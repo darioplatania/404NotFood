@@ -29,7 +29,8 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();
+            first_step();        
+
         }
 
         static void first_step()
@@ -37,13 +38,10 @@ namespace fez_spider
             window = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
 
             GlideTouch.Initialize();
-
+            /*print welcome message into textblock*/
             textBlock = (TextBlock)window.GetChildByName("textBlock");
-            //textBlock.TapEvent += OnTap;
 
             Glide.MainWindow = window;
-
-            
         }
     }
 }

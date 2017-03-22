@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." name="food-service">
+	<description>
+		Script for Food Service
+	</description>
+	
+	<property name="serviceName" value="food" />
+	
+	<import file="service-build.xml"/>
+		
+</project>

@@ -52,8 +52,8 @@ public class FoodServiceResource {
 		@ApiResponse(code = 500, message = "Something wrong in Server")})
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getMenu() {
-		String string = "ok Menu";
-		return string;
+		FoodServiceImpl res = new FoodServiceImpl();
+		return res.try_connect();
 	}
 	    
 }

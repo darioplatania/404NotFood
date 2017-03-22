@@ -20,10 +20,11 @@ namespace fez_spider
 {
     public partial class Program
     {
-        private static GHI.Glide.Display.Window window;
-        private static GHI.Glide.Display.Window menu;
+        private static GHI.Glide.Display.Window window;       
         private static TextBlock textBlock;
-        private static Button button;
+        private static Button button;      
+
+        private static GHI.Glide.Display.Window menu;
         private static TextBlock menu_istance;
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -39,7 +40,6 @@ namespace fez_spider
         /****************
          * FUNCTION 
          * *************/
-
         static void first_step()
         {
             window = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
@@ -51,28 +51,33 @@ namespace fez_spider
 
             /*create button to start*/
             button = (Button)window.GetChildByName("button");
-            /*tap button event*/
-            button.TapEvent += Button_TapEvent;
+            /*press button event*/            
+            button.PressEvent += Button_PressEvent;
 
             Glide.MainWindow = window;
         }
 
+
         /****************
          * CALLBACK 
          * *************/
-        private static void Button_TapEvent(object sender)
+        private static void Button_PressEvent(object sender)
         {
             try
-            {   
-                /*load menu*/
-                menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
-                /*print menu*/
-                menu_istance = (TextBlock)window.GetChildByName("menu_istance");
-            }
-            catch(Exception e)
             {
-                Debug.Print(e.Message);
+                Debug.Print("Premuto");                    
+                /*load menu*/
+                //menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+                /*print menu*/
+                //menu_istance = (TextBlock)window.GetChildByName("menu_istance");
+                
+             }
+            catch (Exception e)
+            {
+               Debug.Print(e.Message);
             }
+
         }
+                
     }
 }

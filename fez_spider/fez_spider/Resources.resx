@@ -132,7 +132,7 @@
 &lt;/Glide&gt;</value>
   </data>
   <data name="Menu" xml:space="preserve">
-    <value>&lt;Glide Version="1.0.7"&gt;
+    <value>&lt;Glide&gt;
   &lt;Window Name="menu" Width="320" Height="240" BackColor="FFFFFF"&gt;
     &lt;TextBlock Name="menu_istance" X="0" Y="0" Width="100" Height="32" Alpha="255" Text="Menu Example" TextAlign="Left" TextVerticalAlign="Top" Font="4" FontColor="0" BackColor="000000" ShowBackColor="False"/&gt;
   &lt;/Window&gt;

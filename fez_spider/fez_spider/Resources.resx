@@ -131,4 +131,11 @@
   &lt;Button Name="button" X="110" Y="104" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;/Window&gt;
 &lt;/Glide&gt;</value>
   </data>
+  <data name="Menu" xml:space="preserve">
+    <value>&lt;Glide Version="1.0.7"&gt;
+  &lt;Window Name="menu" Width="320" Height="240" BackColor="FFFFFF"&gt;
+    &lt;TextBlock Name="menu_istance" X="0" Y="0" Width="100" Height="32" Alpha="255" Text="Menu Example" TextAlign="Left" TextVerticalAlign="Top" Font="4" FontColor="0" BackColor="000000" ShowBackColor="False"/&gt;
+  &lt;/Window&gt;
+&lt;/Glide&gt;</value>
+  </data>
 </root>

@@ -37,6 +37,7 @@ namespace fez_spider
         internal enum StringResources : short
         {
             Window = -5489,
+            Menu = -2554,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

@@ -22,6 +22,7 @@ namespace fez_spider
     {
         private static GHI.Glide.Display.Window window;
         private static TextBlock textBlock;
+        private static Button button;
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
@@ -33,13 +34,21 @@ namespace fez_spider
 
         }
 
+        /*FUNCTION*/
+
         static void first_step()
         {
             window = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
 
             GlideTouch.Initialize();
+
             /*print welcome message into textblock*/
             textBlock = (TextBlock)window.GetChildByName("textBlock");
+
+            /*create button to start*/
+            button = (Button)window.GetChildByName("button");
+            /*tap button event*/
+
 
             Glide.MainWindow = window;
         }

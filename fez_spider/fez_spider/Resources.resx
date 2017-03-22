@@ -128,7 +128,7 @@
     <value>&lt;Glide&gt;
   &lt;Window Name="window" Width="320" Height="240" BackColor="3B5998"&gt;
     &lt;TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="WELCOME" TextAlign="Center" Font="4" FontColor="FFFFFF"/&gt;
-  &lt;/Window&gt;
+  &lt;Button Name="button" X="110" Y="104" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;/Window&gt;
 &lt;/Glide&gt;</value>
   </data>
 </root>

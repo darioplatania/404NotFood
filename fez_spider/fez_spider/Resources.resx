@@ -124,4 +124,11 @@
   <data name="small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\small.tinyfnt;System.Byte[], mscorlib, Culture=neutral, PublicKeyToken=null</value>
   </data>
+  <data name="Window" xml:space="preserve">
+    <value>&lt;Glide&gt;
+  &lt;Window Name="window" Width="320" Height="240" BackColor="3B5998"&gt;
+    &lt;TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="WELCOME" TextAlign="Center" Font="4" FontColor="FFFFFF"/&gt;
+  &lt;/Window&gt;
+&lt;/Glide&gt;</value>
+  </data>
 </root>

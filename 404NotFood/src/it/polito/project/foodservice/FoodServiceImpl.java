@@ -73,11 +73,14 @@ public class FoodServiceImpl {
 			{
 			    String  id_json=result.getString("id");
 			    String name_json=result.getString("name");
+			    String ingredients_json=result.getString("ingredients");
 			    String price_json=result.getString("price");
 			    JSONObject json_obj = new JSONObject();
 			    json_obj.put("id", id_json);
 			    json_obj.put("name", name_json);
+			    json_obj.put("ingredients", ingredients_json);
 			    json_obj.put("price", price_json);
+			    
 			    
 			    // inserisci l'elemento nell'array
 			    jArray.put(json_obj);

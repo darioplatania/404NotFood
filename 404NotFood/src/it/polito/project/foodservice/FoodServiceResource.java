@@ -1,5 +1,7 @@
 package it.polito.project.foodservice;
 
+import java.sql.SQLException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -7,6 +9,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.json.JSONException;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -53,7 +57,14 @@ public class FoodServiceResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getMenu() {
 		FoodServiceImpl res = new FoodServiceImpl();
-		return res.try_connect();
+		String string;
+		try {
+			string = res.getInformation();
+		} catch (SQLException | JSONException e) {
+			// TODO Auto-generated catch block
+			string = e.getMessage();
+		}
+		return string;
 	}
 	    
 }

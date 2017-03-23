@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.wordnik.swagger.annotations.Api;
@@ -54,17 +55,18 @@ public class FoodServiceResource {
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK"),
 		@ApiResponse(code = 500, message = "Something wrong in Server")})
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public String getMenu() {
 		FoodServiceImpl res = new FoodServiceImpl();
-		String string;
+		String jArray = null;
 		try {
-			string = res.getInformation();
+			jArray = res.getInformation();
 		} catch (SQLException | JSONException e) {
 			// TODO Auto-generated catch block
-			string = e.getMessage();
+			e.printStackTrace();
 		}
-		return string;
+		
+		return jArray;
 	}
 	    
 }

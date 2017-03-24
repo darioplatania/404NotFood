@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import javax.ws.rs.ServiceUnavailableException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +34,10 @@ public class FoodServiceImpl {
 		    return properties;
 		}
 		
-		// connect database
+		/** 
+		 * Connect database
+		 * @return
+		 */
 		public Connection connect() {
 		    if (connection == null) {
 		        try {
@@ -45,7 +50,9 @@ public class FoodServiceImpl {
 		    return connection;
 		}
 		
-		// disconnect database
+		/**
+		 *  Disconnect database
+		 */
 		public void disconnect() {
 		    if (connection != null) {
 		        try {
@@ -57,17 +64,25 @@ public class FoodServiceImpl {
 		    }
 		}
 		
+		/**
+		 *  Get all data from DB
+		 * @return
+		 * @throws SQLException
+		 * @throws JSONException
+		 */
 		public String getInformation() throws SQLException, JSONException{
 			
-			// first connect to DB
-			connect();
+			// connect and check if connection is ok
+			connect();			
+			if(connection==null)
+				throw new ServiceUnavailableException();
 			
 			// extract information from DB
 			Statement statement = connection.createStatement();
 			String sql = ("SELECT * FROM Food;");
 			ResultSet result = statement.executeQuery(sql);
 			
-			// save information in a   JSON Array
+			// save information in a JSON Array
 			JSONArray jArray = new JSONArray();
 			while (result.next())
 			{
@@ -80,9 +95,7 @@ public class FoodServiceImpl {
 			    json_obj.put("name", name_json);
 			    json_obj.put("ingredients", ingredients_json);
 			    json_obj.put("price", price_json);
-			    
-			    
-			    // inserisci l'elemento nell'array
+			   
 			    jArray.put(json_obj);
 			}
 			
@@ -91,5 +104,34 @@ public class FoodServiceImpl {
 			
 			return res;
 		}
+		
+		/**
+		 * Add element to DB
+		 * @return
+		 * @throws SQLException 
+		 */
+		public String addItem(JSONObject json_item) throws SQLException{
+			
+			try {
+				String name = json_item.getString("name");
+				String ingredients = json_item.getString("ingredients");
+				String price = json_item.getString("price");
+				
+				// add element to DB
+				connect();
+				Statement statement = connection.createStatement();
+				String sql = "INSERT INTO `Food` (`id`, `name`, `ingredients`, `price`) "
+						+ "VALUES (NULL, '"+name+"', '"+ingredients+"', '"+price+"')";
+				
+				ResultSet result = statement.executeQuery(sql);
+				disconnect();
+				return result.getString("id");
+			} catch (JSONException e) {
+				disconnect();
+				return null;
+			}
+		}
+		
+		
 
 }

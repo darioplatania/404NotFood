@@ -137,10 +137,21 @@
     
 &lt;TextBlock Name="menu_istance" X="110" Y="24" Width="100" Height="32" Alpha="255" Text="Menu'" TextAlign="Center" Font="4" FontColor="000000"/&gt;
   
-&lt;DataGrid Name="dataGrid" X="20" Y="64" Width="250" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" 
+&lt;DataGrid Name="dataGrid" X="5" Y="5" Width="310" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" 
 SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="5" HeadersBackColor="707476"
 HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" 
 SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/&gt;
+&lt;TextBlock Name="textBlock1" X="5" Y="160"Width="50" Height="32" Alpha="255" Text="Scroll" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/&gt;
+&lt;TextBlock Name="textBlock2" X="5" Y="202" Width="50" Height="32" Alpha="255" Text="Select" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/&gt;
+&lt;TextBlock Name="textBlock3" X="175" Y="160" Width="40" Height="32" Alpha="255" Text="List" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/&gt;
+&lt;Button Name="scrollUpBtn" X="60" Y="160" Width="45" Height="32" Alpha="255" Text="Up" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="scrollDownBtn" X="110" Y="160" Width="60" Height="32" Alpha="255" Text="Down" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="selectUpBtn" X="60" Y="202" Width="45" Height="32" Alpha="255" Text="Up" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="selectDownBtn" X="110" Y="202" Width="60" Height="32" Alpha="255" Text="Down" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="selectClearBtn" X="175" Y="202" Width="50" Height="32" Alpha="255" Text="Clear" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="selectDeleteBtn" X="230" Y="202" Width="70" Height="32" Alpha="255" Text="Delete" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="clearBtn" X="220" Y="160" Width="50" Height="32" Alpha="255" Text="Clear" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
+&lt;Button Name="fillBtn" X="275" Y="160" Width="40" Height="32" Alpha="255" Text="Fill" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
 &lt;/Window&gt;
 &lt;/Glide&gt;</value>
   </data>

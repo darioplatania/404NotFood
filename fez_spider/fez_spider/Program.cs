@@ -34,8 +34,7 @@ namespace fez_spider
             /*welcome into display*/
             first_step();        
 
-        }        
-
+        }
 
         /****************
          * FUNCTION 
@@ -57,9 +56,11 @@ namespace fez_spider
         {
             
             Debug.Print("Init Menu!");
+
             /*load menu*/
             menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
             Glide.MainWindow = menu;
+
             // Setup the dataGrid reference.            
             dataGrid = (DataGrid)menu.GetChildByName("dataGrid");
 
@@ -76,8 +77,8 @@ namespace fez_spider
 
             // Create our three columns.
             dataGrid.AddColumn(new DataGridColumn("ID", 50));
-            dataGrid.AddColumn(new DataGridColumn("First Name", 125));
-            dataGrid.AddColumn(new DataGridColumn("Last Name", 125));
+            dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
+            dataGrid.AddColumn(new DataGridColumn("PREZZO", 125));
 
             // Populate the data grid with random data.
             Populate(true);
@@ -87,14 +88,13 @@ namespace fez_spider
             dataGrid.Render();
 
             // Setup the button controls.
-
             Button scrollUpBtn = (Button)menu.GetChildByName("scrollUpBtn");
             scrollUpBtn.TapEvent += new OnTap(scrollUpBtn_TapEvent);
 
             Button scrollDownBtn = (Button)menu.GetChildByName("scrollDownBtn");
             scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);
 
-            Button selectUpBtn = (Button)menu.GetChildByName("selectUpBtn");
+            /*Button selectUpBtn = (Button)menu.GetChildByName("selectUpBtn");
             selectUpBtn.TapEvent += new OnTap(selectUpBtn_TapEvent);
 
             Button selectDownBtn = (Button)menu.GetChildByName("selectDownBtn");
@@ -104,10 +104,10 @@ namespace fez_spider
             selectClearBtn.TapEvent += new OnTap(selectClearBtn_TapEvent);
 
             Button selectDeleteBtn = (Button)menu.GetChildByName("selectDeleteBtn");
-            selectDeleteBtn.TapEvent += new OnTap(selectDeleteBtn_TapEvent);
+            selectDeleteBtn.TapEvent += new OnTap(selectDeleteBtn_TapEvent);*/
 
-            Button clearBtn = (Button)menu.GetChildByName("clearBtn");
-            clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);
+            /*Button clearBtn = (Button)menu.GetChildByName("clearBtn");
+            clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
 
             Button fillBtn = (Button)menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
@@ -116,10 +116,10 @@ namespace fez_spider
         static void Populate(bool invalidate)
         {
             // Add items with random data
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 7; i++)
             {
                 // DataGridItems must contain an object array whose length matches the number of columns.
-                dataGrid.AddItem(new DataGridItem(new object[3] { i, RandomString(10), RandomString(10) }));
+                dataGrid.AddItem(new DataGridItem(new object[3] { i, "Margherita", i }));
             }
 
             if (invalidate)
@@ -146,7 +146,7 @@ namespace fez_spider
             dataGrid.Invalidate();
         }
 
-        static void selectUpBtn_TapEvent(object sender)
+        /*static void selectUpBtn_TapEvent(object sender)
         {
             if (dataGrid.SelectedIndex > 0)
                 dataGrid.SelectedIndex--;
@@ -167,13 +167,13 @@ namespace fez_spider
         {
             dataGrid.RemoveItemAt(dataGrid.SelectedIndex);
             dataGrid.Invalidate();
-        }
+        }*/
 
-        static void clearBtn_TapEvent(object sender)
+        /*static void clearBtn_TapEvent(object sender)
         {
             dataGrid.Clear();
             dataGrid.Invalidate();
-        }
+        }*/
 
         static void fillBtn_TapEvent(object sender)
         {
@@ -182,7 +182,7 @@ namespace fez_spider
 
         // -------------------------------------------------------------------
         // This is used to generate random strings.
-        private static Random random = new Random((int)DateTime.Now.Ticks);
+       /* private static Random random = new Random((int)DateTime.Now.Ticks);
         private static string RandomString(int size)
         {
             string str = String.Empty;
@@ -198,7 +198,7 @@ namespace fez_spider
             }
 
             return str;
-        }
+        }*/
 
     
 

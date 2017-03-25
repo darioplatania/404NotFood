@@ -2,6 +2,7 @@ package it.polito.project.foodservice;
 
 import java.sql.SQLException;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,7 +14,9 @@ import javax.ws.rs.core.MediaType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -36,13 +39,20 @@ public class FoodServiceResource {
 	    @ApiResponse(code = 503, message = "Connection with DB not works correctly")})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String addItem(JSONObject json_item) {
+	public int addItem(String item) {
 		FoodServiceImpl res = new FoodServiceImpl();
-		String id = null;
+		int id;
+
 		try {
+			// convert string to json
+			JSONParser parser = new JSONParser();
+			JSONObject json_item = (JSONObject) parser.parse(item);
 			id = res.addItem(json_item);
 		} catch (SQLException e) {
 			throw new ServiceUnavailableException();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			throw new BadRequestException();
 		}
 		
 		return id;

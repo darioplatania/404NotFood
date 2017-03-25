@@ -2,16 +2,19 @@ package it.polito.project.foodservice;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ServiceUnavailableException;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+
 
 public class FoodServiceImpl {
 
@@ -96,7 +99,7 @@ public class FoodServiceImpl {
 			    json_obj.put("ingredients", ingredients_json);
 			    json_obj.put("price", price_json);
 			   
-			    jArray.put(json_obj);
+			    jArray.add(json_obj);
 			}
 			
 			String res = jArray.toString();
@@ -110,26 +113,29 @@ public class FoodServiceImpl {
 		 * @return
 		 * @throws SQLException 
 		 */
-		public String addItem(JSONObject json_item) throws SQLException{
+		public int addItem(JSONObject json_item) throws SQLException{
 			
-			try {
-				String name = json_item.getString("name");
-				String ingredients = json_item.getString("ingredients");
-				String price = json_item.getString("price");
-				
-				// add element to DB
-				connect();
-				Statement statement = connection.createStatement();
-				String sql = "INSERT INTO `Food` (`id`, `name`, `ingredients`, `price`) "
-						+ "VALUES (NULL, '"+name+"', '"+ingredients+"', '"+price+"')";
-				
-				ResultSet result = statement.executeQuery(sql);
-				disconnect();
-				return result.getString("id");
-			} catch (JSONException e) {
-				disconnect();
-				return null;
-			}
+			String name = json_item.get("name").toString();
+			String ingredients = json_item.get("ingredients").toString();
+			String price = json_item.get("price").toString();
+			
+			if(name==null || ingredients==null || price==null)
+				throw new BadRequestException();
+			
+			// add element to DB
+			connect();
+
+			String sql = "INSERT INTO `Food` (`id`, `name`, `ingredients`, `price`) "
+					+ "VALUES (NULL, '"+name+"', '"+ingredients+"', '"+price+"');";
+			PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            int id = 0;
+            if(rs.next()){
+                id=rs.getInt(1);
+            }
+            disconnect();
+			return id;
 		}
 		
 		

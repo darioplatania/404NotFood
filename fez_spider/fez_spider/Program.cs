@@ -24,7 +24,10 @@ namespace fez_spider
         private static GHI.Glide.Display.Window menu;
         static DataGrid dataGrid;       
         private static int qnt; /*use for setting quantity*/
-
+        private static int price;
+        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        
+                 
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -33,8 +36,7 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();        
-
+            first_step();
         }
 
         /****************
@@ -81,12 +83,12 @@ namespace fez_spider
             dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
             dataGrid.AddColumn(new DataGridColumn("EUR", 50));
             dataGrid.AddColumn(new DataGridColumn("QNT", 50));
-
+            
             // Populate the data grid with random data.
             Populate(true);
 
             // Add the data grid to the window before rendering it.
-            window.AddChild(dataGrid);
+            menu.AddChild(dataGrid);            
             dataGrid.Render();
 
             // Setup the button controls.
@@ -134,7 +136,11 @@ namespace fez_spider
             object[] data = dataGrid.GetRowData(args.RowIndex);                  
             if (data != null)
             {
-                GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);               
+                GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
+                /*get ptice to select row*/
+                var getprice = dataGrid.GetRowData(args.RowIndex).GetValue(2);
+                /*calculate price function*/
+                calcoloprezzo((int)getprice);                               
             }
 
         }     
@@ -184,6 +190,15 @@ namespace fez_spider
         {
             Populate(true);
         }
+
+        static int calcoloprezzo(int prezzo)
+        {
+           
+            price = price + prezzo;
+            Debug.Print("Prezzo Totale: " + price.ToString());
+            //displayTE35.SimpleGraphics.DisplayText(price.ToString(), font, GT.Color.Black, 15, 152);
+            return price;
+        }    
 
         // -------------------------------------------------------------------
         // This is used to generate random strings.

@@ -67,14 +67,14 @@
         </socketUseShape>
       </nestedChildShapes>
     </moduleShape>
-    <socketConnector Id="ce93c4e4-9bcd-47ca-8726-87ff57074bda" edgePoints="[(8.05641732150427 : 3.045); (8.04083333333333 : 3.045 : JumpStart); (7.87416666666667 : 3.045 : JumpEnd); (4.34833333333333 : 3.045 : JumpStart); (4.18166666666667 : 3.045 : JumpEnd); (4.085 : 3.045); (4.085 : 3.12877952401138)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <socketConnector Id="ce93c4e4-9bcd-47ca-8726-87ff57074bda" edgePoints="[(8.05641732150427 : 3.045); (8.04083333333333 : 3.045 : JumpStart); (7.87416666666667 : 3.045 : JumpEnd); (4.085 : 3.045); (4.085 : 3.12877952401138)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <socketUseReferencesSocketMoniker Id="4e207e35-0c74-46c6-befb-0bff5b2665a2" />
       <nodes>
         <socketUseShapeMoniker Id="3315d01d-c6fc-4d3b-9ece-bb294be9cb4d" />
         <socketShapeMoniker Id="e01c052d-cb65-4434-9990-f8a73cf54204" />
       </nodes>
     </socketConnector>
-    <socketConnector Id="e0943498-4dbf-4119-bd3c-299631aa2db7" edgePoints="[(8.05641732150427 : 2.465); (8.04083333333333 : 2.465 : JumpStart); (7.87416666666667 : 2.465 : JumpEnd); (4.68833333333333 : 2.465 : JumpStart); (4.52166666666667 : 2.465 : JumpEnd); (4.265 : 2.465); (4.265 : 3.81641732150427)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <socketConnector Id="e0943498-4dbf-4119-bd3c-299631aa2db7" edgePoints="[(8.05641732150427 : 2.465); (8.04083333333333 : 2.465 : JumpStart); (7.87416666666667 : 2.465 : JumpEnd); (4.68833333333333 : 2.465 : JumpStart); (4.52166666666667 : 2.465 : JumpEnd); (4.265 : 2.465); (4.265 : 3.81641732150427)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <socketUseReferencesSocketMoniker Id="10ccfe92-2726-4c24-ba2e-c1f2ed1e995c" />
       <nodes>
         <socketUseShapeMoniker Id="c684fdf2-54f3-4cb6-bceb-55e133dc136c" />
@@ -88,7 +88,7 @@
         <socketShapeMoniker Id="32342e35-98a8-497d-89d7-ff44081c7d65" />
       </nodes>
     </socketConnector>
-    <socketConnector Id="a20e8518-7395-4140-9742-1d8bab1bc20c" edgePoints="[(8.145 : 1.58122047598862); (8.145 : 1.7175); (7.9575 : 1.7175); (7.9575 : 3.7175); (4.34833333333333 : 3.7175 : JumpStart); (4.18166666666667 : 3.7175 : JumpEnd); (3.34375 : 3.7175); (3.34375 : 3.905); (3.36122047598862 : 3.905)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <socketConnector Id="a20e8518-7395-4140-9742-1d8bab1bc20c" edgePoints="[(8.145 : 1.58122047598862); (8.145 : 1.7175); (7.9575 : 1.7175); (7.9575 : 3.7175); (3.34375 : 3.7175); (3.34375 : 3.905); (3.36122047598862 : 3.905)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <socketUseReferencesSocketMoniker Id="a4c24946-5fe2-48bd-a946-70b7ac0b88ed" />
       <nodes>
         <socketUseShapeMoniker Id="1291ad6d-876e-4be7-90b2-07294877a95d" />
@@ -104,7 +104,7 @@
         </socketUseShape>
       </nestedChildShapes>
     </moduleShape>
-    <socketConnector Id="8b35a555-ab54-4368-bb1a-36303adb8729" edgePoints="[(3.79358267849573 : 1.045); (4.605 : 1.045); (4.605 : 2.56877952401138)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <socketConnector Id="8b35a555-ab54-4368-bb1a-36303adb8729" edgePoints="[(3.79358267849573 : 1.045); (4.605 : 1.045); (4.605 : 2.56877952401138)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <socketUseReferencesSocketMoniker Id="8098c99c-ccd9-4701-a774-5460fed3cd34" />
       <nodes>
         <socketUseShapeMoniker Id="9b9a1318-d285-4ab4-b177-18d131aaf88d" />
@@ -120,7 +120,7 @@
         </socketUseShape>
       </nestedChildShapes>
     </moduleShape>
-    <socketConnector Id="8216cf33-ed86-4398-a5a1-10b6425e35b9" edgePoints="[(2.445 : 1.69358267849573); (2.445 : 2.305); (2.88877952401138 : 2.305)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <socketConnector Id="8216cf33-ed86-4398-a5a1-10b6425e35b9" edgePoints="[(2.445 : 1.69358267849573); (2.445 : 2.305); (2.88877952401138 : 2.305)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <socketUseReferencesSocketMoniker Id="d3ceb2a9-b7bd-42bc-9c10-90a41b5c03b3" />
       <nodes>
         <socketUseShapeMoniker Id="d245b7f3-8ef1-4088-b500-3fffa254009d" />

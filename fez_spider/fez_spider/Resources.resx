@@ -134,8 +134,13 @@
   <data name="Menu" xml:space="preserve">
     <value>&lt;Glide&gt;
   &lt;Window Name="menu" Width="320" Height="240" BackColor="FFFFFF"&gt;
-    &lt;TextBlock Name="menu_istance" X="0" Y="0" Width="100" Height="32" Alpha="255" Text="Menu Example" TextAlign="Left" TextVerticalAlign="Top" Font="4" FontColor="0" BackColor="000000" ShowBackColor="False"/&gt;
-  &lt;/Window&gt;
+    
+&lt;TextBlock Name="menu_istance" X="110" Y="24" Width="100" Height="32" Alpha="255" Text="Menu'" TextAlign="Center" Font="4" FontColor="000000"/&gt;
+  
+&lt;DataGrid Name="grid" X="20" Y="64" Width="100" Height="32" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" 
+TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="4" HeadersBackColor="707476" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" 
+GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/&gt;
+&lt;/Window&gt;
 &lt;/Glide&gt;</value>
   </data>
 </root>

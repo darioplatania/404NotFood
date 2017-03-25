@@ -22,8 +22,9 @@ namespace fez_spider
     {
         private static GHI.Glide.Display.Window window;             
         private static GHI.Glide.Display.Window menu;
-        static DataGrid dataGrid;     
-                   
+        static DataGrid dataGrid;       
+        private static int qnt; /*use for setting quantity*/
+
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -76,9 +77,10 @@ namespace fez_spider
             dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
 
             // Create our three columns.
-            dataGrid.AddColumn(new DataGridColumn("ID", 50));
+            dataGrid.AddColumn(new DataGridColumn("ID", 40));
             dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
-            dataGrid.AddColumn(new DataGridColumn("PREZZO", 125));
+            dataGrid.AddColumn(new DataGridColumn("EUR", 50));
+            dataGrid.AddColumn(new DataGridColumn("QNT", 50));
 
             // Populate the data grid with random data.
             Populate(true);
@@ -114,12 +116,12 @@ namespace fez_spider
         }
 
         static void Populate(bool invalidate)
-        {
+        {            
             // Add items with random data
             for (int i = 0; i < 7; i++)
             {
                 // DataGridItems must contain an object array whose length matches the number of columns.
-                dataGrid.AddItem(new DataGridItem(new object[3] { i, "Margherita", i }));
+                dataGrid.AddItem(new DataGridItem(new object[4] { i, "Margherita", i,qnt }));
             }
 
             if (invalidate)
@@ -128,11 +130,14 @@ namespace fez_spider
 
         static void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
         {
-            // Get the data from the row we tapped.
-            object[] data = dataGrid.GetRowData(args.RowIndex);
+            // Get the data from the row we tapped.            
+            object[] data = dataGrid.GetRowData(args.RowIndex);                  
             if (data != null)
-                GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
-        }
+            {
+                GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);               
+            }
+
+        }     
 
         static void scrollUpBtn_TapEvent(object sender)
         {

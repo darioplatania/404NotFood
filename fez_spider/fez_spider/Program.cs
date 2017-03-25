@@ -21,8 +21,9 @@ namespace fez_spider
     public partial class Program
     {
         private static GHI.Glide.Display.Window window;             
-        private static GHI.Glide.Display.Window menu; 
-              
+        private static GHI.Glide.Display.Window menu;
+        private static DataGrid datagrid;     
+                   
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -31,7 +32,7 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();          
+            first_step();        
 
         }        
 
@@ -49,8 +50,16 @@ namespace fez_spider
             /*create button to start*/
             var button = (Button)window.GetChildByName("button");
             /*press button event*/            
-            button.PressEvent += Button_PressEvent;
+            button.PressEvent += Button_PressEvent;            
+        }
 
+        static void initMenu()
+        {
+            
+            Debug.Print("Init Menu!");
+            /*load menu*/
+            menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            Glide.MainWindow = menu;
             
         }
 
@@ -58,14 +67,8 @@ namespace fez_spider
          * CALLBACK 
          * *************/
         private static void Button_PressEvent(object sender)
-        {
-           
-                Debug.Print("Premuto..");                    
-                /*load menu*/
-                menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
-                Glide.MainWindow = menu;           
-            
-                       
+        {           
+            initMenu(); 
         }
                 
     }

@@ -36,7 +36,7 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();
+            first_step();                        
         }
 
         /****************
@@ -50,7 +50,7 @@ namespace fez_spider
             Glide.MainWindow = window;
 
             /*create button to start*/
-            Button button = (Button)window.GetChildByName("button");            
+            GHI.Glide.UI.Button button = (GHI.Glide.UI.Button)window.GetChildByName("button");            
             /*press button event*/            
             button.PressEvent += Button_PressEvent;            
         }
@@ -92,10 +92,10 @@ namespace fez_spider
             dataGrid.Render();
 
             // Setup the button controls.
-            Button scrollUpBtn = (Button)menu.GetChildByName("scrollUpBtn");
+            GHI.Glide.UI.Button scrollUpBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollUpBtn");
             scrollUpBtn.TapEvent += new OnTap(scrollUpBtn_TapEvent);
 
-            Button scrollDownBtn = (Button)menu.GetChildByName("scrollDownBtn");
+            GHI.Glide.UI.Button scrollDownBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollDownBtn");
             scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);
 
             /*Button selectUpBtn = (Button)menu.GetChildByName("selectUpBtn");
@@ -113,8 +113,8 @@ namespace fez_spider
             /*Button clearBtn = (Button)menu.GetChildByName("clearBtn");
             clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
 
-            Button fillBtn = (Button)menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
+            GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
+            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);            
         }
 
         static void Populate(bool invalidate)

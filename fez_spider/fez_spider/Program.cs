@@ -99,22 +99,7 @@ namespace fez_spider
             scrollUpBtn.TapEvent += new OnTap(scrollUpBtn_TapEvent);
 
             GHI.Glide.UI.Button scrollDownBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollDownBtn");
-            scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);
-
-            /*Button selectUpBtn = (Button)menu.GetChildByName("selectUpBtn");
-            selectUpBtn.TapEvent += new OnTap(selectUpBtn_TapEvent);
-
-            Button selectDownBtn = (Button)menu.GetChildByName("selectDownBtn");
-            selectDownBtn.TapEvent += new OnTap(selectDownBtn_TapEvent);
-
-            Button selectClearBtn = (Button)menu.GetChildByName("selectClearBtn");
-            selectClearBtn.TapEvent += new OnTap(selectClearBtn_TapEvent);
-
-            Button selectDeleteBtn = (Button)menu.GetChildByName("selectDeleteBtn");
-            selectDeleteBtn.TapEvent += new OnTap(selectDeleteBtn_TapEvent);*/
-
-            /*Button clearBtn = (Button)menu.GetChildByName("clearBtn");
-            clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
+            scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);           
 
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
@@ -123,6 +108,9 @@ namespace fez_spider
             deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
 
             GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)menu.GetChildByName("continueBtn");
+
+            GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)menu.GetChildByName("ingBtn");
+            ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
         }          
 
         static void Populate(bool invalidate)
@@ -168,6 +156,11 @@ namespace fez_spider
         {
             dataGrid.ScrollDown(1);
             dataGrid.Invalidate();
+        }         
+
+        static void fillBtn_TapEvent(object sender)
+        {
+            Populate(true);
         }
 
         static void deleteBtn_TapEvent(object sender)
@@ -179,12 +172,12 @@ namespace fez_spider
             {
                 dataGrid.SetCellData(3, i, getqnt);
             }
-            Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: "+ getprice);
-        }  
+            Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: " + getprice);
+        }
 
-        static void fillBtn_TapEvent(object sender)
+        static void ingBtn_TapEvent(object sender)
         {
-            Populate(true);
+            ingredients();
         }
 
         static void priceadd(int prezzo)
@@ -195,6 +188,32 @@ namespace fez_spider
         static void priceremove(int prezzo)
         {
             price = price - prezzo;
+        }
+
+        static void ingredients()
+        {
+            switch(getpizza)
+            {
+                case "Margherita0":
+                    Debug.Print("m0");
+                break;
+
+                case "Margherita1":
+                    Debug.Print("m1");
+                    break;
+
+                case "Margherita2":
+                    Debug.Print("m2");
+                    break;
+
+                case "Margherita3":
+                    Debug.Print("m3");
+                    break;
+
+                default:
+                    Debug.Print("default case");
+                    break;
+            }
         }
 
         /****************

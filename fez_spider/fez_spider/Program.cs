@@ -120,6 +120,8 @@ namespace fez_spider
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
 
             GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)menu.GetChildByName("deleteBtn");
+            deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
+
             GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)menu.GetChildByName("continueBtn");
         }          
 
@@ -167,6 +169,18 @@ namespace fez_spider
         {
             dataGrid.ScrollDown(1);
             dataGrid.Invalidate();
+        }
+
+        static void deleteBtn_TapEvent(object sender)
+        {
+            getqnt = 0;
+            getprice = 0;
+            /*vedere se questo for va bene o c'è un altro modo??*/
+            for (int i = 0; i < 7; i++)
+            {
+                dataGrid.SetCellData(3, i, getqnt);
+            }
+            Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: "+ getprice);
         }
 
         /*static void selectUpBtn_TapEvent(object sender)

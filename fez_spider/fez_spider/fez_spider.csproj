@@ -111,4 +111,7 @@
     <None Include="Resources\NinaB.tinyfnt" />
     <None Include="Resources\small.tinyfnt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Margherita.txt" />
+  </ItemGroup>
 </Project>

@@ -22,16 +22,16 @@ namespace fez_spider
     {
         
         private static GHI.Glide.Display.Window window;             
-        private static GHI.Glide.Display.Window menu;        
+        private static GHI.Glide.Display.Window menu;
+        private static GHI.Glide.Display.Window ing;
         private static DataGrid dataGrid;        
         private static int qnt; /*use for setting quantity*/
         private static int price;
-        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);       
         private static string getpizza;
         private static int getprice;
         private static int getqnt;        
-        private static int row;
-        private static int column;
+        private static int row;        
         //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
         //private static Bitmap display = new Bitmap(SystemMetrics.ScreenWidth, SystemMetrics.ScreenHeight);  
 
@@ -195,8 +195,8 @@ namespace fez_spider
             switch(getpizza)
             {
                 case "Margherita0":
-                    Debug.Print("m0");
-                break;
+                    Debug.Print("m0");                    
+                    break;
 
                 case "Margherita1":
                     Debug.Print("m1");
@@ -216,14 +216,14 @@ namespace fez_spider
             }
         }
 
+        
         /****************
          * CALLBACK 
          * *************/
         private static void Button_PressEvent(object sender)
         {           
             initMenu(); 
-        }
-
+        }     
 
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {

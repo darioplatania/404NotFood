@@ -117,8 +117,10 @@ namespace fez_spider
             clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
 
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);            
-                        
+            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
+
+            GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)menu.GetChildByName("deleteBtn");
+            GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)menu.GetChildByName("continueBtn");
         }          
 
         static void Populate(bool invalidate)

@@ -145,9 +145,8 @@ namespace fez_spider
             if (data != null)
             {
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
-                /*mem column and row index*/
-                row = args.RowIndex;
-                //column = args.ColumnIndex;
+                /*mem row index*/
+                row = args.RowIndex;                
                 /*select name row*/
                 getpizza = (string)dataGrid.GetRowData(args.RowIndex).GetValue(1);
                 /*select price row*/
@@ -181,36 +180,7 @@ namespace fez_spider
                 dataGrid.SetCellData(3, i, getqnt);
             }
             Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: "+ getprice);
-        }
-
-        /*static void selectUpBtn_TapEvent(object sender)
-        {
-            if (dataGrid.SelectedIndex > 0)
-                dataGrid.SelectedIndex--;
-        }
-
-        static void selectDownBtn_TapEvent(object sender)
-        {
-            if (dataGrid.SelectedIndex < dataGrid.NumItems - 1)
-                dataGrid.SelectedIndex++;
-        }
-
-        static void selectClearBtn_TapEvent(object sender)
-        {
-            dataGrid.SelectedIndex = -1;
-        }
-
-        static void selectDeleteBtn_TapEvent(object sender)
-        {
-            dataGrid.RemoveItemAt(dataGrid.SelectedIndex);
-            dataGrid.Invalidate();
-        }*/
-
-        /*static void clearBtn_TapEvent(object sender)
-        {
-            dataGrid.Clear();
-            dataGrid.Invalidate();
-        }*/
+        }  
 
         static void fillBtn_TapEvent(object sender)
         {

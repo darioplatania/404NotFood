@@ -22,8 +22,7 @@ namespace fez_spider
     {
         
         private static GHI.Glide.Display.Window window;             
-        private static GHI.Glide.Display.Window menu;
-        private static GHI.Glide.Display.Window ing;
+        private static GHI.Glide.Display.Window menu;        
         private static DataGrid dataGrid;        
         private static int qnt; /*use for setting quantity*/
         private static int price;
@@ -233,8 +232,7 @@ namespace fez_spider
             dataGrid.SetCellData(3, row, getqnt);
 
             Debug.Print("Hai Aggiunto: "+ getpizza + " Qnt: " + getqnt);
-            Debug.Print("Prezzo Totale: " + price.ToString());
-            
+            Debug.Print("Prezzo Totale: " + price.ToString());           
         }
 
         private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)

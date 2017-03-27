@@ -21,13 +21,14 @@ namespace fez_spider
     public partial class Program
     {
         private static GHI.Glide.Display.Window window;             
-        private static GHI.Glide.Display.Window menu;
-        static DataGrid dataGrid;       
+        private static GHI.Glide.Display.Window menu;        
+        private static DataGrid dataGrid;        
         private static int qnt; /*use for setting quantity*/
         private static int price;
-        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
-        
-                 
+        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);        
+        //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
+        //private static Bitmap display = new Bitmap(SystemMetrics.ScreenWidth, SystemMetrics.ScreenHeight);  
+
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -36,13 +37,15 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();                        
+            first_step();               
         }
+
+        
 
         /****************
          * FUNCTION 
          * *************/
-            static void first_step()
+        static void first_step()
         {
             window = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
 
@@ -66,15 +69,7 @@ namespace fez_spider
 
             // Setup the dataGrid reference.            
             dataGrid = (DataGrid)menu.GetChildByName("dataGrid");
-
-            // Possible configurations...
-            //dataGrid.ShowHeaders = false;
-            //dataGrid.SortableHeaders = false;
-            //dataGrid.TappableCells = false;
-            //dataGrid.Draggable = false;
-            //dataGrid.ShowScrollbar = false;
-            //dataGrid.ScrollbarWidth = 4;
-
+                        
             // Listen for tap cell events.
             dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
 
@@ -114,8 +109,8 @@ namespace fez_spider
             clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
 
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);            
-        }
+            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);                        
+        }    
 
         static void Populate(bool invalidate)
         {            
@@ -137,10 +132,10 @@ namespace fez_spider
             if (data != null)
             {
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
-                /*get ptice to select row*/
+                /*get price to select row*/
                 var getprice = dataGrid.GetRowData(args.RowIndex).GetValue(2);
                 /*calculate price function*/
-                calcoloprezzo((int)getprice);                               
+                pricecalculate((int)getprice);                                           
             }
 
         }     
@@ -191,38 +186,14 @@ namespace fez_spider
             Populate(true);
         }
 
-        static int calcoloprezzo(int prezzo)
+        static int pricecalculate(int prezzo)
         {
            
             price = price + prezzo;
-            Debug.Print("Prezzo Totale: " + price.ToString());
-            //displayTE35.SimpleGraphics.DisplayText(price.ToString(), font, GT.Color.Black, 15, 152);
+            Debug.Print("Prezzo Totale: " + price.ToString());                        
+            //display.SimpleGraphics.DisplayText("HI",font,GHI.Glide.Colors.Black,5,152);
             return price;
-        }    
-
-       
-
-        // -------------------------------------------------------------------
-        // This is used to generate random strings.
-       /* private static Random random = new Random((int)DateTime.Now.Ticks);
-        private static string RandomString(int size)
-        {
-            string str = String.Empty;
-            double d;
-            ushort u;
-            char ch;
-            for (int i = 0; i < size; i++)
-            {
-                d = System.Math.Floor(26 * random.NextDouble() + 65);
-                u = Convert.ToUInt16(d.ToString());
-                ch = Convert.ToChar(u);
-                str += ch;
-            }
-
-            return str;
-        }*/
-
-    
+        }         
 
         /****************
          * CALLBACK 
@@ -231,6 +202,6 @@ namespace fez_spider
         {           
             initMenu(); 
         }
-                
+
     }
 }

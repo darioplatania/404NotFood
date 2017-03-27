@@ -30,6 +30,9 @@ namespace fez_spider {
         /// <summary>The Button module using socket 9 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Button plus;
         
+        /// <summary>The Button module using socket 5 of the mainboard.</summary>
+        private Gadgeteer.Modules.GHIElectronics.Button minus;
+        
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZSpider Mainboard {
             get {
@@ -57,6 +60,7 @@ namespace fez_spider {
             this.usbClientEDP = new GTM.GHIElectronics.USBClientEDP(1);
             this.ledStrip = new GTM.GHIElectronics.LEDStrip(8);
             this.plus = new GTM.GHIElectronics.Button(9);
+            this.minus = new GTM.GHIElectronics.Button(5);
         }
     }
 }

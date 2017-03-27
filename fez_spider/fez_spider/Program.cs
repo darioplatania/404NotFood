@@ -20,12 +20,18 @@ namespace fez_spider
 {
     public partial class Program
     {
+        
         private static GHI.Glide.Display.Window window;             
         private static GHI.Glide.Display.Window menu;        
         private static DataGrid dataGrid;        
         private static int qnt; /*use for setting quantity*/
         private static int price;
-        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);        
+        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        private static string getpizza;
+        private static int getprice;
+        private static int getqnt;        
+        private static int row;
+        private static int column;
         //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
         //private static Bitmap display = new Bitmap(SystemMetrics.ScreenWidth, SystemMetrics.ScreenHeight);  
 
@@ -37,10 +43,12 @@ namespace fez_spider
             Debug.Print("Program Started");
 
             /*welcome into display*/
-            first_step();               
-        }
-
-        
+            first_step();
+            /*button plus(input 9)*/
+            plus.ButtonPressed += Plus_ButtonPressed;
+            /*button minus(input 5)*/
+            minus.ButtonPressed += Minus_ButtonPressed;
+        }      
 
         /****************
          * FUNCTION 
@@ -73,7 +81,7 @@ namespace fez_spider
             // Listen for tap cell events.
             dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
 
-            // Create our three columns.
+            // Create our four columns.
             dataGrid.AddColumn(new DataGridColumn("ID", 40));
             dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
             dataGrid.AddColumn(new DataGridColumn("EUR", 50));
@@ -84,7 +92,7 @@ namespace fez_spider
 
             // Add the data grid to the window before rendering it.
             menu.AddChild(dataGrid);            
-            dataGrid.Render();
+            dataGrid.Render();           
 
             // Setup the button controls.
             GHI.Glide.UI.Button scrollUpBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollUpBtn");
@@ -109,8 +117,9 @@ namespace fez_spider
             clearBtn.TapEvent += new OnTap(clearBtn_TapEvent);*/
 
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);                        
-        }    
+            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);            
+                        
+        }          
 
         static void Populate(bool invalidate)
         {            
@@ -118,7 +127,7 @@ namespace fez_spider
             for (int i = 0; i < 7; i++)
             {
                 // DataGridItems must contain an object array whose length matches the number of columns.
-                dataGrid.AddItem(new DataGridItem(new object[4] { i, "Margherita", i,qnt }));
+                dataGrid.AddItem(new DataGridItem(new object[4] { i, "Margherita" + i, i,qnt }));
             }
 
             if (invalidate)
@@ -132,10 +141,16 @@ namespace fez_spider
             if (data != null)
             {
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
-                /*get price to select row*/
-                var getprice = dataGrid.GetRowData(args.RowIndex).GetValue(2);
-                /*calculate price function*/
-                pricecalculate((int)getprice);                                           
+                /*mem column and row index*/
+                row = args.RowIndex;
+                //column = args.ColumnIndex;
+                /*select name row*/
+                getpizza = (string)dataGrid.GetRowData(args.RowIndex).GetValue(1);
+                /*select price row*/
+                getprice = (int)dataGrid.GetRowData(args.RowIndex).GetValue(2);
+                /*select qnt row*/
+                getqnt = (int)dataGrid.GetRowData(args.RowIndex).GetValue(3);
+                Debug.Print("QNT tapcell: " + getqnt);
             }
 
         }     
@@ -186,14 +201,15 @@ namespace fez_spider
             Populate(true);
         }
 
-        static int pricecalculate(int prezzo)
+        static void priceadd(int prezzo)
+        {           
+            price = price + prezzo;            
+        }
+
+        static void priceremove(int prezzo)
         {
-           
-            price = price + prezzo;
-            Debug.Print("Prezzo Totale: " + price.ToString());                        
-            //display.SimpleGraphics.DisplayText("HI",font,GHI.Glide.Colors.Black,5,152);
-            return price;
-        }         
+            price = price - prezzo;
+        }
 
         /****************
          * CALLBACK 
@@ -201,6 +217,39 @@ namespace fez_spider
         private static void Button_PressEvent(object sender)
         {           
             initMenu(); 
+        }
+
+
+        private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
+        {
+            /*calculate price function*/
+            priceadd(getprice);
+            getqnt = getqnt + 1;
+            dataGrid.SetCellData(3, row, getqnt);
+
+            Debug.Print("Hai Aggiunto: "+ getpizza + " Qnt: " + getqnt);
+            Debug.Print("Prezzo Totale: " + price.ToString());
+            
+        }
+
+        private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
+        {
+            if (getqnt == 0)
+            {
+                Debug.Print("Aggiungi pizza!");
+            }
+            else
+            {
+                /*calculate price function*/
+                priceremove(getprice);
+                getqnt = getqnt - 1;
+                dataGrid.SetCellData(3, row, getqnt);
+                Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
+                Debug.Print("Prezzo Totale: " + price.ToString());
+                Debug.Print("QNT dopo rimozione: " + getqnt);
+
+            }
+            
         }
 
     }

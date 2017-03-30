@@ -154,7 +154,23 @@ namespace fez_spider
                 Debug.Print("QNT tapcell: " + getqnt);
             }
 
-        }       
+        }
+
+        void Joystick_Up()
+        {
+            dataGrid.ScrollUp(1);
+            dataGrid.GetRowData(row + 1);
+            dataGrid.Invalidate();
+            
+        }
+
+        void Joystick_Down()
+        {
+            dataGrid.ScrollDown(1);
+            dataGrid.GetRowData(row - 1);
+            dataGrid.Invalidate();
+            
+        }
 
         void fillBtn_TapEvent(object sender)
         {
@@ -169,10 +185,11 @@ namespace fez_spider
             for (int i = 0; i < 7; i++)
             {
                 dataGrid.SetCellData(3, i, getqnt);
+                dataGrid.Invalidate();
             }
             Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: " + getprice);
         }
-
+        
         void ingBtn_TapEvent(object sender)
         {
             ingredients();
@@ -213,20 +230,6 @@ namespace fez_spider
                     break;
             }
         }
-
-        void Joystick_Up()
-        {
-            dataGrid.ScrollUp(1);
-            dataGrid.Invalidate();
-        }
-
-        void Joystick_Down()
-        {
-            dataGrid.ScrollDown(1);
-            dataGrid.Invalidate();
-        }
-
-
         /****************
          * CALLBACK 
          * *************/
@@ -248,6 +251,7 @@ namespace fez_spider
                 priceadd(getprice);
                 getqnt = getqnt + 1;
                 dataGrid.SetCellData(3, row, getqnt);
+                dataGrid.Invalidate();
 
                 Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
@@ -269,6 +273,7 @@ namespace fez_spider
                 priceremove(getprice);
                 getqnt = getqnt - 1;
                 dataGrid.SetCellData(3, row, getqnt);
+                dataGrid.Invalidate();
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
                 Debug.Print("QNT dopo rimozione: " + getqnt);

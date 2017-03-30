@@ -35,11 +35,18 @@ namespace fez_spider
         //private Bitmap display = new Bitmap(320,240);  
 
 
-        /*This method is run when the mainboard is powered up or reset*/   
+        /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
             Debug.Print("Program Started");
+
+            /*Ethernet Configuration*/
+            ethernetJ11D.UseThisNetworkInterface();
+            //ethernetJ11D.UseStaticIP("")
+            ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
+            ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;                                     
+            new Thread(RunWebServer).Start();
 
             /*welcome into display*/
             first_step();
@@ -237,6 +244,51 @@ namespace fez_spider
                     break;
             }
         }
+
+        /*Ethernet Network_Down Function*/
+        void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
+        {
+            Debug.Print("Network is down!");
+        }
+
+        /*Ethernet Network_Up Function*/
+        void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,
+        GTM.Module.NetworkModule.NetworkState state)
+        {
+            Debug.Print("Network is up!");
+            Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
+        }
+
+        /*Ethernet Run Web_Server Function*/
+        void RunWebServer()
+        {
+            /*Wait for the network...*/
+            while (ethernetJ11D.IsNetworkUp == false)
+            {
+                Debug.Print("Waiting...");
+                Thread.Sleep(1000);
+            }
+            /*Start the server*/           
+            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);            
+            WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
+           
+            while (true)
+            {
+                Thread.Sleep(1000);
+            }
+        }
+
+        void DefaultEvent_WebEventReceived(string path, WebServer.HttpMethod method, Responder responder)
+        {
+            if (method == WebServer.HttpMethod.GET)
+            {
+                Debug.Print("Get Riuscita");                
+            }
+            else
+                Debug.Print("Get Non Riuscita");
+        }       
+
+
         /****************
          * CALLBACK 
          * *************/

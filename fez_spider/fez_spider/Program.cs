@@ -159,17 +159,13 @@ namespace fez_spider
         void Joystick_Up()
         {
             dataGrid.ScrollUp(1);
-            dataGrid.GetRowData(row + 1);
-            dataGrid.Invalidate();
-            
+            dataGrid.Invalidate();                 
         }
 
         void Joystick_Down()
         {
             dataGrid.ScrollDown(1);
-            dataGrid.GetRowData(row - 1);
             dataGrid.Invalidate();
-            
         }
 
         void fillBtn_TapEvent(object sender)

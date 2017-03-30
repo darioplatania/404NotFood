@@ -97,14 +97,6 @@ namespace fez_spider
             dataGrid.Render();           
 
             // Setup the button controls.
-            /*
-            GHI.Glide.UI.Button scrollUpBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollUpBtn");
-            scrollUpBtn.TapEvent += new OnTap(scrollUpBtn_TapEvent);
-
-            GHI.Glide.UI.Button scrollDownBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollDownBtn");
-            scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);           
-            */
-
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
 
@@ -162,21 +154,7 @@ namespace fez_spider
                 Debug.Print("QNT tapcell: " + getqnt);
             }
 
-        }     
-
-        /*
-        void scrollUpBtn_TapEvent(object sender)
-        {
-            dataGrid.ScrollUp(1);
-            dataGrid.Invalidate();
-        }
-
-        void scrollDownBtn_TapEvent(object sender)
-        {
-            dataGrid.ScrollDown(1);
-            dataGrid.Invalidate();
-        }         
-        */
+        }       
 
         void fillBtn_TapEvent(object sender)
         {

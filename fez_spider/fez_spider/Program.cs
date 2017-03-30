@@ -30,7 +30,7 @@ namespace fez_spider
         private static string getpizza;
         private static int getprice;
         private static int getqnt;
-        private static int row = -1;        
+        private static int row = -1;
         //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
         //private Bitmap display = new Bitmap(320,240);  
 
@@ -269,26 +269,29 @@ namespace fez_spider
                 Thread.Sleep(1000);
             }
             /*Start the server*/           
-            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);            
-            WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
-           
+            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);
+            WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;                    
+
             while (true)
             {
                 Thread.Sleep(1000);
             }
         }
 
+        
         void DefaultEvent_WebEventReceived(string path, WebServer.HttpMethod method, Responder responder)
         {
             if (method == WebServer.HttpMethod.GET)
             {
-                Debug.Print("Get Riuscita");                
+                Debug.Print("Get Riuscita");
+
+                string content = "<html><body><h1>Hello World!!</h1></body></html>";
+                byte[] bytes = new System.Text.UTF8Encoding().GetBytes(content);
+                responder.Respond(bytes, "text/html");                       
             }
             else
                 Debug.Print("Get Non Riuscita");
-        }       
-
-
+        }
         /****************
          * CALLBACK 
          * *************/

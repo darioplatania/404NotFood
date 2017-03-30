@@ -115,7 +115,7 @@ namespace fez_spider
             GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)menu.GetChildByName("ingBtn");                       
             ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
             
-            /*create a timer & run method timer_trick when thr timer ticks (for joystick)*/
+            /*Create a timer & run method timer_trick when thr timer ticks (for joystick)*/
             GT.Timer timer = new GT.Timer(200);
             timer.Tick += Timer_Tick; 
             timer.Start(); 

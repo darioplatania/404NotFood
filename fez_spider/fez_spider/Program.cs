@@ -48,13 +48,14 @@ namespace fez_spider
             plus.TurnLedOff();
             /*button minus(input 5)*/
             minus.ButtonPressed += Minus_ButtonPressed;
-            minus.TurnLedOff();          
+            minus.TurnLedOff();  
+            
         }      
 
         /****************
          * FUNCTION 
          * *************/
-        static void first_step()
+        void first_step()
         {
             window = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
 
@@ -67,7 +68,7 @@ namespace fez_spider
             button.PressEvent += Button_PressEvent;            
         }
 
-        static void initMenu()
+        void initMenu()
         {
             
             Debug.Print("Init Menu!");
@@ -96,11 +97,13 @@ namespace fez_spider
             dataGrid.Render();           
 
             // Setup the button controls.
+            /*
             GHI.Glide.UI.Button scrollUpBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollUpBtn");
             scrollUpBtn.TapEvent += new OnTap(scrollUpBtn_TapEvent);
 
             GHI.Glide.UI.Button scrollDownBtn = (GHI.Glide.UI.Button)menu.GetChildByName("scrollDownBtn");
             scrollDownBtn.TapEvent += new OnTap(scrollDownBtn_TapEvent);           
+            */
 
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
@@ -112,9 +115,23 @@ namespace fez_spider
 
             GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)menu.GetChildByName("ingBtn");
             ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
-        }          
 
-        static void Populate(bool invalidate)
+            GT.Timer timer = new GT.Timer(200); // Create a timer
+            timer.Tick += Timer_Tick; // Run the method timer_tick when the timer ticks
+            timer.Start(); // Start the timer
+
+        }
+
+        private void Timer_Tick(GT.Timer timer)
+        {
+            Joystick.Position pos = joystick.GetPosition();
+            if (pos.X > 0.50)            
+                Joystick_Up();            
+            else if(pos.X < -0.50)
+                Joystick_Down();
+        }
+
+        void Populate(bool invalidate)
         {            
             // Add items with random data
             for (int i = 0; i < 7; i++)
@@ -127,7 +144,7 @@ namespace fez_spider
                 dataGrid.Invalidate();
         }
 
-        static void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
+        void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
         {
             // Get the data from the row we tapped.            
             object[] data = dataGrid.GetRowData(args.RowIndex);                  
@@ -147,24 +164,26 @@ namespace fez_spider
 
         }     
 
-        static void scrollUpBtn_TapEvent(object sender)
+        /*
+        void scrollUpBtn_TapEvent(object sender)
         {
             dataGrid.ScrollUp(1);
             dataGrid.Invalidate();
         }
 
-        static void scrollDownBtn_TapEvent(object sender)
+        void scrollDownBtn_TapEvent(object sender)
         {
             dataGrid.ScrollDown(1);
             dataGrid.Invalidate();
         }         
+        */
 
-        static void fillBtn_TapEvent(object sender)
+        void fillBtn_TapEvent(object sender)
         {
             Populate(true);
         }
 
-        static void deleteBtn_TapEvent(object sender)
+        void deleteBtn_TapEvent(object sender)
         {
             getqnt = 0;
             getprice = 0;
@@ -176,22 +195,22 @@ namespace fez_spider
             Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: " + getprice);
         }
 
-        static void ingBtn_TapEvent(object sender)
+        void ingBtn_TapEvent(object sender)
         {
             ingredients();
         }
 
-        static void priceadd(int prezzo)
+        void priceadd(int prezzo)
         {           
             price = price + prezzo;            
         }
 
-        static void priceremove(int prezzo)
+        void priceremove(int prezzo)
         {
             price = price - prezzo;
         }
 
-        static void ingredients()
+        void ingredients()
         {
             switch(getpizza)
             {
@@ -217,11 +236,23 @@ namespace fez_spider
             }
         }
 
-        
+        void Joystick_Up()
+        {
+            dataGrid.ScrollUp(1);
+            dataGrid.Invalidate();
+        }
+
+        void Joystick_Down()
+        {
+            dataGrid.ScrollDown(1);
+            dataGrid.Invalidate();
+        }
+
+
         /****************
          * CALLBACK 
          * *************/
-        private static void Button_PressEvent(object sender)
+        private void Button_PressEvent(object sender)
         {           
             initMenu(); 
         }     

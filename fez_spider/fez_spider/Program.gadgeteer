@@ -142,8 +142,8 @@
           <moduleHasSocketUses Id="853bfbf7-527e-4a5c-b6a4-21831a13c663">
             <socketUse Id="602ccb56-2cb8-4f0d-aef8-e16257908053" label="XY">
               <socket>
-                <socketUseReferencesSocket Id="0205960e-8a8e-4b42-af99-998eddfa4ae2">
-                  <socketMoniker Id="3437c3a4-7f3e-4d18-91e9-2f5ba8ff70b3" />
+                <socketUseReferencesSocket Id="4f5233ba-0ff4-44db-acc1-5a6eb4e8a928">
+                  <socketMoniker Id="b90cfd95-7e98-40d8-8bfe-50a6b90ac659" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>
@@ -159,6 +159,21 @@
               <socket>
                 <socketUseReferencesSocket Id="8c2b5290-cbf9-42a3-b656-45951481d2b3">
                   <socketMoniker Id="05bfe726-e4a5-4de1-8c3f-2ddc5adffdc2" />
+                </socketUseReferencesSocket>
+              </socket>
+            </socketUse>
+          </moduleHasSocketUses>
+        </socketUses>
+      </module>
+    </gadgeteerModelHasGadgeteerHardware>
+    <gadgeteerModelHasGadgeteerHardware Id="b89013cf-66f2-45f2-bc9a-3818527f25ca">
+      <module Id="d5a987e2-93d0-464f-ab6f-90ab5e95e839" cachedDefinition="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;ModuleDefinition xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Name=&quot;Joystick&quot; Manufacturer=&quot;GHI Electronics&quot; Description=&quot;A Joystick module&quot; Type=&quot;Gadgeteer.Modules.GHIElectronics.Joystick&quot; HardwareVersion=&quot;1.2&quot; Image=&quot;C:\Program Files\GHI Electronics\.NET Gadgeteer SDK\Modules\Joystick\Image.jpg&quot; BoardWidth=&quot;37&quot; BoardHeight=&quot;32&quot; MinimumGadgeteerCoreVersion=&quot;2.43.800&quot; HelpUrl=&quot;http://www.ghielectronics.com/catalog/product/299&quot; UniqueId=&quot;4ef2835f-1ee5-4a2c-a556-544c870e1ba0&quot; InstanceName=&quot;joystick&quot; ModuleSuppliesPower=&quot;false&quot;&gt;&#xD;&#xA;  &lt;Power&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;3.3&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0.001&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0.001&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;5&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;  &lt;/Power&gt;&#xD;&#xA;  &lt;ProvidedSockets /&gt;&#xD;&#xA;  &lt;Assemblies&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GTM.GHIElectronics.Joystick&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.3&quot; Name=&quot;GTM.GHIElectronics.Joystick&quot; /&gt;&#xD;&#xA;  &lt;/Assemblies&gt;&#xD;&#xA;  &lt;LibrariesProvided /&gt;&#xD;&#xA;  &lt;Sockets&gt;&#xD;&#xA;    &lt;Socket Orientation=&quot;0&quot; Left=&quot;19.13&quot; Top=&quot;15.32&quot; TypesLabel=&quot;A&quot; ConstructorOrder=&quot;1&quot; Optional=&quot;false&quot;&gt;&#xD;&#xA;      &lt;Types&gt;&#xD;&#xA;        &lt;Type&gt;A&lt;/Type&gt;&#xD;&#xA;      &lt;/Types&gt;&#xD;&#xA;      &lt;Pins&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;3&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;4&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;5&lt;/Pin&gt;&#xD;&#xA;      &lt;/Pins&gt;&#xD;&#xA;    &lt;/Socket&gt;&#xD;&#xA;  &lt;/Sockets&gt;&#xD;&#xA;  &lt;ExtraLibrariesRequired /&gt;&#xD;&#xA;&lt;/ModuleDefinition&gt;" name="joystick" moduleType="Gadgeteer.Modules.GHIElectronics.Joystick" moduleDefinitionId="4ef2835f-1ee5-4a2c-a556-544c870e1ba0">
+        <socketUses>
+          <moduleHasSocketUses Id="bc902bb6-a00e-479a-8b54-4e0d2fddf3fd">
+            <socketUse Id="242b9bee-141e-4d0b-8512-c465d16dc7a2" label="A">
+              <socket>
+                <socketUseReferencesSocket Id="e62c7eb9-77bf-461c-8600-cf016760b6b1">
+                  <socketMoniker Id="3437c3a4-7f3e-4d18-91e9-2f5ba8ff70b3" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>

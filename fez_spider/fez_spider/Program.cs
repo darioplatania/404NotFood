@@ -29,8 +29,8 @@ namespace fez_spider
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);       
         private static string getpizza;
         private static int getprice;
-        private static int getqnt;        
-        private static int row;        
+        private static int getqnt;
+        private static int row = -1;        
         //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
         //private static Bitmap display = new Bitmap(SystemMetrics.ScreenWidth, SystemMetrics.ScreenHeight);  
 
@@ -43,10 +43,12 @@ namespace fez_spider
 
             /*welcome into display*/
             first_step();
-            /*button plus(input 9)*/
+            /*button plus(input 4)*/
             plus.ButtonPressed += Plus_ButtonPressed;
+            plus.TurnLedOff();
             /*button minus(input 5)*/
             minus.ButtonPressed += Minus_ButtonPressed;
+            minus.TurnLedOff();          
         }      
 
         /****************
@@ -226,23 +228,34 @@ namespace fez_spider
 
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
-            /*calculate price function*/
-            priceadd(getprice);
-            getqnt = getqnt + 1;
-            dataGrid.SetCellData(3, row, getqnt);
+            plus.TurnLedOn();
+            if (row == -1)
+            {
+                Debug.Print("Seleziona una pizza!!");
+            }
+            else
+            {                
+                /*calculate price function*/
+                priceadd(getprice);
+                getqnt = getqnt + 1;
+                dataGrid.SetCellData(3, row, getqnt);
 
-            Debug.Print("Hai Aggiunto: "+ getpizza + " Qnt: " + getqnt);
-            Debug.Print("Prezzo Totale: " + price.ToString());           
+                Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
+                Debug.Print("Prezzo Totale: " + price.ToString());
+            }
+            plus.TurnLedOff();
+
         }
 
         private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
+            minus.TurnLedOn();
             if (getqnt == 0)
             {
                 Debug.Print("Aggiungi pizza!");
             }
             else
-            {
+            {                
                 /*calculate price function*/
                 priceremove(getprice);
                 getqnt = getqnt - 1;
@@ -250,9 +263,9 @@ namespace fez_spider
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
                 Debug.Print("QNT dopo rimozione: " + getqnt);
-
             }
-            
+            minus.TurnLedOff();
+
         }
 
     }

@@ -117,4 +117,10 @@
   <ItemGroup>
     <None Include="Resources\Margherita.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prova.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Menu.txt" />
+  </ItemGroup>
 </Project>

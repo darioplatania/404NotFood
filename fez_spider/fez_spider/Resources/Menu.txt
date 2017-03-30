@@ -1,0 +1,11 @@
+<Glide>
+  <Window Name="menu" Width="320" Height="240" BackColor="FFFFFF">
+	<DataGrid Name="dataGrid" X="5" Y="5" Width="310" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="20" HeadersBackColor="707476" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/>
+	<TextBlock Name="textBlock1" X="5" Y="162" Width="50" Height="32" Alpha="255" Text="Price" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<TextBlock Name="textBlock3" X="175" Y="202" Width="50" Height="32" Alpha="255" Text="List" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<Button Name="fillBtn" X="235" Y="202" Width="70" Height="32" Alpha="255" Text="Fill" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="deleteBtn" X="195" Y="162" Width="50" Height="32" Alpha="255" Text="X" Font="3" FontColor="DD2C00" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="ContinueBtn" X="265" Y="162" Width="50" Height="32" Alpha="255" Text="V" Font="3" FontColor="388E3C" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="ingBtn" X="85" Y="162" Width="80" Height="32" Alpha="255" Text="Ingredients" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+  </Window>
+</Glide>

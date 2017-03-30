@@ -124,23 +124,10 @@
   <data name="small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\small.tinyfnt;System.Byte[], mscorlib, Culture=neutral, PublicKeyToken=null</value>
   </data>
-  <data name="Window" xml:space="preserve">
-    <value>&lt;Glide&gt;
-  &lt;Window Name="window" Width="320" Height="240" BackColor="3B5998"&gt;
-    &lt;TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="WELCOME" TextAlign="Center" Font="4" FontColor="FFFFFF"/&gt;
-  &lt;Button Name="button" X="110" Y="104" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;/Window&gt;
-&lt;/Glide&gt;</value>
+  <data name="Menu" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Menu.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
-  <data name="Menu" xml:space="preserve">
-    <value>&lt;Glide&gt;
-  &lt;Window Name="menu" Width="320" Height="240" BackColor="FFFFFF"&gt;
-&lt;DataGrid Name="dataGrid" X="5" Y="5" Width="310" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" 
-SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="20" HeadersBackColor="707476"
-HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" 
-SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/&gt;&lt;TextBlock Name="textBlock1" X="5" Y="162" Width="50" Height="32" Alpha="255" Text="Price" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/&gt;
-&lt;TextBlock Name="textBlock3" X="175" Y="202" Width="50" Height="32" Alpha="255" Text="List" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/&gt;
-&lt;Button Name="fillBtn" X="235" Y="202" Width="70" Height="32" Alpha="255" Text="Fill" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;Button Name="deleteBtn" X="195" Y="162" Width="50" Height="32" Alpha="255" Text="X" Font="3" FontColor="DD2C00" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;Button Name="ContinueBtn" X="265" Y="162" Width="50" Height="32" Alpha="255" Text="V" Font="3" FontColor="388E3C" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;&lt;Button Name="ingBtn" X="85" Y="162" Width="80" Height="32" Alpha="255" Text="Ingredients" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/&gt;
-&lt;/Window&gt;
-&lt;/Glide&gt;</value>
+  <data name="Window" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Prova.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
 </root>

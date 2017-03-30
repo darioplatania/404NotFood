@@ -32,13 +32,13 @@ namespace fez_spider
         private static int getqnt;
         private static int row = -1;        
         //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
-        //private static Bitmap display = new Bitmap(SystemMetrics.ScreenWidth, SystemMetrics.ScreenHeight);  
+        //private Bitmap display = new Bitmap(320,240);  
 
 
-        // This method is run when the mainboard is powered up or reset.   
+        /*This method is run when the mainboard is powered up or reset*/   
         void ProgramStarted()
         {
-            // Use Debug.Print to show messages in Visual Studio's "Output" window during debugging.
+            /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
             Debug.Print("Program Started");
 
             /*welcome into display*/
@@ -77,26 +77,26 @@ namespace fez_spider
             menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
             Glide.MainWindow = menu;
 
-            // Setup the dataGrid reference.            
+            /*Setup the dataGrid reference*/           
             dataGrid = (DataGrid)menu.GetChildByName("dataGrid");
                         
             // Listen for tap cell events.
             dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
 
-            // Create our four columns.
+            /*Create our four columns*/
             dataGrid.AddColumn(new DataGridColumn("ID", 40));
             dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
             dataGrid.AddColumn(new DataGridColumn("EUR", 50));
             dataGrid.AddColumn(new DataGridColumn("QNT", 50));
             
-            // Populate the data grid with random data.
+            /*Populate the data grid with random data*/
             Populate(true);
 
-            // Add the data grid to the window before rendering it.
+            /*Add the data grid to the window before rendering it*/
             menu.AddChild(dataGrid);            
             dataGrid.Render();           
 
-            // Setup the button controls.
+            /*Setup the button controls*/
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
 
@@ -105,15 +105,17 @@ namespace fez_spider
 
             GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)menu.GetChildByName("continueBtn");
 
-            GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)menu.GetChildByName("ingBtn");
+            GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)menu.GetChildByName("ingBtn");                       
             ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
-
-            GT.Timer timer = new GT.Timer(200); // Create a timer
-            timer.Tick += Timer_Tick; // Run the method timer_tick when the timer ticks
-            timer.Start(); // Start the timer
+            
+            /*create a timer & run method timer_trick when thr timer ticks (for joystick)*/
+            GT.Timer timer = new GT.Timer(200);
+            timer.Tick += Timer_Tick; 
+            timer.Start(); 
 
         }
 
+        /*Timer_Tick function for joystick*/
         private void Timer_Tick(GT.Timer timer)
         {
             Joystick.Position pos = joystick.GetPosition();
@@ -123,6 +125,7 @@ namespace fez_spider
                 Joystick_Down();
         }
 
+        /*Populate Grid function*/
         void Populate(bool invalidate)
         {            
             // Add items with random data
@@ -136,6 +139,7 @@ namespace fez_spider
                 dataGrid.Invalidate();
         }
 
+        /*DataGrid TapCellEvent*/
         void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
         {
             // Get the data from the row we tapped.            
@@ -156,23 +160,27 @@ namespace fez_spider
 
         }
 
+        /*Joystick Up function*/
         void Joystick_Up()
         {
             dataGrid.ScrollUp(1);
             dataGrid.Invalidate();                 
         }
 
+        /*Joystick Down function*/
         void Joystick_Down()
         {
             dataGrid.ScrollDown(1);
             dataGrid.Invalidate();
         }
 
+        /*Fill_btn TapEvent*/
         void fillBtn_TapEvent(object sender)
         {
             Populate(true);
         }
 
+        /*Delete_btn TapEvent*/
         void deleteBtn_TapEvent(object sender)
         {
             getqnt = 0;
@@ -186,6 +194,7 @@ namespace fez_spider
             Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: " + getprice);
         }
         
+        /*Ingredients_btn TapEvent*/
         void ingBtn_TapEvent(object sender)
         {
             ingredients();
@@ -193,7 +202,8 @@ namespace fez_spider
 
         void priceadd(int prezzo)
         {           
-            price = price + prezzo;            
+            price = price + prezzo;
+            //displayTE35.SimpleGraphics.DisplayTextInRectangle(price.ToString(),55,202,10,10,GHI.Glide.Colors.Green,font);
         }
 
         void priceremove(int prezzo)
@@ -201,6 +211,7 @@ namespace fez_spider
             price = price - prezzo;
         }
 
+        /*Ingredients Function display*/
         void ingredients()
         {
             switch(getpizza)

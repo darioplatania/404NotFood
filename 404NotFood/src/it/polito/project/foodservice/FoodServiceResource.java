@@ -38,9 +38,9 @@ public class FoodServiceResource {
 	    @ApiResponse(code = 503, message = "Connection with DB not works correctly")})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public int addItem(String item) {
+	public String addItem(String item) {
 		FoodServiceImpl res = new FoodServiceImpl();
-		int id;
+		String id;
 
 		try {
 			// convert string to json

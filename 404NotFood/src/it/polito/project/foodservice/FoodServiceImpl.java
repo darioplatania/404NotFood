@@ -73,6 +73,7 @@ public class FoodServiceImpl {
 		 * @throws SQLException
 		 * @throws JSONException
 		 */
+		@SuppressWarnings("unchecked")
 		public String getInformation() throws SQLException, JSONException{
 			
 			// connect and check if connection is ok
@@ -113,7 +114,8 @@ public class FoodServiceImpl {
 		 * @return
 		 * @throws SQLException 
 		 */
-		public int addItem(JSONObject json_item) throws SQLException{
+		@SuppressWarnings("unchecked")
+		public String addItem(JSONObject json_item) throws SQLException{
 			
 			String name = json_item.get("name").toString();
 			String ingredients = json_item.get("ingredients").toString();
@@ -134,8 +136,11 @@ public class FoodServiceImpl {
             if(rs.next()){
                 id=rs.getInt(1);
             }
+            
+            JSONObject json_obj = new JSONObject();
+            json_obj.put("id", id);
             disconnect();
-			return id;
+			return json_obj.toString();
 		}
 		
 		

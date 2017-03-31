@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.core.MediaType;
@@ -58,20 +59,21 @@ public class FoodServiceResource {
 	 
 	
 	@PUT
+	@Path("{id}")
 	@ApiOperation(value = "modify an item")
 	@ApiResponses(value = {
 	  	@ApiResponse(code = 200, message = "OK"),
 	  	@ApiResponse(code = 404, message = "Item not found"),
 	  	@ApiResponse(code = 500, message = "Something wrong in Server")})
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void modifyIdem(String item) {
+	public void modifyIdem(@PathParam("id") String id, String item) {
 		FoodServiceImpl service = new FoodServiceImpl();
 		
 		try{
 			// convert string to json
 			JSONParser parser = new JSONParser();
 			JSONObject json_item =(JSONObject) parser.parse(item);
-			service.modifyItem(json_item);
+			service.modifyItem(id, json_item);
 		} catch (SQLException e) {
 			throw new ServiceUnavailableException();
 		} catch (ParseException e) {

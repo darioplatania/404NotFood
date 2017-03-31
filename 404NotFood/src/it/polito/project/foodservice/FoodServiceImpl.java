@@ -148,9 +148,8 @@ public class FoodServiceImpl {
 		 * Modify an existing element in DB
 		 * @throws SQLException 
 		 */
-		public void modifyItem(JSONObject json_item) throws SQLException{
+		public void modifyItem(String id, JSONObject json_item) throws SQLException{
 			
-			String id = json_item.get("id").toString();
 			String name = json_item.get("name").toString();
 			String ingredients = json_item.get("ingredients").toString();
 			String price = json_item.get("price").toString();

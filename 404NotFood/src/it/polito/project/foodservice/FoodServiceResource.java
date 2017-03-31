@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -62,9 +63,10 @@ public class FoodServiceResource {
 	@Path("{id}")
 	@ApiOperation(value = "modify an item")
 	@ApiResponses(value = {
-	  	@ApiResponse(code = 200, message = "OK"),
+	  	@ApiResponse(code = 204, message = "No Content"),
 	  	@ApiResponse(code = 404, message = "Item not found"),
-	  	@ApiResponse(code = 500, message = "Something wrong in Server")})
+	  	@ApiResponse(code = 500, message = "Something wrong in Server"),
+		@ApiResponse(code = 503, message = "Connection with DB not works correctly")})
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void modifyIdem(@PathParam("id") String id, String item) {
 		FoodServiceImpl service = new FoodServiceImpl();
@@ -99,6 +101,23 @@ public class FoodServiceResource {
 		}
 		
 		return jArray;
+	}
+	
+	@DELETE
+	@Path("{id}")
+	@ApiOperation(value = "delete an item")
+	@ApiResponses(value = {
+		  	@ApiResponse(code = 204, message = "No Content"),
+		  	@ApiResponse(code = 404, message = "Item not found"),
+		  	@ApiResponse(code = 500, message = "Something wrong in Server"),
+			@ApiResponse(code = 503, message = "Connection with DB not works correctly")})
+	public void deleteItem(@PathParam("id") String id){
+		FoodServiceImpl service = new FoodServiceImpl();
+		try{
+			service.deleteElement(id);
+		} catch(SQLException e){
+			throw new ServiceUnavailableException();
+		}
 	}
 	    
 }

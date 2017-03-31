@@ -161,9 +161,29 @@ public class FoodServiceImpl {
 			
 			String sql = "UPDATE Food SET name = '"+name+"', price = '"+price+"', ingredients = '"+ingredients+"' WHERE id = "+id;
 			PreparedStatement ps = connection.prepareStatement(sql);
-			if(ps.executeUpdate()==0)
+			int res = ps.executeUpdate();
+			
+			disconnect();
+			if(res==0)
 				throw new NotFoundException();
 			
+		}
+		
+		/**
+		 * Delete a single element from DB
+		 * @throws SQLException 
+		 */
+		public void deleteElement(String id) throws SQLException{
+			
+			connect();
+			
+			String sql = "DELETE FROM `Food` WHERE id = "+id;
+			PreparedStatement ps = connection.prepareStatement(sql);
+			int res = ps.executeUpdate();
+			
+			disconnect();
+			if(res==0)
+				throw new NotFoundException();
 			
 		}
 		

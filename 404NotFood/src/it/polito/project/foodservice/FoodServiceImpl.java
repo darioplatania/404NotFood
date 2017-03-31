@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ServiceUnavailableException;
 
 import org.json.simple.JSONArray;
@@ -143,6 +144,29 @@ public class FoodServiceImpl {
 			return json_obj.toString();
 		}
 		
+		/**
+		 * Modify an existing element in DB
+		 * @throws SQLException 
+		 */
+		public void modifyItem(JSONObject json_item) throws SQLException{
+			
+			String id = json_item.get("id").toString();
+			String name = json_item.get("name").toString();
+			String ingredients = json_item.get("ingredients").toString();
+			String price = json_item.get("price").toString();
+			
+			if(name==null || ingredients==null || price==null)
+				throw new BadRequestException();
+			
+			connect();
+			
+			String sql = "UPDATE Food SET name = '"+name+"', price = '"+price+"', ingredients = '"+ingredients+"' WHERE id = "+id;
+			PreparedStatement ps = connection.prepareStatement(sql);
+			if(ps.executeUpdate()==0)
+				throw new NotFoundException();
+			
+			
+		}
 		
 
 }

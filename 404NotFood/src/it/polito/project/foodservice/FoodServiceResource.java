@@ -50,26 +50,34 @@ public class FoodServiceResource {
 		} catch (SQLException e) {
 			throw new ServiceUnavailableException();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			throw new BadRequestException();
 		}
 		
 		return id;
 	}
 	 
-	/*
+	
 	@PUT
 	@ApiOperation(value = "modify an item")
 	@ApiResponses(value = {
 	  	@ApiResponse(code = 200, message = "OK"),
+	  	@ApiResponse(code = 404, message = "Item not found"),
 	  	@ApiResponse(code = 500, message = "Something wrong in Server")})
-	//@Consumes(MediaType.TEXT_PLAIN)
-	@Produces(MediaType.TEXT_PLAIN)
-	public String modifyIdem() {
-	    String string = "ok PUT";
-	    return string;
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void modifyIdem(String item) {
+		FoodServiceImpl service = new FoodServiceImpl();
+		
+		try{
+			// convert string to json
+			JSONParser parser = new JSONParser();
+			JSONObject json_item =(JSONObject) parser.parse(item);
+			service.modifyItem(json_item);
+		} catch (SQLException e) {
+			throw new ServiceUnavailableException();
+		} catch (ParseException e) {
+			throw new BadRequestException();
+		}
 	}
-	*/
 	  
 	    
 	@GET

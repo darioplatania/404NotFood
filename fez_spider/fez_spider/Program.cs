@@ -27,7 +27,9 @@ namespace fez_spider
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
-        private GHI.Glide.UI.TextBlock _pCounter;     
+        private GHI.Glide.UI.TextBlock _pCounter;
+        private GHI.Glide.UI.TextBlock _qntCounter;
+        private GHI.Glide.UI.TextBlock _errMsg;  
         private static int qnt; 
         private static int price;
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);       
@@ -87,6 +89,8 @@ namespace fez_spider
 
             _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
+            _qntCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("qntCounter");
+            _errMsg   = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
 
             /*Setup the button controls*/
 
@@ -94,9 +98,9 @@ namespace fez_spider
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
             */
-                       
+
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            _deleteBtn.Visible = false;
+            _deleteBtn.Enabled = false;
             _menu.Invalidate();
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
 
@@ -210,7 +214,8 @@ namespace fez_spider
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0
                   
-            _pCounter.Text = price.ToString();                   
+            _pCounter.Text = price.ToString();
+            _qntCounter.Text = qnt.ToString();
             _menu.Invalidate();
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
@@ -331,16 +336,22 @@ namespace fez_spider
             if (row == -1)
             {
                 Debug.Print("Seleziona una pizza!!");
+                _errMsg.Text = "Select pizza!";
+                _errMsg.Visible = true;
+                _menu.Invalidate();
             }
             else
             {
-                _deleteBtn.Visible = true;
+                _deleteBtn.Enabled = true;
+                _errMsg.Visible = false;
 
                 /*calculate price function*/
                 priceadd(getprice);
-                getqnt = getqnt + 1;
-                _dataGrid.SetCellData(3, row, getqnt);
-                _dataGrid.Invalidate();
+                getqnt = getqnt + 1; //quantità della pizza selezionata
+                qnt = qnt + 1; //quantità totale
+                _qntCounter.Text = qnt.ToString();
+                _dataGrid.SetCellData(3, row, getqnt);               
+                _menu.Invalidate();
 
                 Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
@@ -355,14 +366,22 @@ namespace fez_spider
             if (getqnt == 0)
             {                
                 Debug.Print("Aggiungi pizza!");
+                _errMsg.Text = "Add pizza!";
+                _errMsg.Visible = true;
+                _menu.Invalidate();
             }
             else
-            {                
+            {
+                _errMsg.Visible = false;
+
                 /*calculate price function*/
                 priceremove(getprice);
-                getqnt = getqnt - 1;
-                _dataGrid.SetCellData(3, row, getqnt);
-                _dataGrid.Invalidate();
+                getqnt = getqnt - 1; //quantità della pizza selezionata
+                qnt = qnt - 1; //quantità totale    
+                _qntCounter.Text = qnt.ToString();
+                _dataGrid.SetCellData(3, row, getqnt);               
+                _menu.Invalidate();
+
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
                 Debug.Print("QNT dopo rimozione: " + getqnt);

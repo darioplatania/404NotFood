@@ -123,4 +123,16 @@
   <ItemGroup>
     <None Include="Resources\Menu.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\food.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\prova.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\restaurant.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\restaurant2.jpg" />
+  </ItemGroup>
 </Project>

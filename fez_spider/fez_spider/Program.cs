@@ -49,7 +49,7 @@ namespace fez_spider
             //ethernetJ11D.UseStaticIP("")
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;                                     
-            new Thread(RunWebServer).Start();*/
+            new Thread(RunWebServer).Start();*/          
 
             /*welcome into display*/
             first_step();
@@ -73,9 +73,14 @@ namespace fez_spider
             Glide.MainWindow = _mainwindow;
 
             /*create button to start*/
-            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
+           _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
             /*press button event*/            
-            _startbtn.PressEvent += Button_PressEvent;            
+           _startbtn.PressEvent += Button_PressEvent;
+
+            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.restaurant2), Bitmap.BitmapImageType.Jpeg);
+
+            //displayTE35.SimpleGraphics.DisplayImage(prova, 50, 50);
+            //displayTE35.SimpleGraphics.Redraw();
         }
 
         void initMenu()

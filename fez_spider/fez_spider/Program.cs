@@ -110,13 +110,16 @@ namespace fez_spider
             _dataGrid.Render();           
 
             /*Setup the button controls*/
+
+            /*
             GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("fillBtn");
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
+            */
 
             GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
             deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
 
-            GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
+            //GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
 
             GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");                       
             ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);           

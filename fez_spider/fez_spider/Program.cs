@@ -24,18 +24,17 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _mainwindow;             
         private static GHI.Glide.Display.Window _menu;
         private GHI.Glide.UI.Button _startbtn;
+        private GHI.Glide.UI.Button _deleteBtn;
+        private GHI.Glide.UI.Button _ingBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.TextBlock _pCounter;     
-        private static int qnt; /*use for setting quantity*/
+        private static int qnt; 
         private static int price;
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);       
         private static string getpizza;
         private static int getprice;
         private static int getqnt;
-        private static int row = -1;
-        //static DisplayTE35 display = new DisplayTE35(14, 13, 12);
-        //private Bitmap display = new Bitmap(320,240);  
-
+        private static int row = -1;       
 
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
@@ -107,7 +106,7 @@ namespace fez_spider
 
             /*Add the data grid to the window before rendering it*/
             _menu.AddChild(_dataGrid);            
-            _dataGrid.Render();           
+            _dataGrid.Render();
 
             /*Setup the button controls*/
 
@@ -116,13 +115,23 @@ namespace fez_spider
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
             */
 
-            GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
+            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+            _deleteBtn.PressEvent += deleteBtn_PressEvent;
+
+            _ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
+            _ingBtn.PressEvent += ingBtn_PressEvent;
 
             //GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
 
+            /*****Da Levare
+            
+            GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+            deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
+                        
             GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");                       
-            ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);           
+            ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
+
+            */
 
             /*Create a timer & run method timer_trick when thr timer ticks (for joystick)*/
             GT.Timer timer = new GT.Timer(200);
@@ -197,7 +206,7 @@ namespace fez_spider
         }
 
         /*Delete_btn TapEvent*/
-        void deleteBtn_TapEvent(object sender)
+        void deleteBtn_PressEvent(object sender)
         {
             getqnt = 0;//set qnt to 0
             getprice = 0;//set getprice to selected row to 0 
@@ -216,7 +225,7 @@ namespace fez_spider
         }
         
         /*Ingredients_btn TapEvent*/
-        void ingBtn_TapEvent(object sender)
+        void ingBtn_PressEvent(object sender)
         {
             ingredients();
         }

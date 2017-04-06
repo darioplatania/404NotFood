@@ -4,6 +4,6 @@
 	<TextBlock Name="pCounter" X="14" Y="162" Width="50" Height="32" Alpha="255" Text="0" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
 	<TextBlock Name="textBlock2" X="1" Y="162" Width="50" Height="32" Alpha="255" Text="Price: " TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
 	<Button Name="deleteBtn" X="235" Y="162" Width="60" Height="32" Alpha="255" Text="Annulla" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-	<Button Name="ingBtn" X="85" Y="162" Width="80" Height="32" Alpha="255" Text="Ingredients" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="ingBtn" X="235" Y="202" Width="80" Height="32" Alpha="255" Text="Ingredients" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
   </Window>
 </Glide>

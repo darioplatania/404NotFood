@@ -56,8 +56,7 @@ namespace fez_spider
             plus.TurnLedOff();
             /*button minus(input 5)*/
             minus.ButtonPressed += Minus_ButtonPressed;
-            minus.TurnLedOff();  
-            
+            minus.TurnLedOff();
         }      
 
         /****************
@@ -89,6 +88,25 @@ namespace fez_spider
             _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
 
+            /*Setup the button controls*/
+
+            /*
+            GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("fillBtn");
+            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
+            */
+                       
+            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+            _deleteBtn.Visible = false;
+            _menu.Invalidate();
+            _deleteBtn.PressEvent += deleteBtn_PressEvent;
+
+            _ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
+            _ingBtn.Visible = false;
+            _menu.Invalidate();
+            _ingBtn.PressEvent += ingBtn_PressEvent;
+            
+            //GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
+            
             /*Setup the dataGrid reference*/
             _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
                         
@@ -106,32 +124,7 @@ namespace fez_spider
 
             /*Add the data grid to the window before rendering it*/
             _menu.AddChild(_dataGrid);            
-            _dataGrid.Render();
-
-            /*Setup the button controls*/
-
-            /*
-            GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
-            */
-
-            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            _deleteBtn.PressEvent += deleteBtn_PressEvent;
-
-            _ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
-            _ingBtn.PressEvent += ingBtn_PressEvent;
-
-            //GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
-
-            /*****Da Levare
-            
-            GHI.Glide.UI.Button deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            deleteBtn.TapEvent += new OnTap(deleteBtn_TapEvent);
-                        
-            GHI.Glide.UI.Button ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");                       
-            ingBtn.TapEvent += new OnTap(ingBtn_TapEvent);
-
-            */
+            _dataGrid.Render();            
 
             /*Create a timer & run method timer_trick when thr timer ticks (for joystick)*/
             GT.Timer timer = new GT.Timer(200);
@@ -152,11 +145,11 @@ namespace fez_spider
 
         /*Populate Grid function*/
         void Populate(bool invalidate)
-        {            
-            // Add items with random data
+        {
+            /*Add items with data*/
             for (int i = 0; i < 7; i++)
             {
-                // DataGridItems must contain an object array whose length matches the number of columns.
+                /*DataGridItems must contain an object array whose length matches the number of columns.*/
                 _dataGrid.AddItem(new DataGridItem(new object[4] { i, "Margherita" + i, i,qnt }));
             }
 
@@ -166,11 +159,15 @@ namespace fez_spider
 
         /*DataGrid TapCellEvent*/
         void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
-        {
+        {           
             // Get the data from the row we tapped.            
             object[] data = _dataGrid.GetRowData(args.RowIndex);                  
             if (data != null)
             {
+                /*enable ingredients & delete button*/
+                _ingBtn.Visible = true;
+                _menu.Invalidate();                                
+
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
                 /*mem row index*/
                 row = args.RowIndex;                
@@ -180,8 +177,8 @@ namespace fez_spider
                 getprice = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(2);
                 /*select qnt row*/
                 getqnt = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(3);
-                Debug.Print("QNT tapcell: " + getqnt);
-            }
+                Debug.Print("QNT tapcell: " + getqnt);                
+            }                   
 
         }
 
@@ -207,13 +204,13 @@ namespace fez_spider
 
         /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
-        {
+        {            
             getqnt = 0;//set qnt to 0
             getprice = 0;//set getprice to selected row to 0 
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0
                   
-            _pCounter.Text = price.ToString();
+            _pCounter.Text = price.ToString();                   
             _menu.Invalidate();
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
@@ -336,7 +333,9 @@ namespace fez_spider
                 Debug.Print("Seleziona una pizza!!");
             }
             else
-            {                
+            {
+                _deleteBtn.Visible = true;
+
                 /*calculate price function*/
                 priceadd(getprice);
                 getqnt = getqnt + 1;
@@ -354,7 +353,7 @@ namespace fez_spider
         {
             minus.TurnLedOn();
             if (getqnt == 0)
-            {
+            {                
                 Debug.Print("Aggiungi pizza!");
             }
             else

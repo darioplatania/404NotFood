@@ -135,4 +135,7 @@
   <ItemGroup>
     <None Include="Resources\restaurant2.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\start.jpg" />
+  </ItemGroup>
 </Project>

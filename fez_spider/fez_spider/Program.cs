@@ -77,10 +77,10 @@ namespace fez_spider
             /*press button event*/            
            _startbtn.PressEvent += Button_PressEvent;
 
-            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.restaurant2), Bitmap.BitmapImageType.Jpeg);
+            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.start), Bitmap.BitmapImageType.Jpeg);
 
-            //displayTE35.SimpleGraphics.DisplayImage(prova, 50, 50);
-            //displayTE35.SimpleGraphics.Redraw();
+            //displayTE35.SimpleGraphics.DisplayImage(prova, 30, 20);
+            //displayTE35.BacklightEnabled = true;
         }
 
         void initMenu()

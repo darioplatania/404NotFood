@@ -115,25 +115,10 @@
     <None Include="Resources\small.tinyfnt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Margherita.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Prova.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Menu.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\food.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\prova.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\restaurant.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\restaurant2.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\start.jpg" />

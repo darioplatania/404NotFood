@@ -196,18 +196,20 @@ namespace fez_spider
         /*Delete_btn TapEvent*/
         void deleteBtn_TapEvent(object sender)
         {
-            getqnt = 0; //set qnt to 0
+            getqnt = 0;//set qnt to 0
             getprice = 0;//set getprice to selected row to 0 
-            price = 0;//set total price to 0           
+            price = 0;//set total price to 0     
+            qnt = 0;//set total qnt to 0
+                  
             _pCounter.Text = price.ToString();
             _menu.Invalidate();
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
             {
-                _dataGrid.SetCellData(3, i, getqnt);
+                _dataGrid.SetCellData(3, i, qnt);
                 _dataGrid.Invalidate();                
             }
-            Debug.Print("Annullato tutto! Qnt: " + getqnt + " Prezzo: " + getprice);
+            Debug.Print("Annullato tutto! Qnt: " + qnt + " Prezzo: " + price);
         }
         
         /*Ingredients_btn TapEvent*/

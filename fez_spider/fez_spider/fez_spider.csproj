@@ -94,7 +94,7 @@
     <Reference Include="Microsoft.SPOT.Net" />
     <Reference Include="Microsoft.SPOT.TinyCore" />
     <Reference Include="mscorlib" />
-    <Reference Include="System.IO" />
+    <Reference Include="System.Http" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

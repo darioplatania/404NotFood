@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Threading;
+using System.Net;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation;
 using Microsoft.SPOT.Presentation.Controls;
@@ -36,20 +37,23 @@ namespace fez_spider
         private static string getpizza;
         private static int getprice;
         private static int getqnt;
-        private static int row = -1;       
+        private static int row = -1;
+        byte[] result = new byte[65536];
+        int read = 0;
+
 
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
-            Debug.Print("Program Started");
+            Debug.Print("Program Started");           
 
-            /*Ethernet Configuration
+            /*Ethernet Configuration*/
             ethernetJ11D.UseThisNetworkInterface();
             //ethernetJ11D.UseStaticIP("")
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;                                     
-            new Thread(RunWebServer).Start();*/          
+            new Thread(RunWebServer).Start();           
 
             /*welcome into display*/
             first_step();
@@ -286,11 +290,15 @@ namespace fez_spider
         }
 
         /*Ethernet Network_Up Function*/
-        void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,
-        GTM.Module.NetworkModule.NetworkState state)
+        void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
             Debug.Print("Network is up!");
             Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
+
+             /*var req = WebRequest.Create("http://192.168.100.1:8080/food/webapi/food");
+             req.Method = "GET";                      
+             req.GetResponse();
+             ArrayList arrayList = JsonSerializer.DeserializeString(json) as ArrayList;*/
         }
 
         /*Ethernet Run Web_Server Function*/
@@ -304,7 +312,7 @@ namespace fez_spider
             }
             /*Start the server*/           
             WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);
-            WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;                    
+            //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;                    
 
             while (true)
             {
@@ -313,7 +321,7 @@ namespace fez_spider
         }
 
         
-        void DefaultEvent_WebEventReceived(string path, WebServer.HttpMethod method, Responder responder)
+        /*void DefaultEvent_WebEventReceived(string path, WebServer.HttpMethod method, Responder responder)
         {
             if (method == WebServer.HttpMethod.GET)
             {
@@ -325,7 +333,7 @@ namespace fez_spider
             }
             else
                 Debug.Print("Get Non Riuscita");
-        }
+        }*/
 
         /****************
          * CALLBACK 

@@ -1,6 +1,7 @@
 package it.polito.pl.FourZeroFourNotFood;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -19,7 +20,7 @@ public class LoggerWrapper {
 
 	
 	private static final String SEPARATOR	= "/";
-	private static final String LOG_DIR		= "/Users/carmelor/Documents/workspace/404NotFood/log"; //TODO: Change Next	
+	private static final String LOG_DIR		= "log"; //TODO: Change Next	
 	private static Logger LOGGER;
 	private static FileHandler fh;
 	private static Writer writer = null;
@@ -29,7 +30,8 @@ public class LoggerWrapper {
 	
 	private LoggerWrapper(){
 		try {
-			initLogger();
+			if(checkIfLogDirExists())
+				initLogger();
 		} catch (SecurityException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,6 +84,15 @@ public class LoggerWrapper {
 	
 	public void DEBUG_INFO(Level lvl, String msg){
 		LOGGER.log(lvl, msg);
+	}
+	
+	private boolean checkIfLogDirExists(){
+		
+		File temp = new File(LOG_DIR);
+		if(!temp.exists())
+			return temp.mkdir();
+		return true;
+			
 	}
 	
 }

@@ -46,22 +46,22 @@ public class LoggerWrapper {
 	}
 	
 	private static String getCurrentTimestamp(){
-		return new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss").format(new Date()).toString();
+		return new SimpleDateFormat("yyyy_MM_dd").format(new Date()).toString();
 	}
 	
 	private static void initLogger() throws SecurityException, IOException{
 		
 		
-		String target = LOG_DIR+SEPARATOR+getCurrentTimestamp()+".txt";
+		String target = LOG_DIR+SEPARATOR+getCurrentTimestamp()+".log";
+		
 		
 		try {
 			writer = new BufferedWriter(
-				new OutputStreamWriter(
-	              new FileOutputStream(target), "utf-8")
+				new OutputStreamWriter( new FileOutputStream(target), "utf-8")
 				);
 
 			LOGGER = Logger.getLogger(Main.APP_NAME);
-			fh = new FileHandler(target);
+			fh = new FileHandler(target,true); //TODO: append true does not work!!
 			fh.setFormatter(new SimpleFormatter());
 			LOGGER.addHandler(fh);
 			

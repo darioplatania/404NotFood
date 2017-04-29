@@ -1,26 +1,31 @@
 package it.polito.pl.FourZeroFourNotFood;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Main {
 
 	
 	// SET APP NAME
-	private static final String APP_NAME = "404 Not Food";
+	
+	public static final String APP_NAME	= "404 Not Food";
+	
 	
 	// SETUP LOGGER
-	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 	
 	
 	public static void main(String[] args){
+
+		// Starting App...
 		
+		// Starting Logger Engine...
+		LoggerWrapper logger = LoggerWrapper.getInstance();
 		
 		// System Starting...
-		DEBUG_INFO(Level.INFO,APP_NAME+" Starting...");
+		logger.DEBUG_INFO(Level.INFO,APP_NAME+" Starting...");
 		
 		// TODO: 1. Start Connection on IPv4 Socket
-		
+		logger.DEBUG_INFO(Level.INFO,"Starting connection...");
 		
 		
 		// TODO: 2. Wait for oders
@@ -31,9 +36,6 @@ public class Main {
 		
 		
 	}
-	
-	private static void DEBUG_INFO(Level lvl, String msg){
-		LOGGER.log(lvl, msg);
-	}
+
 	
 }

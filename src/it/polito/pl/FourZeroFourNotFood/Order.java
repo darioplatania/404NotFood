@@ -4,10 +4,14 @@ import java.util.ArrayList;
 
 public class Order {
 
+	private enum State {
+		WAITING, IN_PROGRESS, IN_SERVICE, CLOSE
+	};
 	
-	private String name;
-	private String amount;
+	private String 			name;
+	private String 			amount;
 	private ArrayList<Food> foods;
+	private State			state;
 	
 	public Order(String name, String amount, ArrayList<Food> foods) {
 		this.name = name;

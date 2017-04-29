@@ -14,7 +14,7 @@ public class Server {
 
 	private ServerSocket socket;
 	private LoggerWrapper logger;
-	private static final String CLOSE = "CLOSE";
+	private static final String MSG_CLOSE = "CLOSE";
 	
 	public Server(int PORT_NUMBER) throws IOException{
 		
@@ -56,10 +56,11 @@ public class Server {
 			String message = "";
 			do{
 				
-				// TODO: 2.1 Follow order workflow
+				// Handle Order Workflow
+				handleOrder();
 				
 				
-			}while(!message.equals(CLOSE));
+			}while(!message.equals(MSG_CLOSE));
 			
 			
 			
@@ -74,4 +75,7 @@ public class Server {
 		this.socket.close();
 	}
 	
+	private void handleOrder(){
+		// TODO: 2.1 Follow order workflow
+	}
 }

@@ -48,18 +48,37 @@ public class Order {
 	private float 					price;
 	private ArrayList<OrderedFood>  foods;
 	private State					state;
+	private boolean					paid;
 	
 	
 	public Order(String id) {
 		this.id = id;
 		this.price = 0;
 		this.foods = new ArrayList<OrderedFood>();
+		this.paid = false;
 	}
 	
 	public Order(String id, float price, ArrayList<OrderedFood> foods) {
 		this.id = id;
 		this.price = price;
 		this.foods = foods;
+		this.paid = false;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
 	}
 
 	//TODO L'id deve essere generato univocamente lato client(Es. Ultime2CifreIP+TimeStamp)

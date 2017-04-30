@@ -21,6 +21,7 @@ public class OrderDB {
 		return db;
 	}
 	
+	// add or edit order if already exists
 	public void add(Order order){
 		this.orders.put(order.getid(), order);
 	}

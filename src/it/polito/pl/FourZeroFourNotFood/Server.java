@@ -16,9 +16,13 @@ import com.google.gson.JsonSyntaxException;
 class ClientRunnable implements Runnable{
 
 	
-	private static final String MSG_ORDER	= "ORDER";
-	private static final String MSG_PAYMENT = "PAYMENT";
-	private static final String MSG_CLOSE	= "CLOSE";
+	private static final String MSG_ORDER		 = "NEW_ORDER";
+	private static final String MSG_PAYMENT		 = "PAYMENT";
+	private static final String MSG_CLOSE		 = "CLOSE";
+	private static final String MSG_UPDATE_ORDER = "UPDATE_ORDER";
+	private static final String MSG_CANCEL_ORDER = "CANCEL_ORDER";
+	
+	
 	private OrderDB db;
 	
 	
@@ -97,31 +101,59 @@ class ClientRunnable implements Runnable{
 	private void handleOrder(){
 		
 		// TODO: 2.1 Follow order workflow
-		BufferedReader in;
+		Order			order;
+		BufferedReader	in;
+		boolean			isEnded = false;
+		
+		
 		try {
 			in = new BufferedReader(
 			        new InputStreamReader(socket.getInputStream()));
 			
 			System.out.println("Waiting for Order from: "+hostname);
-			String orderAsJSON = in.readLine();
-			if(orderAsJSON!=null){
+			order = getOrderFromJson(in.readLine());
+			this.db.add(order);
 			
-				Gson gson = new Gson();
-				Order order = gson.fromJson(orderAsJSON, Order.class);
-				this.db.add(order);
-				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "ORDER "+order.getid()+" received from "+hostname);
+			LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "ORDER "+order.getid()+" received from "+hostname);
+			
+			while(!isEnded){
 				
-		
+				System.out.println("Waiting for Payment from: "+hostname);
+				
+				switch(in.readLine()){
+				
+					case MSG_PAYMENT:
+						if(Payment.handlePayment(order))
+							isEnded=true;
+						
+						break;
+					case MSG_UPDATE_ORDER:
+						order = getOrderFromJson(in.readLine());
+						this.db.add(order);
+						break;
+				
+					case MSG_CANCEL_ORDER:
+						isEnded=true;
+						break;
+						
+					default:
+						break;
+				
+			
+				}
 			}
 			
-			
-			
+	
 		} catch (IOException|JsonSyntaxException e) {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" from: "+hostname);
 		}
 		
 		
 		
+	}
+	
+	private Order getOrderFromJson(String json){
+		return new Gson().fromJson(json, Order.class);
 	}
 	
 	private void closeConnection() throws IOException{

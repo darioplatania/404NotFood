@@ -21,7 +21,32 @@ public class Main {
 	
 	public static void main(String[] args){
 
-		startService();
+		// START NEW THREAD WORKING AS SERVER
+
+					new Thread(
+							new Runnable(){
+
+								@Override
+								public void run() {
+
+									startService();
+									
+								}
+								
+							}
+					).start();
+		
+		
+		
+		//START NEW THREAD TO HADLE GUI		
+		try {
+			MainWindow window = new MainWindow();
+			window.open();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		
 	}
 

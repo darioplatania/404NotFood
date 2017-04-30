@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import com.google.gson.Gson;
 
 
+
+
 public class Main {
 
 	
@@ -15,60 +17,60 @@ public class Main {
 	public static final String 	APP_NAME	= "404 Not Food";
 	public static final int		PORT_NUMBER = 4096;
 	
-	// SETUP LOGGER
 	
 	
 	public static void main(String[] args){
 
-		
-		// Variables
-		
-		Server server;
-		
-		
-		// Starting App...
-		
-		// Starting Logger Engine...
-		LoggerWrapper logger = LoggerWrapper.getInstance();
-
-		
-		
-		// System Starting...
-		logger.DEBUG_INFO(Level.INFO,APP_NAME+" Starting...");
-		
-		// Start Connection on IPv4 Socket
-		logger.DEBUG_INFO(Level.INFO,"Starting connection...");
-		try{
-			
-		
-			
-			
-			server = new Server(PORT_NUMBER);
-			
-			// Waiting for new Connections...
-			logger.DEBUG_INFO(Level.INFO,"Server Started at "+server.getSocket().getLocalSocketAddress()); 
-			logger.DEBUG_INFO(Level.INFO,"Waiting for new connections...");
-			
-			// Server Starting
-			server.start();
-			
-			// Server Quitting -> NEVER EXECUTED AT THE MOMENT
-			server.stop();
-			
-			
-			
-			
-		}catch(IOException ex){
-			logger.DEBUG_INFO(Level.SEVERE, "Failed starting server: "+ex.getMessage());
-			return;
-		}
-		
-		
-		
-		
+		startService();
 		
 	}
 
+	
+	private static void startService(){
+		// Variables
+		
+				Server server;
+				
+				
+				// Starting App...
+				
+				// Starting Logger Engine...
+				LoggerWrapper logger = LoggerWrapper.getInstance();
+
+				
+				
+				// System Starting...
+				logger.DEBUG_INFO(Level.INFO,APP_NAME+" Starting...");
+				
+				// Start Connection on IPv4 Socket
+				logger.DEBUG_INFO(Level.INFO,"Starting connection...");
+				try{
+					
+				
+					
+					
+					server = new Server(PORT_NUMBER);
+					
+					// Waiting for new Connections...
+					logger.DEBUG_INFO(Level.INFO,"Server Started at "+server.getSocket().getLocalSocketAddress()); 
+					logger.DEBUG_INFO(Level.INFO,"Waiting for new connections...");
+					
+					// Server Starting
+					server.start();
+					
+					// Server Quitting -> NEVER EXECUTED AT THE MOMENT
+					server.stop();
+					
+					
+					
+					
+				}catch(IOException ex){
+					logger.DEBUG_INFO(Level.SEVERE, "Failed starting server: "+ex.getMessage());
+					return;
+				}
+
+	}
+	
 	@SuppressWarnings("unused")
 	//TODO METODO PROVA -> ELIMINARE ALLA FINE
 	private String generateRandomFoodJSON(){

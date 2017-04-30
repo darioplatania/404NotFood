@@ -8,23 +8,24 @@ public class Order {
 		WAITING, IN_PROGRESS, IN_SERVICE, CLOSE
 	};
 	
-	private String 			name;
+	
+	private String 			id;
 	private String 			amount;
 	private ArrayList<Food> foods;
 	private State			state;
 	
-	public Order(String name, String amount, ArrayList<Food> foods) {
-		this.name = name;
+	public Order(String id, String amount, ArrayList<Food> foods) {
+		this.id = id;
 		this.amount = amount;
 		this.foods = foods;
 	}
 
-	public String getName() {
-		return name;
+	public String getid() {
+		return id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setid(String id) {
+		this.id = id;
 	}
 
 	public String getAmount() {

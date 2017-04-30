@@ -84,10 +84,6 @@ class ClientRunnable implements Runnable{
 			case MSG_ORDER:
 				handleOrder();
 				return true;
-			
-			case MSG_PAYMENT:
-				//handlePayment();
-				return true;
 
 			case MSG_CLOSE:
 				return false;

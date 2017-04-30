@@ -1,0 +1,14 @@
+Apr 30, 2017 9:44:30 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: 404 Not Food Starting...
+Apr 30, 2017 9:44:31 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: Starting connection...
+Apr 30, 2017 9:44:31 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: Server Started at 0.0.0.0/0.0.0.0:4096
+Apr 30, 2017 9:44:31 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: Waiting for new connections...
+Apr 30, 2017 9:44:38 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: New connection from 127.0.0.1
+Apr 30, 2017 9:44:59 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: ORDER ID1 received from 127.0.0.1
+Apr 30, 2017 9:46:08 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+SEVERE: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $ from: 127.0.0.1

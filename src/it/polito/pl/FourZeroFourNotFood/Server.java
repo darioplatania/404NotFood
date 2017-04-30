@@ -109,7 +109,7 @@ class ClientRunnable implements Runnable{
 				Gson gson = new Gson();
 				Order order = gson.fromJson(orderAsJSON, Order.class);
 				this.db.add(order);
-				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "New order "+order.getid()+" received from "+hostname);
+				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "ORDER "+order.getid()+" received from "+hostname);
 				
 		
 			}

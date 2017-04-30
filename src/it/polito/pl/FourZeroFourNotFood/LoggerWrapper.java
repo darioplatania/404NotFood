@@ -45,7 +45,7 @@ public class LoggerWrapper {
 	}
 	
 	private static String getCurrentTimestamp(){
-		return new SimpleDateFormat("yyyy_MM_dd").format(new Date()).toString();
+		return new SimpleDateFormat("yyyy_MM_dd_HH.mm.ss").format(new Date()).toString();
 	}
 	
 	private static void initLogger() throws SecurityException, IOException{
@@ -60,7 +60,7 @@ public class LoggerWrapper {
 				);
 
 			LOGGER = Logger.getLogger(Main.APP_NAME);
-			fh = new FileHandler(target,true); //TODO: append true does not work!!
+			fh = new FileHandler(target);
 			fh.setFormatter(new SimpleFormatter());
 			LOGGER.addHandler(fh);
 			

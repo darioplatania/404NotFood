@@ -126,7 +126,6 @@ class ClientRunnable implements Runnable{
 						if(PaymentWrapper.handlePayment(in.readLine(),order))
 							isEnded=true;
 						
-						System.out.println(order.isPaid());
 						break;
 					case MSG_UPDATE_ORDER:
 						order = getOrderFromJson(in.readLine());

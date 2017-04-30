@@ -1,0 +1,6 @@
+Apr 30, 2017 8:08:36 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: 404 Not Food Starting...
+Apr 30, 2017 8:08:36 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFO: Starting connection...
+Apr 30, 2017 8:08:36 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+SEVERE: Failed starting server: Address already in use

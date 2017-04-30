@@ -75,7 +75,7 @@ class PaymentWrapper {
 		// Total amount
 		Amount amount = new Amount();
 		amount.setCurrency("EUR");
-		amount.setTotal("7");
+		amount.setTotal(String.format("%.02f", order.getPrice()));
 		
 		//TODO: FIX THIS
 		//amount.setTotal(String.valueOf(order.getPrice()));
@@ -111,7 +111,7 @@ class PaymentWrapper {
 		payment.setTransactions(transactions);
 		Payment createdPayment = null;
 	
-		System.out.println(card.toJSON());
+		
 		
 		try {
 			  // Create payment
@@ -119,7 +119,7 @@ class PaymentWrapper {
 			  createdPayment = payment.create(apiContext);
 			  
 			  order.setPaid(true);
-			  LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, "Created payment with id = " + createdPayment.getId());
+			  LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Created payment with id = " + createdPayment.getId());
 			  
 			  return true;
 			  

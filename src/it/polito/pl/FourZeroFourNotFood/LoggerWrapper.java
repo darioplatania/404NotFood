@@ -20,7 +20,7 @@ public class LoggerWrapper {
 
 	
 	private static final String SEPARATOR	= "/";
-	private static final String LOG_DIR		= "log"; //TODO: Change Next	
+	private static final String LOG_DIR		= "log"; 	
 	private static Logger LOGGER;
 	private static FileHandler fh;
 	private static Writer writer = null;
@@ -33,7 +33,6 @@ public class LoggerWrapper {
 			if(checkIfLogDirExists())
 				initLogger();
 		} catch (SecurityException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

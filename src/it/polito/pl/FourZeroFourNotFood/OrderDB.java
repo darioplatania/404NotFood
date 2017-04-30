@@ -21,7 +21,13 @@ public class OrderDB {
 		return db;
 	}
 	
+	public void add(Order order){
+		this.orders.put(order.getid(), order);
+	}
 	
+	public Order get(String id){
+		return this.orders.get(id);
+	}
 	
 	
 }

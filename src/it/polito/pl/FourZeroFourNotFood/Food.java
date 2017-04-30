@@ -9,11 +9,13 @@ public class Food {
 	private ArrayList<String>	ingredients;
 	
 
+	
 	public Food(String name, float price, ArrayList<String> ingredients) {
-		super();
+		
 		this.name = name;
 		this.price = price;
 		this.ingredients = ingredients;
+		
 	}
 
 	public String getName() {

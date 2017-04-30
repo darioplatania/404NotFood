@@ -6,9 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.logging.Level;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 
 
@@ -18,6 +19,7 @@ class ClientRunnable implements Runnable{
 	private static final String MSG_ORDER	= "ORDER";
 	private static final String MSG_PAYMENT = "PAYMENT";
 	private static final String MSG_CLOSE	= "CLOSE";
+	private OrderDB db;
 	
 	
 	private String hostname;
@@ -26,6 +28,7 @@ class ClientRunnable implements Runnable{
 	public ClientRunnable(String hostname, Socket socket){
 		this.hostname = hostname;
 		this.socket = socket;
+		this.db = OrderDB.getInstance();
 	}
 	
 	@Override
@@ -34,26 +37,34 @@ class ClientRunnable implements Runnable{
 		
 		try {
 			
+			String message = "";
+			
 			PrintWriter out =
 				        new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(
 			        new InputStreamReader(socket.getInputStream()));
 			
 			
-			String message = "";
+			
+			
+			// Handle Order Workflow
 			do{
-				
-				// Handle Order Workflow
-				dispatcher(message);
-				
-				
-				
-			}while(!message.equals(MSG_CLOSE));
+				System.out.println("Waiting for commands from: "+hostname);
+			}while(dispatcher(in.readLine()));
+			
+			
+			// TODO: 2.2 Close Order Updating DB
+			try {
+				closeConnection();
+				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Connection closed with host: "+hostname);
+			} catch (IOException e) {
+				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, e.getMessage());
+			}
 			
 			
 		} catch (IOException e) {
 		
-			LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, e.getMessage());
+			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, e.getMessage());
 		}
 		
 
@@ -62,38 +73,55 @@ class ClientRunnable implements Runnable{
 		
 	}
 	
-	private void dispatcher(String message){
+	private boolean dispatcher(String message){
 		switch(message)
 		{
 		
 			case MSG_ORDER:
 				handleOrder();
-				break;
+				return true;
 			
 			case MSG_PAYMENT:
 				//handlePayment();
-				break;
-				
-			case MSG_CLOSE:
+				return true;
 
-				// TODO: 2.2 Close Order Updating DB
-				try {
-					closeConnection();
-				} catch (IOException e) {
-					LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, e.getMessage());
-				}
+			case MSG_CLOSE:
+				return false;
 				
-				break;
-			
 			default:
-				break;
+				return false;
 		}
 		
-		return;
 	}
 	
 	private void handleOrder(){
+		
 		// TODO: 2.1 Follow order workflow
+		BufferedReader in;
+		try {
+			in = new BufferedReader(
+			        new InputStreamReader(socket.getInputStream()));
+			
+			System.out.println("Waiting for Order from: "+hostname);
+			String orderAsJSON = in.readLine();
+			if(orderAsJSON!=null){
+			
+				Gson gson = new Gson();
+				Order order = gson.fromJson(orderAsJSON, Order.class);
+				this.db.add(order);
+				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "New order "+order.getid()+" received from "+hostname);
+				
+		
+			}
+			
+			
+			
+		} catch (IOException|JsonSyntaxException e) {
+			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" from: "+hostname);
+		}
+		
+		
+		
 	}
 	
 	private void closeConnection() throws IOException{
@@ -137,7 +165,7 @@ public class Server {
 			
 			logger.DEBUG_INFO(Level.INFO, "New connection from "+host);
 			
-			// TODO START NEW THREAD TO HANDLE NEW CONNECTION
+			// START NEW THREAD TO HANDLE NEW CONNECTION
 			new Thread(
 					new ClientRunnable(host, new_client)
 			).start();

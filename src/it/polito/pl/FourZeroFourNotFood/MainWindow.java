@@ -83,28 +83,45 @@ public class MainWindow {
 		shell.setText("404NotFood");
 		
 		table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(true);
 
+		
 	    TableColumn tc1 = new TableColumn(table, SWT.CENTER);
 	    TableColumn tc2 = new TableColumn(table, SWT.CENTER);
 	    TableColumn tc3 = new TableColumn(table, SWT.CENTER);
 	    TableColumn tc4 = new TableColumn(table, SWT.CENTER);
+	    TableColumn tc5 = new TableColumn(table, SWT.CENTER);
 	    
-	    tc1.setText("Order Id");
+	    tc1.setText("Id");
 	    tc2.setText("Menu");
 	    tc3.setText("Price");
 	    tc4.setText("Payment");
+	    tc5.setText("Status");
 	    
-	    int w = shell.getBounds().width;
-	    int n = table.getColumnCount();
 	    
-	    tc1.setWidth((w/n)/2);
-	    tc2.setWidth(2*(w/n));
-	    tc3.setWidth((w/n)/2);
-	    tc4.setWidth(w/n);
-	    
-	    table.setHeaderVisible(true);
-	    table.setLinesVisible(true);
 
+
+	    table.addListener(SWT.Resize, new Listener(){
+
+	    	// Adjust table columns width on resize
+			@Override
+			public void handleEvent(Event e) {
+
+				int w = shell.getBounds().width;
+				int n = table.getColumnCount();
+				
+				
+				table.getColumn(0).setWidth((w/n)/2);
+				table.getColumn(1).setWidth(2*(w/n));
+				table.getColumn(2).setWidth((w/n)/2);
+				table.getColumn(3).setWidth((w/n));
+				table.getColumn(4).setWidth((w/n));
+				
+					
+			}
+	    	
+	    });
 	    
 	}
 }

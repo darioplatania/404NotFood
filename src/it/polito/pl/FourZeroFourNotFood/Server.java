@@ -159,6 +159,10 @@ class ClientRunnable implements Runnable{
 								MainWindow.getTable().remove(MainWindow.getTable().indexOf(item_to_remove));
 								MainWindow.getOrderItems().remove(id_to_remove);
 								LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Order "+id_to_remove+" canceled from "+hostname);
+							
+								if(MainWindow.selected_id.equals(id_to_remove))
+									MainWindow.getMenuTable().removeAll();
+							
 							}
 							
 						});

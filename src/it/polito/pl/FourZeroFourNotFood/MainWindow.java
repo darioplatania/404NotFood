@@ -31,13 +31,15 @@ public class MainWindow {
 
 	protected Shell shell;
 	protected static Table table;
+	protected static Table menu_table;
+	
 	private final String title = "404NotFood";
 	
 	protected MenuItem fileMenuHeader;
 
 	private static ConcurrentHashMap<String,TableItem> orderItems = new ConcurrentHashMap<String,TableItem>();
 	
-	private String selected_id = "";
+	public static String selected_id = "";
 
 	public static ConcurrentHashMap<String,TableItem> getOrderItems() {
 		return orderItems;
@@ -48,6 +50,9 @@ public class MainWindow {
 		return table;
 	}
 
+	public static Table getMenuTable() {
+		return menu_table;
+	}
 
 
 
@@ -79,17 +84,23 @@ public class MainWindow {
 		
 		shell = new Shell();
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
-		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png"));
+		
+		Image icon = SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png");
+		shell.setImage(icon);
 		
 		shell.setLayout(new GridLayout());
 		shell.setText(title);
 		
-		Label title_lbl = new Label(shell,SWT.NONE);
-		title_lbl.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false,false));
-		title_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-	    title_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
-	    title_lbl.setText(title);
-	    
+		CLabel icon_lbl = new CLabel(shell,SWT.NONE);
+		icon_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+		icon_lbl.setLayoutData(new GridData(SWT.CENTER,SWT.TOP,false,false));
+		icon_lbl.setImage(icon);
+		icon_lbl.setText(title);
+		icon_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    icon_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
+		
+		
+		
 	    
 	    
 		Label orders_lbl = new Label(shell,SWT.NONE); 
@@ -175,7 +186,7 @@ public class MainWindow {
 	    menu_composite.setLayout(new GridLayout());
 	    menu_composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 	    
-	    Table menu_table = new Table(menu_composite, SWT.HIDE_SELECTION);
+	    menu_table = new Table(menu_composite, SWT.HIDE_SELECTION);
 	    menu_table.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 	    menu_table.setFont(SWTResourceManager.getFont(".SF NS Text", 13, SWT.BOLD));
 	    menu_table.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));

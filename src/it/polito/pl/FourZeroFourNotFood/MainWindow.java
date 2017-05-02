@@ -14,7 +14,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -29,7 +31,7 @@ public class MainWindow {
 
 	protected Shell shell;
 	protected static Table table;
-	
+	private final String title = "404NotFood";
 	
 	protected MenuItem fileMenuHeader;
 
@@ -80,8 +82,16 @@ public class MainWindow {
 		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png"));
 		
 		shell.setLayout(new GridLayout());
-		shell.setText("404NotFood");
+		shell.setText(title);
 		
+		Label title_lbl = new Label(shell,SWT.NONE);
+		title_lbl.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false,false));
+		title_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    title_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
+	    title_lbl.setText(title);
+	    
+	    
+	    
 		Label orders_lbl = new Label(shell,SWT.NONE); 
 		orders_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 	    orders_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));

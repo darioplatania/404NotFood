@@ -96,7 +96,7 @@ public class Main {
 					
 				}catch(IOException ex){
 					logger.DEBUG_INFO(Level.SEVERE, "Failed starting server: "+ex.getMessage());
-					return;
+					System.exit(0);
 				}
 
 	}

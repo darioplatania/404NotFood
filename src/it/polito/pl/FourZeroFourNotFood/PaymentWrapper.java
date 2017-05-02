@@ -152,7 +152,7 @@ class PaymentWrapper {
 					 if(paid){
 						 
 						 table.getItem(index).setText(3, "SUCCESS");
-						 table.getItem(index).setBackground(3, Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
+						 table.getItem(index).setBackground(3, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 						 
 					 }else{
 						 table.getItem(index).setText(3, "FAILED");

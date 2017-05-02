@@ -200,9 +200,9 @@ class ClientRunnable implements Runnable{
 				 String paid;
 				 
 				 if(order.isPaid())
-					 paid = "PAID";
+					 paid = "Already Paid";
 				 else
-					 paid = "NOT PAID";
+					 paid = "Waiting for Payment";
 				 
 				 String price = String.valueOf(order.getPrice())+" €";
 				 
@@ -215,7 +215,7 @@ class ClientRunnable implements Runnable{
 				 }
 				 
 				 TableItem new_item = new TableItem(MainWindow.getTable(), SWT.NONE);
-				 new_item.setText(new String[] { id,menu,price,paid });
+				 new_item.setText(new String[] { id,menu,price,paid,"Received" });
 				 MainWindow.getOrderItems().putIfAbsent(id, new_item);
 				 
 			 }

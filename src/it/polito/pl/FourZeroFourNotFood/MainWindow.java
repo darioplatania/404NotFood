@@ -9,32 +9,33 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
+
 
 public class MainWindow {
 
 	protected Shell shell;
 	protected static Table table;
 	
+	
 	protected MenuItem fileMenuHeader;
 
 	private static ConcurrentHashMap<String,TableItem> orderItems = new ConcurrentHashMap<String,TableItem>();
 	
+	private String selected_id = "";
 
 	public static ConcurrentHashMap<String,TableItem> getOrderItems() {
 		return orderItems;
@@ -75,16 +76,47 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shell = new Shell();
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png"));
 		
-		
-		
-		shell.setLayout(new FillLayout());
+		shell.setLayout(new GridLayout());
 		shell.setText("404NotFood");
 		
-		table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
-	    table.setHeaderVisible(true);
-	    table.setLinesVisible(true);
+		Label orders_lbl = new Label(shell,SWT.NONE); 
+		orders_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    orders_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
+	    orders_lbl.setText("Orders");
+	    new Label(shell, SWT.HORIZONTAL | SWT.SEPARATOR).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+	    final ScrolledComposite orders_composite = new ScrolledComposite(shell, SWT.NONE);
+	    orders_composite.setLayout(new GridLayout());
+	    orders_composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+
+		table = new Table(orders_composite, SWT.NO_SCROLL | SWT.FULL_SELECTION);
+		table.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		table.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+	    table.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false));
+		table.setHeaderVisible(true);
+		table.setLinesVisible(false);
+
+		
+	    orders_composite.setContent(table);
+	    orders_composite.setExpandHorizontal(true);
+	    orders_composite.setExpandVertical(true);
+	    orders_composite.setAlwaysShowScrollBars(false);
+	    orders_composite.setMinHeight(shell.getBounds().height/2);
+	    
+	    orders_composite.addListener(SWT.Resize, new Listener(){
+
+			@Override
+			public void handleEvent(Event arg0) {
+
+				orders_composite.setMinHeight(shell.getBounds().height/2);
+			}
+	    	
+	    });
+		
+		
 
 		
 	    TableColumn tc1 = new TableColumn(table, SWT.CENTER);
@@ -98,9 +130,6 @@ public class MainWindow {
 	    tc3.setText("Price");
 	    tc4.setText("Payment");
 	    tc5.setText("Status");
-	    
-	    
-
 
 	    table.addListener(SWT.Resize, new Listener(){
 
@@ -122,6 +151,103 @@ public class MainWindow {
 			}
 	    	
 	    });
+	    
+	    Label items_lbl = new Label(shell,SWT.NONE); 
+	    items_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    items_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
+	    items_lbl.setText("Items");
+	    new Label(shell, SWT.HORIZONTAL | SWT.SEPARATOR).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	    
+	    
+	    final ScrolledComposite menu_composite = new ScrolledComposite(shell, SWT.NONE);
+	    menu_composite.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    menu_composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+	    menu_composite.setLayout(new GridLayout());
+	    menu_composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+	    
+	    Table menu_table = new Table(menu_composite, SWT.HIDE_SELECTION);
+	    menu_table.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+	    menu_table.setFont(SWTResourceManager.getFont(".SF NS Text", 13, SWT.BOLD));
+	    menu_table.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    menu_table.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,true));
+	    menu_table.setHeaderVisible(false);
+	    menu_table.setLinesVisible(false);
+
+	    
+	    TableColumn tableColumn = new TableColumn(menu_table, SWT.LEFT);
+	    tableColumn.setImage(null);
+	    tableColumn.setText("Item");
+	    new TableColumn(menu_table, SWT.CENTER).setText("Qty");
+	    new TableColumn(menu_table, SWT.CENTER).setText("Price");
+
+	    
+	    menu_table.addListener(SWT.Resize, new Listener(){
+
+	    	// Adjust table columns width on resize
+			@Override
+			public void handleEvent(Event e) {
+
+				int w = shell.getBounds().width;
+				int n = menu_table.getColumnCount();
+				
+				
+				menu_table.getColumn(0).setWidth(2*w/n);
+				menu_table.getColumn(1).setWidth((w/n)/2);
+				menu_table.getColumn(2).setWidth((w/n)/2);
+				
+				
+					
+			}
+	    	
+	    });
+	    
+	    
+	    
+	    menu_composite.setContent(menu_table);
+	    menu_composite.setExpandHorizontal(true);
+	    menu_composite.setExpandVertical(true);
+	    menu_composite.setAlwaysShowScrollBars(false);
+	    menu_composite.setMinHeight(shell.getBounds().height/2);
+	    
+	    menu_composite.addListener(SWT.Resize, new Listener(){
+
+			@Override
+			public void handleEvent(Event arg0) {
+
+				menu_composite.setMinHeight(shell.getBounds().height/2);
+			}
+	    	
+	    });
+		
+
+
+
+	    table.addListener(SWT.Selection, new Listener() {
+	        public void handleEvent(Event event) {
+	          
+	        	
+	            TableItem[] selection = table.getSelection();
+	            String id = selection[0].getText(0);
+	            
+	            if(!id.equals(selected_id)){
+	            	
+	            	selected_id = id;
+	            	
+	            	menu_table.removeAll();
+	            	
+	            	Order order = OrderDB.getInstance().get(id);
+		            
+		            for(OrderedFood of:order.getFoods())
+		            	new TableItem(menu_table,SWT.NONE).setText(new String[]{of.getFood().getName(),of.getQuantity()+"",of.getFood().getPrice()*of.getQuantity()+" €"});
+		            new TableItem(menu_table,SWT.NONE).setText(new String[]{"Total","",order.getPrice()+" €"});
+		        		
+	            }
+	            
+	        	
+	        }
+	      });
+
+	    
 	    
 	}
 }

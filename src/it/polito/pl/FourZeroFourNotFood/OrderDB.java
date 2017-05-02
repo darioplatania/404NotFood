@@ -30,5 +30,12 @@ public class OrderDB {
 		return this.orders.get(id);
 	}
 	
+	public void remove(String id){
+		this.orders.remove(id);
+	}
+	
+	public int size(){
+		return this.orders.size();
+	}
 	
 }

@@ -21,22 +21,8 @@ public class Main {
 	
 	public static void main(String[] args){
 
-		// START NEW THREAD WORKING AS SERVER
 
-					new Thread(
-							new Runnable(){
-
-								@Override
-								public void run() {
-
-									startService();
-									
-								}
-								
-							}
-					).start();
-		
-		
+		startServerThread();
 		
 		//START NEW THREAD TO HADLE GUI		
 		try {
@@ -48,8 +34,27 @@ public class Main {
 		}
 		
 		
+		
+		
 	}
 
+
+	public static void startServerThread(){
+		// START NEW THREAD WORKING AS SERVER
+
+		new Thread(
+				new Runnable(){
+
+					@Override
+					public void run() {
+
+						startService();
+						
+					}
+					
+				}
+		).start();
+	}
 	
 	private static void startService(){
 		// Variables

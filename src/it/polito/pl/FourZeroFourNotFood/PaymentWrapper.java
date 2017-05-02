@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Table;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.paypal.api.payments.Address;
@@ -117,15 +121,15 @@ class PaymentWrapper {
 			  // Create payment
 			  APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
 			  createdPayment = payment.create(apiContext);
-			  
 			  order.setPaid(true);
 			  LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Created payment with id = " + createdPayment.getId());
-			  
+			  updateGUIOnResult(order.getId(),true);
 			  return true;
 			  
 		} catch (PayPalRESTException e) {
 			
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, e.getMessage());
+			updateGUIOnResult(order.getId(),false);
 			return false;
 		}
 
@@ -135,4 +139,29 @@ class PaymentWrapper {
 	}
 	
 	
+	private static void updateGUIOnResult(final String id,boolean paid){
+		  // UPDATE GUI
+		  Display.getDefault().asyncExec(new Runnable() {
+				 public void run() {
+					 
+					 Table	table = MainWindow.getTable();
+					 int	index = table.indexOf(MainWindow.getOrderItems().get(id));
+					 
+					 table.getItem(index).setForeground(3, Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+					 
+					 if(paid){
+						 
+						 table.getItem(index).setText(3, "SUCCESS");
+						 table.getItem(index).setBackground(3, Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
+						 
+					 }else{
+						 table.getItem(index).setText(3, "FAILED");
+						 table.getItem(index).setBackground(3, Display.getDefault().getSystemColor(SWT.COLOR_RED));
+					 }
+					 
+					 
+					 
+				 }
+		  });
+	}
 }

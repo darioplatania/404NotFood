@@ -8,6 +8,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TableItem;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -97,7 +101,8 @@ class ClientRunnable implements Runnable{
 	private void handleOrder(){
 		
 		// TODO: 2.1 Follow order workflow
-		Order			order;
+		
+		Order 			order;
 		BufferedReader	in;
 		boolean			isEnded = false;
 		
@@ -108,9 +113,20 @@ class ClientRunnable implements Runnable{
 			
 			System.out.println("Waiting for Order from: "+hostname);
 			order = getOrderFromJson(in.readLine());
+			System.out.println(order.getId());
+			if(this.db.get(order.getId())!=null){
+				System.out.println("DUPLICATO");
+				throw new JsonSyntaxException("Duplicated Order ID");
+			}
+			
+			// UPDATE RAM DB
 			this.db.add(order);
+			System.out.println(this.db.size());
 			
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "ORDER "+order.getid()+" received from "+hostname);
+			
+			//UPDATE GUI
+			updateGUIWithNewOrder(order);
 			
 			while(!isEnded){
 				
@@ -124,11 +140,30 @@ class ClientRunnable implements Runnable{
 						
 						break;
 					case MSG_UPDATE_ORDER:
-						order = getOrderFromJson(in.readLine());
-						this.db.add(order);
+						Order current_order = getOrderFromJson(in.readLine());
+						
+						if(current_order.getid().equals(order.getid()))
+							this.db.add(current_order);
+						else
+							LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, "Cannot update different order ids received from "+hostname);
 						break;
 				
 					case MSG_CANCEL_ORDER:
+						final String id_to_remove = order.getId();
+						this.db.remove(id_to_remove);
+						Display.getDefault().asyncExec(new Runnable(){
+								
+							@Override
+							public void run() {
+								TableItem item_to_remove = MainWindow.getOrderItems().get(id_to_remove);
+								MainWindow.getTable().remove(MainWindow.getTable().indexOf(item_to_remove));
+								MainWindow.getOrderItems().remove(id_to_remove);
+								LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Order "+id_to_remove+" canceled from "+hostname);
+							}
+							
+						});
+						
+						
 						isEnded=true;
 						break;
 						
@@ -154,6 +189,37 @@ class ClientRunnable implements Runnable{
 	
 	private void closeConnection() throws IOException{
 		this.socket.close();
+	}
+	
+	private void updateGUIWithNewOrder(final Order order){
+		Display.getDefault().asyncExec(new Runnable() {
+			 public void run() {
+				 
+				 String id = order.getid();
+				 
+				 String paid;
+				 
+				 if(order.isPaid())
+					 paid = "PAID";
+				 else
+					 paid = "NOT PAID";
+				 
+				 String price = String.valueOf(order.getPrice())+" €";
+				 
+				 String menu = "";
+				 for(OrderedFood of:order.getFoods()){
+					 if(menu.equals(""))
+							menu += of.getFood().getName()+" Qty: "+of.getQuantity();
+					 else
+						 	menu += " + "+of.getFood().getName()+" Qty: "+of.getQuantity();
+				 }
+				 
+				 TableItem new_item = new TableItem(MainWindow.getTable(), SWT.NONE);
+				 new_item.setText(new String[] { id,menu,price,paid });
+				 MainWindow.getOrderItems().putIfAbsent(id, new_item);
+				 
+			 }
+			});
 	}
 	
 }

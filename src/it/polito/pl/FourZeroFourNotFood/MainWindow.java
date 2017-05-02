@@ -1,22 +1,56 @@
 package it.polito.pl.FourZeroFourNotFood;
 
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 public class MainWindow {
 
 	protected Shell shell;
-	
+	protected static Table table;
 	
 	protected MenuItem fileMenuHeader;
 
+	private static ConcurrentHashMap<String,TableItem> orderItems = new ConcurrentHashMap<String,TableItem>();
 	
+
+	public static ConcurrentHashMap<String,TableItem> getOrderItems() {
+		return orderItems;
+	}
+
+
+	public static Table getTable() {
+		return table;
+	}
+
+
+
+
+
+
+
 
 	/**
 	 * Open the window.
@@ -24,6 +58,7 @@ public class MainWindow {
 	public void open() {
 		Display display = Display.getDefault();
 		createContents();
+		
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed()) {
@@ -40,25 +75,36 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shell = new Shell();
-		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
-		shell.setSize(800, 600);
+		shell.setImage(SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png"));
+		
+		
+		
+		shell.setLayout(new FillLayout());
 		shell.setText("404NotFood");
 		
-		CLabel lblNewLabel = new CLabel(shell, SWT.NONE);
-		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
-		lblNewLabel.setImage(SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png"));
-		lblNewLabel.setBounds(327, 216, 146, 151);
-		lblNewLabel.setText("");
-		
-		Label lblnotfood = new Label(shell, SWT.NONE);
-		lblnotfood.setFont(SWTResourceManager.getFont(".SF NS Text", 18, SWT.NORMAL));
-		lblnotfood.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		lblnotfood.setAlignment(SWT.CENTER);
-		lblnotfood.setBounds(325, 364, 136, 48);
-		lblnotfood.setText("404NotFood");
+		table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 
-		
-		
+	    TableColumn tc1 = new TableColumn(table, SWT.CENTER);
+	    TableColumn tc2 = new TableColumn(table, SWT.CENTER);
+	    TableColumn tc3 = new TableColumn(table, SWT.CENTER);
+	    TableColumn tc4 = new TableColumn(table, SWT.CENTER);
+	    
+	    tc1.setText("Order Id");
+	    tc2.setText("Menu");
+	    tc3.setText("Price");
+	    tc4.setText("Payment");
+	    
+	    int w = shell.getBounds().width;
+	    int n = table.getColumnCount();
+	    
+	    tc1.setWidth((w/n)/2);
+	    tc2.setWidth(2*(w/n));
+	    tc3.setWidth((w/n)/2);
+	    tc4.setWidth(w/n);
+	    
+	    table.setHeaderVisible(true);
+	    table.setLinesVisible(true);
+
 	    
 	}
 }

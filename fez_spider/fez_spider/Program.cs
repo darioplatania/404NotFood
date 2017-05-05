@@ -303,9 +303,27 @@ namespace fez_spider
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             Stream stream = res.GetResponseStream();
             StreamReader sr = new StreamReader(stream);
-            
-           Menu menu = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Menu>(sr.ReadToEnd());
-           
+
+            //Debug.Print(sr.ReadToEnd());
+            //string json = Json.NETMF.JsonSerializer.SerializeObject(sr.ReadToEnd());
+
+            //dynamic json = new Json.NETMF.JsonSerializer().Deserialize(sr.ReadToEnd());
+
+            //var serializer = new Json.NETMF.JsonSerializer();
+            //dynamic jsonObject = serializer.Deserialize(sr.ReadToEnd());
+
+            //string prova = ((Menu)json).menu[2].name;         
+            //Debug.Print("prova stampa: " + prova);
+
+
+            var menu = new Json.NETMF.JsonSerializer().Deserialize(sr.ReadToEnd());
+            string result = ((Menu)menu).menu[0].id; //non funzionante
+            Debug.Print(result);
+
+
+            //Debug.Print(json);
+
+            //Menu menu = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Menu>(sr.ReadToEnd());
 
         }
 

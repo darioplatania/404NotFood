@@ -16,8 +16,6 @@ namespace fez_spider
         public String name;
         public String[] ingredients;
         public float price;
-
-
     }
 
 }

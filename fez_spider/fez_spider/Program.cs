@@ -16,6 +16,8 @@ using GTM = Gadgeteer.Modules;
 using GHI.Glide;
 using GHI.Glide.Display;
 using GHI.Glide.UI;
+using System.IO;
+
 
 namespace fez_spider
 {
@@ -143,7 +145,7 @@ namespace fez_spider
             GT.Timer timer = new GT.Timer(200);
             timer.Tick += Timer_Tick; 
             timer.Start(); 
-
+            
         }
 
         /*Timer_Tick function for joystick*/
@@ -295,10 +297,16 @@ namespace fez_spider
             Debug.Print("Network is up!");
             Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
 
-             /*var req = WebRequest.Create("http://192.168.100.1:8080/food/webapi/food");
-             req.Method = "GET";                      
-             req.GetResponse();
-             ArrayList arrayList = JsonSerializer.DeserializeString(json) as ArrayList;*/
+            String url = @"http://192.168.100.1:8080/food/webapi/food";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+            Stream stream = res.GetResponseStream();
+            StreamReader sr = new StreamReader(stream);
+            
+           Menu menu = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Menu>(sr.ReadToEnd());
+           
+
         }
 
         /*Ethernet Run Web_Server Function*/

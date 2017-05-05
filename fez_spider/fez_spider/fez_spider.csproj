@@ -39,6 +39,7 @@
   <!-- Everything below here is custom to .NET MF / Gadgeteer template-->
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="Menu.cs" />
     <Compile Include="Program.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -94,7 +95,9 @@
     <Reference Include="Microsoft.SPOT.Net" />
     <Reference Include="Microsoft.SPOT.TinyCore" />
     <Reference Include="mscorlib" />
+    <Reference Include="System" />
     <Reference Include="System.Http" />
+    <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -104,6 +107,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Program.gadgeteer">
       <Generator>GadgeteerFileCodeGenerator</Generator>
       <LastGenOutput>Program.generated.cs</LastGenOutput>
@@ -122,5 +126,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\start.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\json-serialize.js" />
+    <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>
 </Project>

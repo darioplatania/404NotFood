@@ -29,6 +29,7 @@ namespace fez_spider
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
+        private GHI.Glide.UI.Button _payBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _qntCounter;
@@ -110,6 +111,13 @@ namespace fez_spider
             fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
             */
 
+            /*create button*/
+
+            _payBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("payBtn");
+            _payBtn.Enabled = false;
+            _menu.Invalidate();
+            _payBtn.PressEvent += _payBtn_PressEvent;
+
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
             _deleteBtn.Enabled = false;
             _menu.Invalidate();
@@ -179,8 +187,8 @@ namespace fez_spider
             object[] data = _dataGrid.GetRowData(args.RowIndex);                  
             if (data != null)
             {
-                /*enable ingredients & delete button*/
-                _ingBtn.Visible = true;
+                /*enable ingredients button*/
+                _ingBtn.Visible = true;               
                 _menu.Invalidate();                                
 
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
@@ -217,6 +225,12 @@ namespace fez_spider
             Populate(true);
         }
 
+        /*Pay_btn TapEvent*/
+        void _payBtn_PressEvent(object sender)
+        {
+            //throw new NotImplementedException();
+        }
+
         /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
         {            
@@ -227,6 +241,8 @@ namespace fez_spider
                   
             _pCounter.Text = price.ToString();
             _qntCounter.Text = qnt.ToString();
+            _deleteBtn.Enabled = false;
+            _payBtn.Enabled = false;
             _menu.Invalidate();
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
@@ -297,13 +313,29 @@ namespace fez_spider
             Debug.Print("Network is up!");
             Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
 
-            String url = @"http://192.168.100.1:8080/food/webapi/food";
+           /* String url = @"http://192.168.100.1:8080/food/webapi/food";
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
 
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             Stream stream = res.GetResponseStream();
             StreamReader sr = new StreamReader(stream);
 
+            string json = sr.ReadToEnd();
+            string target = "\\";
+            Debug.Print(target);
+            //for (int i = 0; i < json.Length; i++) {
+
+                //if (json[i] == '"')
+               // {
+                //    target+= "\"";
+              //  }
+             //   else target += json[i];
+            //}
+            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+            Debug.Print(json);
+             
+                        
             //Debug.Print(sr.ReadToEnd());
             //string json = Json.NETMF.JsonSerializer.SerializeObject(sr.ReadToEnd());
 
@@ -313,18 +345,13 @@ namespace fez_spider
             //dynamic jsonObject = serializer.Deserialize(sr.ReadToEnd());
 
             //string prova = ((Menu)json).menu[2].name;         
-            //Debug.Print("prova stampa: " + prova);
-
-
-            var menu = new Json.NETMF.JsonSerializer().Deserialize(sr.ReadToEnd());
-            string result = ((Menu)menu).menu[0].id; //non funzionante
-            Debug.Print(result);
+            //Debug.Print("prova stampa: " + prova);        
 
 
             //Debug.Print(json);
 
             //Menu menu = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Menu>(sr.ReadToEnd());
-
+            */
         }
 
         /*Ethernet Run Web_Server Function*/
@@ -382,6 +409,7 @@ namespace fez_spider
             else
             {
                 _deleteBtn.Enabled = true;
+                _payBtn.Enabled = true;
                 _errMsg.Visible = false;
 
                 /*calculate price function*/
@@ -406,7 +434,7 @@ namespace fez_spider
             {                
                 Debug.Print("Aggiungi pizza!");
                 _errMsg.Text = "Add pizza!";
-                _errMsg.Visible = true;
+                _errMsg.Visible = true;                
                 _menu.Invalidate();
             }
             else
@@ -421,9 +449,16 @@ namespace fez_spider
                 _dataGrid.SetCellData(3, row, getqnt);               
                 _menu.Invalidate();
 
+                if (getqnt == 0)
+                {
+                    _payBtn.Enabled = false;
+                    _deleteBtn.Enabled = false;
+                    _menu.Invalidate();
+                }
+
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
-                Debug.Print("QNT dopo rimozione: " + getqnt);
+                Debug.Print("QNT dopo rimozione: " + getqnt);               
             }
             minus.TurnLedOff();
 

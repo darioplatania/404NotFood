@@ -29,19 +29,21 @@ namespace fez_spider
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
-        private GHI.Glide.UI.Button _payBtn;
+        private GHI.Glide.UI.Button _ordBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;  
-        private static int qnt; 
-        private static int price;
-        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);       
-        private static string getpizza;
-        private static int getprice;
-        private static int getqnt;
-        private static int row = -1;
+        private  int qnt; 
+        private  int price;
+        private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        private int getid;     
+        private  string getpizza;
+        private  int getprice;
+        private  int getqnt;
+        private  int row = -1;
         byte[] result = new byte[65536];
+        ArrayList payment = new ArrayList();
         int read = 0;
 
 
@@ -113,10 +115,10 @@ namespace fez_spider
 
             /*create button*/
 
-            _payBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("payBtn");
-            _payBtn.Enabled = false;
+            _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
+            _ordBtn.Enabled = false;
             _menu.Invalidate();
-            _payBtn.PressEvent += _payBtn_PressEvent;
+            _ordBtn.PressEvent += _ordBtn_PressEvent;
 
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
             _deleteBtn.Enabled = false;
@@ -193,7 +195,9 @@ namespace fez_spider
 
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
                 /*mem row index*/
-                row = args.RowIndex;                
+                row = args.RowIndex;
+                /*select id row*/
+                getid = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(0);
                 /*select name row*/
                 getpizza = (string)_dataGrid.GetRowData(args.RowIndex).GetValue(1);
                 /*select price row*/
@@ -226,7 +230,7 @@ namespace fez_spider
         }
 
         /*Pay_btn TapEvent*/
-        void _payBtn_PressEvent(object sender)
+        void _ordBtn_PressEvent(object sender)
         {
             //throw new NotImplementedException();
         }
@@ -234,15 +238,14 @@ namespace fez_spider
         /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
         {            
-            getqnt = 0;//set qnt to 0
-            getprice = 0;//set getprice to selected row to 0 
+            getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0
                   
             _pCounter.Text = price.ToString();
             _qntCounter.Text = qnt.ToString();
             _deleteBtn.Enabled = false;
-            _payBtn.Enabled = false;
+            _ordBtn.Enabled = false;
             _menu.Invalidate();
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
@@ -257,22 +260,7 @@ namespace fez_spider
         void ingBtn_PressEvent(object sender)
         {
             ingredients();
-        }
-
-        void priceadd(int prezzo)
-        {           
-            price = price + prezzo;
-            _pCounter.Text = price.ToString();
-            _menu.Invalidate();            
-            
-        }
-
-        void priceremove(int prezzo)
-        {
-            price = price - prezzo;
-            _pCounter.Text = price.ToString();
-            _menu.Invalidate();
-        }
+        }        
 
         /*Ingredients Function display*/
         void ingredients()
@@ -405,15 +393,16 @@ namespace fez_spider
                 _errMsg.Text = "Select pizza!";
                 _errMsg.Visible = true;
                 _menu.Invalidate();
-            }
+            }           
             else
             {
                 _deleteBtn.Enabled = true;
-                _payBtn.Enabled = true;
-                _errMsg.Visible = false;
+                _ordBtn.Enabled = true;
+                _errMsg.Visible = false;                
+                /*calculate price function*/               
+                price = price + getprice;
+                _pCounter.Text = price.ToString();
 
-                /*calculate price function*/
-                priceadd(getprice);
                 getqnt = getqnt + 1; //quantità della pizza selezionata
                 qnt = qnt + 1; //quantità totale
                 _qntCounter.Text = qnt.ToString();
@@ -442,16 +431,18 @@ namespace fez_spider
                 _errMsg.Visible = false;
 
                 /*calculate price function*/
-                priceremove(getprice);
+                price = price - getprice;
+
+                _pCounter.Text = price.ToString();
                 getqnt = getqnt - 1; //quantità della pizza selezionata
                 qnt = qnt - 1; //quantità totale    
                 _qntCounter.Text = qnt.ToString();
                 _dataGrid.SetCellData(3, row, getqnt);               
                 _menu.Invalidate();
 
-                if (getqnt == 0)
+                if (qnt == 0)
                 {
-                    _payBtn.Enabled = false;
+                    _ordBtn.Enabled = false;
                     _deleteBtn.Enabled = false;
                     _menu.Invalidate();
                 }

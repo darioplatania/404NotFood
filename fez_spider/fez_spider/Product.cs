@@ -16,6 +16,7 @@ namespace fez_spider
             nome = n;
             prezzo = p;
             quantita = q;
+            
         }
     }
 }

@@ -42,8 +42,9 @@ namespace fez_spider
         private  int getprice;
         private  int getqnt;
         private  int row = -1;
+        private  int count = 0;
         byte[] result = new byte[65536];
-        ArrayList payment = new ArrayList();
+        ArrayList payment = new ArrayList();       
         int read = 0;
 
 
@@ -232,7 +233,11 @@ namespace fez_spider
         /*Pay_btn TapEvent*/
         void _ordBtn_PressEvent(object sender)
         {
-            //throw new NotImplementedException();
+            Debug.Print("HAI ORDINATO: ");
+            foreach (Product i in payment)
+            {
+                Debug.Print("Pizza: " + i.nome + " Prezzo: " + i.prezzo);
+            }
         }
 
         /*Delete_btn TapEvent*/
@@ -241,12 +246,14 @@ namespace fez_spider
             getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0
+            payment.Clear();
                   
             _pCounter.Text = price.ToString();
             _qntCounter.Text = qnt.ToString();
             _deleteBtn.Enabled = false;
             _ordBtn.Enabled = false;
             _menu.Invalidate();
+            
             /*vedere se questo for va bene o c'è un altro modo??*/
             for (int i = 0; i < 7; i++)
             {
@@ -382,8 +389,8 @@ namespace fez_spider
         private void Button_PressEvent(object sender)
         {           
             initMenu(); 
-        }     
-
+        }
+       
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
             plus.TurnLedOn();
@@ -409,6 +416,16 @@ namespace fez_spider
                 _dataGrid.SetCellData(3, row, getqnt);               
                 _menu.Invalidate();
 
+                /*inizio parte array*/                
+                payment.Add(new Product(getid,getpizza,getprice,getqnt));                         
+                Debug.Print("Elementi presenti array(plus):  " + payment.Count);              
+                
+                foreach (Product i in payment)
+                {
+                    Debug.Print("Array (plus) elements: " + i.id + " " + i.nome + " " + i.prezzo + " ID_ARRAY: " + payment.IndexOf(i));
+                }
+                /*fine parte array*/
+
                 Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());
             }
@@ -419,6 +436,8 @@ namespace fez_spider
         private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
             minus.TurnLedOn();
+            count = 1;
+            
             if (getqnt == 0)
             {                
                 Debug.Print("Aggiungi pizza!");
@@ -432,7 +451,6 @@ namespace fez_spider
 
                 /*calculate price function*/
                 price = price - getprice;
-
                 _pCounter.Text = price.ToString();
                 getqnt = getqnt - 1; //quantità della pizza selezionata
                 qnt = qnt - 1; //quantità totale    
@@ -446,6 +464,25 @@ namespace fez_spider
                     _deleteBtn.Enabled = false;
                     _menu.Invalidate();
                 }
+
+                /*inizio parte array*/                
+                foreach (Product i in payment)
+                {
+                    int indice = payment.IndexOf(i);
+                    Debug.Print("Indice: " + indice);                    
+
+                    if (getid == i.id && count == 1)
+                    {
+                        Debug.Print("IF --- ELIMINO");                        
+                        payment.RemoveAt(indice);
+                        count = 0;
+                        break;                        
+                    }
+                      
+                }
+
+                Debug.Print("Elementi presenti array(minus):  " + payment.Count);               
+                /*fine parte array*/
 
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
                 Debug.Print("Prezzo Totale: " + price.ToString());

@@ -43,9 +43,11 @@ namespace fez_spider
         private  int getqnt;
         private  int row = -1;
         private  int count = 0;
+        private  int exist = 0;
+        private  int aux = 0;
         byte[] result = new byte[65536];
         ArrayList payment = new ArrayList();       
-        int read = 0;
+        
 
 
         /*This method is run when the mainboard is powered up or reset*/
@@ -236,7 +238,7 @@ namespace fez_spider
             Debug.Print("HAI ORDINATO: ");
             foreach (Product i in payment)
             {
-                Debug.Print("Pizza: " + i.nome + " Prezzo: " + i.prezzo);
+                Debug.Print("Pizza: " + i.nome + " Prezzo: " + i.prezzo + " Qnt: " + i.quantita);
             }
         }
 
@@ -245,7 +247,7 @@ namespace fez_spider
         {            
             getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
-            qnt = 0;//set total qnt to 0
+            qnt = 0;//set total qnt to 0            
             payment.Clear();
                   
             _pCounter.Text = price.ToString();
@@ -416,14 +418,43 @@ namespace fez_spider
                 _dataGrid.SetCellData(3, row, getqnt);               
                 _menu.Invalidate();
 
-                /*inizio parte array*/                
-                payment.Add(new Product(getid,getpizza,getprice,getqnt));                         
-                Debug.Print("Elementi presenti array(plus):  " + payment.Count);              
-                
-                foreach (Product i in payment)
+                /*inizio parte array*/
+                 
+                if(payment.Count == 0)
                 {
-                    Debug.Print("Array (plus) elements: " + i.id + " " + i.nome + " " + i.prezzo + " ID_ARRAY: " + payment.IndexOf(i));
-                }
+                    Debug.Print("First insert into array");
+                    payment.Add(new Product(getid, getpizza, getprice, getqnt));                    
+                    //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
+                }                
+                   
+                else
+                {
+                    Debug.Print("Second or plus insert into array");
+                    exist = 0;
+                    foreach ( Product i in payment)
+                    {
+                      int indice = payment.IndexOf(i);
+                      //Debug.Print("Indice: " + indice);
+                    
+                      if(getid == i.id)
+                        {
+                            Debug.Print("Esiste già uno -- setto qnt+1");
+                            payment.RemoveAt(indice);
+                            payment.Insert(indice, new Product(getid, getpizza, getprice, getqnt));
+                            //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
+                            exist = 1;
+                            break;
+                        }                                         
+                    }
+
+                    if (exist == 0)
+                    {
+                        Debug.Print("Non esiste -- aggiungo");
+                        payment.Add(new Product(getid, getpizza, getprice, getqnt));
+                        //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
+                    }                
+
+                }              
                 /*fine parte array*/
 
                 Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
@@ -450,6 +481,7 @@ namespace fez_spider
                 _errMsg.Visible = false;
 
                 /*calculate price function*/
+                aux = getqnt;
                 price = price - getprice;
                 _pCounter.Text = price.ToString();
                 getqnt = getqnt - 1; //quantità della pizza selezionata
@@ -462,26 +494,39 @@ namespace fez_spider
                 {
                     _ordBtn.Enabled = false;
                     _deleteBtn.Enabled = false;
-                    _menu.Invalidate();
+                    _menu.Invalidate();                    
                 }
 
                 /*inizio parte array*/                
                 foreach (Product i in payment)
                 {
                     int indice = payment.IndexOf(i);
-                    Debug.Print("Indice: " + indice);                    
+                    //Debug.Print("Indice: " + indice);
 
                     if (getid == i.id && count == 1)
                     {
-                        Debug.Print("IF --- ELIMINO");                        
-                        payment.RemoveAt(indice);
-                        count = 0;
-                        break;                        
+                        Debug.Print("IF");
+                        //Debug.Print("QNT: " + aux);
+                        if (aux >= 2)
+                        {
+                            Debug.Print("IF MAGGIORE DI UNO --- ELIMINO");
+                            payment.RemoveAt(indice);
+                            payment.Insert(indice, new Product(getid, getpizza, getprice, getqnt));
+                            count = 0;
+                            break;
+                        }
+                        else
+                        {
+                            Debug.Print("ELSE UNO --- ELIMINO");
+                            payment.RemoveAt(indice);
+                            count = 0;
+                            break;
+                        }                  
                     }
                       
                 }
 
-                Debug.Print("Elementi presenti array(minus):  " + payment.Count);               
+                //Debug.Print("Elementi presenti array(minus):  " + payment.Count);               
                 /*fine parte array*/
 
                 Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);

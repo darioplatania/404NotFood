@@ -244,13 +244,40 @@ namespace fez_spider
         
 
         /*Pay_btn TapEvent*/
-        void _ordBtn_PressEvent(object sender)
-        {
-            Debug.Print("HAI ORDINATO: ");
-            foreach (Product i in payment)
+        void _ordBtn_PressEvent(object sender) {
+
+            string id_ordine = "1";
+            string tot = price.ToString();
+
+
+            Hashtable order = new Hashtable();
+            order.Add("id", id_ordine);
+            order.Add("price", tot);
+            
+            // Preparing order array list
+            ArrayList foods = new ArrayList();
+            
+            foreach (Product p in payment)
             {
-                Debug.Print("Pizza: " + i.nome + " Prezzo: " + i.prezzo + " Qnt: " + i.quantita);
+                // Preparing food array list
+                Hashtable new_food = new Hashtable();
+                new_food.Add("name",p.nome);
+                new_food.Add("price",p.prezzo);
+                
+
+                Hashtable food = new Hashtable();
+                food.Add("food", new_food);
+                food.Add("quantity", p.quantita);
+
+                foods.Add(food);
             }
+
+            order.Add("foods", foods);
+
+            string order_as_json = Json.NETMF.JsonSerializer.SerializeObject(order);
+
+            // TODO: MANDARE order_as_json al Desktop tramite Socket
+            Debug.Print(order_as_json);
 
             /*load menu*/
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));

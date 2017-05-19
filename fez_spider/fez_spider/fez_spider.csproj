@@ -133,6 +133,7 @@
     <None Include="Resources\start.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Ordina.txt" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

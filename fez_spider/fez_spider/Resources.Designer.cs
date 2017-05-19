@@ -33,26 +33,18 @@ namespace fez_spider
         {
             return ((string)(Microsoft.SPOT.ResourceUtility.GetObject(ResourceManager, id)));
         }
-        internal static byte[] GetBytes(Resources.BinaryResources id)
-        {
-            return ((byte[])(Microsoft.SPOT.ResourceUtility.GetObject(ResourceManager, id)));
-        }
         [System.SerializableAttribute()]
         internal enum StringResources : short
         {
             Window = -5489,
             Menu = -2554,
+            Ordina = 6285,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short
         {
             small = 13070,
             NinaB = 18060,
-        }
-        [System.SerializableAttribute()]
-        internal enum BinaryResources : short
-        {
-            start = 28368,
         }
     }
 }

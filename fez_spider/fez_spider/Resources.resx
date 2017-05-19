@@ -130,7 +130,7 @@
   <data name="Window" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Prova.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
-  <data name="start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\start.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  <data name="Ordina" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\Ordina.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
 </root>

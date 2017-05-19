@@ -26,18 +26,21 @@ namespace fez_spider
         
         private static GHI.Glide.Display.Window _mainwindow;             
         private static GHI.Glide.Display.Window _menu;
+        private static GHI.Glide.Display.Window _ordina;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
         private GHI.Glide.UI.Button _ordBtn;
+        private GHI.Glide.UI.Button _payBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _qntCounter;
-        private GHI.Glide.UI.TextBlock _errMsg;  
+        private GHI.Glide.UI.TextBlock _errMsg;
+        private GHI.Glide.UI.TextBox _textorder;
         private  int qnt; 
         private  int price;
         private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
-        private int getid;     
+        private  int getid;     
         private  string getpizza;
         private  int getprice;
         private  int getqnt;
@@ -240,6 +243,18 @@ namespace fez_spider
             {
                 Debug.Print("Pizza: " + i.nome + " Prezzo: " + i.prezzo + " Qnt: " + i.quantita);
             }
+
+            /*load menu*/
+            _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
+            Glide.MainWindow = _ordina;
+            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
+            //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
+            //string prova = "aaa";
+            //_textorder.Text = prova.ToString();   
+            /*
+             <TextBox Name="textorder" X="20" Y="10" Width="250" Height="150" Alpha="255" TextAlign="Left" Font="4" FontColor="000000"/>
+	         <Button Name="paytBtn" X="110" Y="202" Width="100" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+             */
         }
 
         /*Delete_btn TapEvent*/

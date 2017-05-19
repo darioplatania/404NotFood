@@ -147,7 +147,7 @@ namespace fez_spider
             /*Create our four columns*/
             _dataGrid.AddColumn(new DataGridColumn("ID", 0));
             _dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
-            _dataGrid.AddColumn(new DataGridColumn("EUR", 50));
+            _dataGrid.AddColumn(new DataGridColumn("PREZZO", 80));
             _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
             
             /*Populate the data grid with random data*/
@@ -280,9 +280,11 @@ namespace fez_spider
             Debug.Print(order_as_json);
 
             /*load menu*/
+            /*
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
             _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
+            */
             //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
             //string prova = "aaa";
             //_textorder.Text = prova.ToString();   

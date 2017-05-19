@@ -5,12 +5,12 @@ namespace fez_spider
 {
     class Product
     {
-        public int id { get; set; }
+        public Double id { get; set; }
         public string nome { get; set; }
-        public double prezzo { get; set; }
+        public Double prezzo { get; set; }
         public int quantita { get; set; }
 
-        public Product(int i, string n, double p, int q)
+        public Product(Double i, string n, Double p, int q)
         {
             id = i;
             nome = n;

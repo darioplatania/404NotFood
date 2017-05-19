@@ -38,11 +38,11 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBox _textorder;
         private  int qnt; 
-        private  int price;
+        private  Double price;
         private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
-        private  int getid;     
+        private  Double getid;     
         private  string getpizza;
-        private  int getprice;
+        private  Double getprice;
         private  int getqnt;
         private  int row = -1;
         private  int count = 0;
@@ -145,13 +145,13 @@ namespace fez_spider
             _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
 
             /*Create our four columns*/
-            _dataGrid.AddColumn(new DataGridColumn("ID", 40));
+            _dataGrid.AddColumn(new DataGridColumn("ID", 0));
             _dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
             _dataGrid.AddColumn(new DataGridColumn("EUR", 50));
             _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
             
             /*Populate the data grid with random data*/
-            Populate(true);
+            Populate();
 
             /*Add the data grid to the window before rendering it*/
             _menu.AddChild(_dataGrid);            
@@ -175,17 +175,30 @@ namespace fez_spider
         }
 
         /*Populate Grid function*/
-        void Populate(bool invalidate)
+        void Populate()
         {
-            /*Add items with data*/
-            for (int i = 0; i < 7; i++)
-            {
-                /*DataGridItems must contain an object array whose length matches the number of columns.*/
-                _dataGrid.AddItem(new DataGridItem(new object[4] { i, "Margherita" + i, i,qnt }));
-            }
+            Debug.Print("Populating...");
 
-            if (invalidate)
-                _dataGrid.Invalidate();
+            String url = "http://192.168.1.75:8080/food/webapi/food";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+            Stream stream = res.GetResponseStream();
+            StreamReader sr = new StreamReader(stream);
+
+            string json = sr.ReadToEnd();
+            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+            for (int i = 0; i < al.Count; i++)
+            {
+                Hashtable ht = al[i] as Hashtable;
+
+                /*DataGridItems must contain an object array whose length matches the number of columns.*/
+                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+            }
+            _dataGrid.Invalidate();
+
+
         }
 
         /*DataGrid TapCellEvent*/
@@ -203,11 +216,11 @@ namespace fez_spider
                 /*mem row index*/
                 row = args.RowIndex;
                 /*select id row*/
-                getid = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(0);
+                getid = Double.Parse(_dataGrid.GetRowData(args.RowIndex).GetValue(0).ToString());
                 /*select name row*/
                 getpizza = (string)_dataGrid.GetRowData(args.RowIndex).GetValue(1);
                 /*select price row*/
-                getprice = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(2);
+                getprice = Double.Parse(_dataGrid.GetRowData(args.RowIndex).GetValue(2).ToString());
                 /*select qnt row*/
                 getqnt = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(3);
                 Debug.Print("QNT tapcell: " + getqnt);                
@@ -228,12 +241,7 @@ namespace fez_spider
             _dataGrid.ScrollDown(1);
             _dataGrid.Invalidate();
         }
-
-        /*Fill_btn TapEvent*/
-        void fillBtn_TapEvent(object sender)
-        {
-            Populate(true);
-        }
+        
 
         /*Pay_btn TapEvent*/
         void _ordBtn_PressEvent(object sender)

@@ -38,7 +38,7 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
-        private GHI.Glide.UI.TextBox _textorder;
+        private GHI.Glide.UI.TextBox _textorder;        
         private  int qnt; 
         private  Double price;
         private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -50,9 +50,12 @@ namespace fez_spider
         private  int count = 0;
         private  int exist = 0;
         private  int aux = 0;
+        private  int flagmdf = 0;    
         byte[] result = new byte[65536];
-        ArrayList payment = new ArrayList();       
+        ArrayList payment = new ArrayList();
+        String url = "http://192.168.100.1:8080/food/webapi/food";
         
+
 
 
         /*This method is run when the mainboard is powered up or reset*/
@@ -83,6 +86,7 @@ namespace fez_spider
          * *************/
         void first_step()
         {
+            flagmdf = 0;
             Glide.FitToScreen = true;
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));          
 
@@ -112,19 +116,13 @@ namespace fez_spider
             _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
             _qntCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("qntCounter");
-            _errMsg   = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
-
-            /*Setup the button controls*/
-
-            /*
-            GHI.Glide.UI.Button fillBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("fillBtn");
-            fillBtn.TapEvent += new OnTap(fillBtn_TapEvent);
-            */
-
-            /*create button*/
+            _errMsg   = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");            
 
             _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
-            _ordBtn.Enabled = false;
+            if (flagmdf == 0)
+                _ordBtn.Enabled = false;
+            else
+                _ordBtn.Enabled = true;
             _menu.Invalidate();
             _ordBtn.PressEvent += _ordBtn_PressEvent;
 
@@ -133,12 +131,10 @@ namespace fez_spider
             _menu.Invalidate();
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
 
-            _ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
-            _ingBtn.Visible = false;
-            _menu.Invalidate();
-            _ingBtn.PressEvent += ingBtn_PressEvent;
-            
-            //GHI.Glide.UI.Button continueBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("continueBtn");
+            //_ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
+            //_ingBtn.Visible = false;
+            //_menu.Invalidate();
+            //_ingBtn.PressEvent += ingBtn_PressEvent;      
             
             /*Setup the dataGrid reference*/
             _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
@@ -180,25 +176,45 @@ namespace fez_spider
         void Populate()
         {
             Debug.Print("Populating...");
-
-            String url = "http://192.168.100.1:8080/food/webapi/food";
+                        
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             Stream stream = res.GetResponseStream();
             StreamReader sr = new StreamReader(stream);
-
             string json = sr.ReadToEnd();
             ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
 
+            /*populating iniziale*/
             for (int i = 0; i < al.Count; i++)
             {
                 Hashtable ht = al[i] as Hashtable;
-
-                /*DataGridItems must contain an object array whose length matches the number of columns.*/
                 _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
             }
             _dataGrid.Invalidate();
+
+            /*se l'utente deve modificare l'ordine'*/
+            if (flagmdf == 1)
+            {               
+                _pCounter.Text = price.ToString();
+                _qntCounter.Text = qnt.ToString();
+                int qnt_appoggio = qnt;
+                
+                _dataGrid.Clear();
+                _menu.Invalidate();
+                _dataGrid.Invalidate();
+
+                for (int i = 0; i < al.Count; i++)
+                { 
+                Hashtable ht = al[i] as Hashtable;
+                qnt = 0;
+                foreach (Product p in payment)
+                    if (p.id == Double.Parse(ht["id"].ToString()))
+                        qnt = p.quantita;                   
+                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+                }               
+                _dataGrid.Invalidate();                
+                qnt = qnt_appoggio;
+            }            
 
 
         }
@@ -211,8 +227,8 @@ namespace fez_spider
             if (data != null)
             {
                 /*enable ingredients button*/
-                _ingBtn.Visible = true;               
-                _menu.Invalidate();                                
+                //_ingBtn.Visible = true;               
+                //_menu.Invalidate();                                
 
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
                 /*mem row index*/
@@ -245,7 +261,7 @@ namespace fez_spider
         }
         
 
-        /*Pay_btn TapEvent*/
+        /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender) {
 
             string id_ordine = "1";
@@ -288,6 +304,10 @@ namespace fez_spider
             _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
             _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
 
+            _annullaBtn.TapEvent += _annullaBtn_TapEvent;
+            _mdfBtn.TapEvent += _mdfBtn_TapEvent;
+            _payBtn.TapEvent += _payBtn_TapEvent;
+
             //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
             //string prova = "aaa";
             // _textorder.Text = prova.ToString();
@@ -300,6 +320,57 @@ namespace fez_spider
              <TextBox Name="textorder" X="20" Y="10" Width="250" Height="150" Alpha="255" TextAlign="Left" Font="4" FontColor="000000"/>
 	         <Button Name="paytBtn" X="110" Y="202" Width="100" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
              */
+        }
+
+        /*void mdfMenu()
+        {
+            Debug.Print("Modified...");
+
+            _pCounter.Text = price.ToString();
+            _qntCounter.Text = qnt.ToString();
+            _menu.Invalidate();
+
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+            Stream stream = res.GetResponseStream();
+            StreamReader sr = new StreamReader(stream);
+            string json = sr.ReadToEnd();
+            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+            for (int i = 0; i < al.Count; i++)
+            {
+                /*DataGridItems must contain an object array whose length matches the number of columns.
+                Hashtable ht = al[i] as Hashtable;               
+                
+                    foreach (Product p in payment)
+                        if (p.id == Double.Parse(ht["id"].ToString()))
+                            qnt = p.quantita;
+                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));               
+            }
+            _dataGrid.Invalidate();
+        }*/
+
+        /*apre pagina per il pagamento*/
+        private void _payBtn_TapEvent(object sender)
+        {           
+            
+        }
+
+        /*modifica ordine prima di pagare*/
+        private void _mdfBtn_TapEvent(object sender)
+        {
+            flagmdf = 1;
+            initMenu();
+        }
+
+        /*chiamata quando annullo tutto l'ordine prima di pagare e torna all'inizio*/
+        private void _annullaBtn_TapEvent(object sender)
+        {
+            getqnt = 0;//set qnt to 0            
+            price = 0;//set total price to 0     
+            qnt = 0;//set total qnt to 0            
+            payment.Clear();
+            first_step();
         }
 
         /*Delete_btn TapEvent*/

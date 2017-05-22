@@ -1,8 +1,8 @@
 <Glide>
   <Window Name="ordina" Width="320" Height="240" BackColor="FFFFFF">	
-   <Button Name="annullaBtn" X="10" Y="202" Width="80" Height="32" Alpha="255" Text="Annulla" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>    
-   <Button Name="payBtn" X="120" Y="202" Width="80" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>    
-   <Button Name="mdfBtn" X="230" Y="202" Width="80" Height="32" Alpha="255" Text="Modifica" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>    
+    <Button Name="annullaBtn" X="0" Y="200" Width="90" Height="32" Alpha="255" Text="Annulla" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+    <Button Name="payBtn" X="114" Y="200" Width="90" Height="32" Alpha="255" Text="Pagamento" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+    <Button Name="mdfBtn" X="228" Y="200" Width="90" Height="32" Alpha="255" Text="Modifica" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
   </Window>
 </Glide>
 

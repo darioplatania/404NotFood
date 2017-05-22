@@ -127,7 +127,10 @@ namespace fez_spider
             _ordBtn.PressEvent += _ordBtn_PressEvent;
 
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            _deleteBtn.Enabled = false;
+            if (flagmdf == 0)
+                _deleteBtn.Enabled = false;
+            else
+                _deleteBtn.Enabled = true;
             _menu.Invalidate();
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
 
@@ -264,7 +267,9 @@ namespace fez_spider
         /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender) {
 
-            string id_ordine = "1";
+            var random = new Random(System.DateTime.Now.Millisecond);
+            uint randomNumber = (uint)random.Next();            
+            string id_ordine = randomNumber.ToString();
             string tot = price.ToString();
 
 

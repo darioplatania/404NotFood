@@ -17,6 +17,7 @@ using GHI.Glide;
 using GHI.Glide.Display;
 using GHI.Glide.UI;
 using System.IO;
+using System.Net.Sockets;
 
 
 namespace fez_spider
@@ -459,7 +460,11 @@ namespace fez_spider
             }
             /*Start the server*/           
             WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);
-            //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;                    
+            //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
+
+            /*inizio socket*/
+            SocketClient.StartClient();           
+            /*fine socket*/
 
             while (true)
             {

@@ -179,7 +179,7 @@ namespace fez_spider
         {
             Debug.Print("Populating...");
 
-            String url = "http://192.168.1.75:8080/food/webapi/food";
+            String url = "http://192.168.100.1:8080/food/webapi/food";
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
 
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
@@ -361,46 +361,7 @@ namespace fez_spider
         {
             Debug.Print("Network is up!");
             Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
-
-           /* String url = @"http://192.168.100.1:8080/food/webapi/food";
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-            Stream stream = res.GetResponseStream();
-            StreamReader sr = new StreamReader(stream);
-
-            string json = sr.ReadToEnd();
-            string target = "\\";
-            Debug.Print(target);
-            //for (int i = 0; i < json.Length; i++) {
-
-                //if (json[i] == '"')
-               // {
-                //    target+= "\"";
-              //  }
-             //   else target += json[i];
-            //}
-            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-
-            Debug.Print(json);
-             
-                        
-            //Debug.Print(sr.ReadToEnd());
-            //string json = Json.NETMF.JsonSerializer.SerializeObject(sr.ReadToEnd());
-
-            //dynamic json = new Json.NETMF.JsonSerializer().Deserialize(sr.ReadToEnd());
-
-            //var serializer = new Json.NETMF.JsonSerializer();
-            //dynamic jsonObject = serializer.Deserialize(sr.ReadToEnd());
-
-            //string prova = ((Menu)json).menu[2].name;         
-            //Debug.Print("prova stampa: " + prova);        
-
-
-            //Debug.Print(json);
-
-            //Menu menu = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<Menu>(sr.ReadToEnd());
-            */
+           
         }
 
         /*Ethernet Run Web_Server Function*/

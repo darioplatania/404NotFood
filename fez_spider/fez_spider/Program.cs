@@ -32,6 +32,8 @@ namespace fez_spider
         private GHI.Glide.UI.Button _ingBtn;
         private GHI.Glide.UI.Button _ordBtn;
         private GHI.Glide.UI.Button _payBtn;
+        private GHI.Glide.UI.Button _annullaBtn;
+        private GHI.Glide.UI.Button _mdfBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _qntCounter;
@@ -279,15 +281,21 @@ namespace fez_spider
             // TODO: MANDARE order_as_json al Desktop tramite Socket
             Debug.Print(order_as_json);
 
-            /*load menu*/
-            /*
+            /*load menu*/            
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
+            _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
             _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
-            */
+            _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
+
             //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
             //string prova = "aaa";
-            //_textorder.Text = prova.ToString();   
+            // _textorder.Text = prova.ToString();
+            
+            
+            //displayTE35.SimpleGraphics.DisplayText(prova,font,GT.Color.Black,20,10);
+            //displayTE35.BacklightEnabled = true;
+
             /*
              <TextBox Name="textorder" X="20" Y="10" Width="250" Height="150" Alpha="255" TextAlign="Left" Font="4" FontColor="000000"/>
 	         <Button Name="paytBtn" X="110" Y="202" Width="100" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>

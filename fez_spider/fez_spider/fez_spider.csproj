@@ -137,6 +137,7 @@
   <ItemGroup>
     <None Include="Resources\Ordina.txt" />
     <None Include="Resources\Pagamento.txt" />
+    <None Include="Resources\logo.ico" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

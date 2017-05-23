@@ -21,7 +21,8 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _mainwindow;             
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _ordina;
-        private static GHI.Glide.Display.Window _pagamento;
+        private static GHI.Glide.Display.Window _pagamento;        
+        private GHI.Glide.UI.Image _logo;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
@@ -99,9 +100,16 @@ namespace fez_spider
             /*create button to start*/
            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
             /*press button event*/            
-           _startbtn.PressEvent += Button_PressEvent;           
+           _startbtn.PressEvent += Button_PressEvent;
 
-            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.start), Bitmap.BitmapImageType.Jpeg);
+            //_logo = (GHI.Glide.UI.Image)_mainwindow.GetChildByName("logo");            
+            //_logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Jpeg);
+            //_logo.Invalidate();
+
+           
+
+
+            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Gif);
 
             //displayTE35.SimpleGraphics.DisplayImage(prova, 30, 20);
             //displayTE35.BacklightEnabled = true;

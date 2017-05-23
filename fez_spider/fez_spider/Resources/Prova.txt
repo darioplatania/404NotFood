@@ -1,5 +1,7 @@
 <Glide>
-  <Window Name="window" Width="320" Height="240" BackColor="3B5998">
-    <TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="WELCOME" TextAlign="Center" Font="4" FontColor="FFFFFF"/>
-	<Button Name="startbtn" X="110" Y="104" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/></Window>
+  <Window Name="window" Width="320" Height="240" BackColor="e77575">
+    <TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="404NotFood" TextAlign="Center" Font="4" FontColor="414141"/>
+	<Button Name="startbtn" X="110" Y="150" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Image Name="logo" X="142" Y="100" Width="32" Height="32" Alpha="255"/>
+  </Window>
 </Glide>

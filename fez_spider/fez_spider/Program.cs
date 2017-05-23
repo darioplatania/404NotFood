@@ -52,10 +52,19 @@ namespace fez_spider
         private  int exist = 0;
         private  int aux = 0;
         private  int flagmdf = 0;    
+        private  string json;
         byte[] result = new byte[65536];
+
         ArrayList payment = new ArrayList();
         String url = "http://192.168.100.1:8080/food/webapi/food";
+        HttpWebRequest req;
+        HttpWebResponse res;
+        Stream stream;
+        StreamReader sr;
+        ArrayList al;
         
+        
+
 
 
 
@@ -181,12 +190,14 @@ namespace fez_spider
         {
             Debug.Print("Populating...");
                         
+            /*
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
             Stream stream = res.GetResponseStream();
             StreamReader sr = new StreamReader(stream);
             string json = sr.ReadToEnd();
             ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+            */
 
             /*populating iniziale*/
             for (int i = 0; i < al.Count; i++)
@@ -461,6 +472,16 @@ namespace fez_spider
             /*Start the server*/           
             WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);
             //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
+
+            /*inizio get menu*/
+            Debug.Print("GET MENU");
+            req = (HttpWebRequest)WebRequest.Create(url);
+            res = (HttpWebResponse)req.GetResponse();
+            stream = res.GetResponseStream();
+            sr = new StreamReader(stream);
+            json = sr.ReadToEnd();
+            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+            /*fine get menu*/
 
             /*inizio socket*/
             //SocketClient.StartClient();           

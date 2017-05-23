@@ -463,7 +463,7 @@ namespace fez_spider
             //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
 
             /*inizio socket*/
-            SocketClient.StartClient();           
+            //SocketClient.StartClient();           
             /*fine socket*/
 
             while (true)

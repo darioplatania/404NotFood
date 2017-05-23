@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using Microsoft.SPOT;
 using System;
 using System.Net;
+using System.Text;
 
 namespace fez_spider
 {
@@ -24,22 +25,20 @@ namespace fez_spider
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, 4096);
 
                 // Create a TCP/IP  socket.  
-                Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect the socket to the remote endpoint. Catch any errors.  
                 try {
-                
+                                       
+                    socket.Connect(remoteEP);
 
-                   
-                    sender.Connect(remoteEP);
-
-                    Debug.Print("Socket connected to {0}" + sender.RemoteEndPoint.ToString());
+                    Debug.Print("Socket connected to " + socket.RemoteEndPoint.ToString());
 
                     // Encode the data string into a byte array.  
-                    // byte[] msg = Encoding.ASCII.GetBytes("This is a test<EOF>");
+                    byte[] msg = Encoding.UTF8.GetBytes("NEW_ORDER");
 
-                    // Send the data through the socket.  
-                    //int bytesSent = sender.Send(msg);
+                    // Send the data through the socket.                      
+                    int bytesSent = socket.Send(msg);                   
 
                     // Receive the response from the remote device.  
                     //int bytesRec = sender.Receive(bytes);
@@ -48,7 +47,7 @@ namespace fez_spider
 
                     // Release the socket.  
                     //sender.Shutdown(SocketShutdown.Both);
-                    sender.Close();
+                    //sender.Close();
 
                 }
                 catch (ArgumentNullException ane)

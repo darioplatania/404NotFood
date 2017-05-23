@@ -21,8 +21,7 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _mainwindow;             
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _ordina;
-        private static GHI.Glide.Display.Window _pagamento;        
-        private GHI.Glide.UI.Image _logo;
+        private static GHI.Glide.Display.Window _pagamento;       
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
@@ -81,7 +80,7 @@ namespace fez_spider
          * FUNCTION 
          * *************/
         void first_step()
-        {
+        {            
             flagmdf = 0;
 
             /*button plus(input 4)*/
@@ -100,15 +99,11 @@ namespace fez_spider
             /*create button to start*/
            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
             /*press button event*/            
-           _startbtn.PressEvent += Button_PressEvent;
+           _startbtn.PressEvent += Button_PressEvent;           
 
             //_logo = (GHI.Glide.UI.Image)_mainwindow.GetChildByName("logo");            
             //_logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Jpeg);
             //_logo.Invalidate();
-
-           
-
-
             //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Gif);
 
             //displayTE35.SimpleGraphics.DisplayImage(prova, 30, 20);
@@ -119,6 +114,10 @@ namespace fez_spider
         {
             
             Debug.Print("Init Menu!");
+
+            /*inizio socket*/
+            SocketClient.StartClient();
+            /*fine socket*/
 
             /*load menu*/
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
@@ -455,11 +454,7 @@ namespace fez_spider
             sr = new StreamReader(stream);
             json = sr.ReadToEnd();
             al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-            /*fine get menu*/
-
-            /*inizio socket*/
-            //SocketClient.StartClient();           
-            /*fine socket*/
+            /*fine get menu*/            
 
             while (true)
             {

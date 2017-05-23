@@ -4,20 +4,13 @@ using System.Collections;
 using System.Threading;
 using System.Net;
 using Microsoft.SPOT;
-using Microsoft.SPOT.Presentation;
-using Microsoft.SPOT.Presentation.Controls;
-using Microsoft.SPOT.Presentation.Media;
-using Microsoft.SPOT.Presentation.Shapes;
-using Microsoft.SPOT.Touch;
-
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using GHI.Glide;
-using GHI.Glide.Display;
 using GHI.Glide.UI;
 using System.IO;
-using System.Net.Sockets;
+
 
 
 namespace fez_spider
@@ -36,7 +29,9 @@ namespace fez_spider
         private GHI.Glide.UI.Button _annullaBtn;
         private GHI.Glide.UI.Button _mdfBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
+        private GHI.Glide.UI.DataGrid _gridOrdine;
         private GHI.Glide.UI.TextBlock _pCounter;
+        private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBox _textorder;        
@@ -79,16 +74,10 @@ namespace fez_spider
             //ethernetJ11D.UseStaticIP("")
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;                                     
-            new Thread(RunWebServer).Start();           
+            new Thread(RunWebServer).Start();
 
             /*welcome into display*/
             first_step();
-            /*button plus(input 4)*/
-            plus.ButtonPressed += Plus_ButtonPressed;
-            plus.TurnLedOff();
-            /*button minus(input 5)*/
-            minus.ButtonPressed += Minus_ButtonPressed;
-            minus.TurnLedOff();
         }      
 
         /****************
@@ -97,6 +86,14 @@ namespace fez_spider
         void first_step()
         {
             flagmdf = 0;
+
+            /*button plus(input 4)*/
+            plus.ButtonPressed += Plus_ButtonPressed;
+            plus.TurnLedOff();
+            /*button minus(input 5)*/
+            minus.ButtonPressed += Minus_ButtonPressed;
+            minus.TurnLedOff();
+
             Glide.FitToScreen = true;
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));          
 
@@ -106,7 +103,7 @@ namespace fez_spider
             /*create button to start*/
            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
             /*press button event*/            
-           _startbtn.PressEvent += Button_PressEvent;
+           _startbtn.PressEvent += Button_PressEvent;           
 
             //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.start), Bitmap.BitmapImageType.Jpeg);
 
@@ -188,16 +185,7 @@ namespace fez_spider
         /*Populate Grid function*/
         void Populate()
         {
-            Debug.Print("Populating...");
-                        
-            /*
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-            Stream stream = res.GetResponseStream();
-            StreamReader sr = new StreamReader(stream);
-            string json = sr.ReadToEnd();
-            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-            */
+            Debug.Print("Populating...");          
 
             /*populating iniziale*/
             for (int i = 0; i < al.Count; i++)
@@ -317,19 +305,37 @@ namespace fez_spider
             /*load menu*/            
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
+            _gridOrdine = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("gridOrdine");
             _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
             _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
             _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
+            _pfinal = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("pFinal");
 
             _annullaBtn.TapEvent += _annullaBtn_TapEvent;
             _mdfBtn.TapEvent += _mdfBtn_TapEvent;
             _payBtn.TapEvent += _payBtn_TapEvent;
 
+            /*Setup the dataGrid reference*/
+            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");          
+
+            /*Create our four columns*/            
+            _gridOrdine.AddColumn(new DataGridColumn("PIZZA", 125));
+            _gridOrdine.AddColumn(new DataGridColumn("PREZZO", 80));
+            _gridOrdine.AddColumn(new DataGridColumn("QNT", 50));
+
+            foreach (Product p in payment)
+                _gridOrdine.AddItem(new DataGridItem(new object[3] {p.nome,p.prezzo,p.quantita }));
+
+            _pfinal.Text = price.ToString();
+
+            _ordina.Invalidate();
+            _gridOrdine.Invalidate();
+
             //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
             //string prova = "aaa";
             // _textorder.Text = prova.ToString();
-            
-            
+
+
             //displayTE35.SimpleGraphics.DisplayText(prova,font,GT.Color.Black,20,10);
             //displayTE35.BacklightEnabled = true;
 
@@ -337,35 +343,7 @@ namespace fez_spider
              <TextBox Name="textorder" X="20" Y="10" Width="250" Height="150" Alpha="255" TextAlign="Left" Font="4" FontColor="000000"/>
 	         <Button Name="paytBtn" X="110" Y="202" Width="100" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
              */
-        }
-
-        /*void mdfMenu()
-        {
-            Debug.Print("Modified...");
-
-            _pCounter.Text = price.ToString();
-            _qntCounter.Text = qnt.ToString();
-            _menu.Invalidate();
-
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-            Stream stream = res.GetResponseStream();
-            StreamReader sr = new StreamReader(stream);
-            string json = sr.ReadToEnd();
-            ArrayList al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-
-            for (int i = 0; i < al.Count; i++)
-            {
-                /*DataGridItems must contain an object array whose length matches the number of columns.
-                Hashtable ht = al[i] as Hashtable;               
-                
-                    foreach (Product p in payment)
-                        if (p.id == Double.Parse(ht["id"].ToString()))
-                            qnt = p.quantita;
-                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));               
-            }
-            _dataGrid.Invalidate();
-        }*/
+        }       
 
         /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)

@@ -1,0 +1,5 @@
+<Glide Version="1.0.7">
+  <Window Name="pagamento" Width="320" Height="240" BackColor="FFFFFF">    
+    <TextBlock Name="paypal" X="130" Y="5" Width="100" Height="32" Alpha="255" Text="PayPal" TextAlign="Left" TextVerticalAlign="Top" Font="4" FontColor="0" BackColor="000000" ShowBackColor="False"/>
+  </Window>
+</Glide>

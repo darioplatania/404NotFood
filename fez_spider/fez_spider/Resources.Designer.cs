@@ -36,6 +36,7 @@ namespace fez_spider
         [System.SerializableAttribute()]
         internal enum StringResources : short
         {
+            Pagamento = -6655,
             Window = -5489,
             Menu = -2554,
             Ordina = 6285,

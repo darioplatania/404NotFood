@@ -21,6 +21,7 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _mainwindow;             
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _ordina;
+        private static GHI.Glide.Display.Window _pagamento;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
@@ -34,7 +35,7 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
-        private GHI.Glide.UI.TextBox _textorder;        
+        private GHI.Glide.UI.TextBlock _paypal;       
         private  int qnt; 
         private  Double price;
         private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -57,11 +58,6 @@ namespace fez_spider
         Stream stream;
         StreamReader sr;
         ArrayList al;
-        
-        
-
-
-
 
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
@@ -302,7 +298,7 @@ namespace fez_spider
             // TODO: MANDARE order_as_json al Desktop tramite Socket
             Debug.Print(order_as_json);
 
-            /*load menu*/            
+            /*load ordina*/            
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
             _gridOrdine = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("gridOrdine");
@@ -329,26 +325,18 @@ namespace fez_spider
             _pfinal.Text = price.ToString();
 
             _ordina.Invalidate();
-            _gridOrdine.Invalidate();
-
-            //_textorder = (GHI.Glide.UI.TextBox)_ordina.GetChildByName("textorder");
-            //string prova = "aaa";
-            // _textorder.Text = prova.ToString();
-
-
-            //displayTE35.SimpleGraphics.DisplayText(prova,font,GT.Color.Black,20,10);
-            //displayTE35.BacklightEnabled = true;
-
-            /*
-             <TextBox Name="textorder" X="20" Y="10" Width="250" Height="150" Alpha="255" TextAlign="Left" Font="4" FontColor="000000"/>
-	         <Button Name="paytBtn" X="110" Y="202" Width="100" Height="32" Alpha="255" Text="Paga" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-             */
+            _gridOrdine.Invalidate();            
         }       
 
         /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)
-        {           
+        {
+            /*load pagamento*/
+            _pagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Pagamento));
+            Glide.MainWindow = _pagamento;                      
             
+            _paypal = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("paypal");           
+            _pagamento.Invalidate();
         }
 
         /*modifica ordine prima di pagare*/

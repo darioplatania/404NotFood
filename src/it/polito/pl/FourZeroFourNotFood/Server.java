@@ -130,24 +130,33 @@ class ClientRunnable implements Runnable{
 			
 			while(!isEnded){
 				
-				System.out.println("Waiting for Payment from: "+hostname);
+				System.out.println("Waiting for PAYMENT | UPDATE_ORDER | CANCEL_ORDER");
 				
 				switch(in.readLine()){
 				
 					case MSG_PAYMENT:
+						System.out.println("Waiting for Payment from: "+hostname);
 						if(PaymentWrapper.handlePayment(in.readLine(),order))
 							isEnded=true;
 						
 						break;
 					case MSG_UPDATE_ORDER:
+						System.out.println("Waiting for UPDATED_ORDER from: "+hostname);
 						Order current_order = getOrderFromJson(in.readLine());
 						
 						if(current_order.getid().equals(order.getid()))
 							this.db.add(current_order);
 						else
 							LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, "Cannot update different order ids received from "+hostname);
+						
+						//UPDATE GUI
+						updateGUIWithNewOrder(current_order);
+						
 						break;
 				
+						
+						
+						
 					case MSG_CANCEL_ORDER:
 						final String id_to_remove = order.getId();
 						this.db.remove(id_to_remove);
@@ -160,12 +169,20 @@ class ClientRunnable implements Runnable{
 								MainWindow.getOrderItems().remove(id_to_remove);
 								LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Order "+id_to_remove+" canceled from "+hostname);
 							
-								if(MainWindow.selected_id.equals(id_to_remove))
+								if(MainWindow.selected_id.equals(id_to_remove)){
 									MainWindow.getMenuTable().removeAll();
-							
+									MainWindow.selected_id = "";
+								}
+								
+								
+								
+								
 							}
 							
+							
+							
 						});
+						
 						
 						
 						isEnded=true;
@@ -178,6 +195,7 @@ class ClientRunnable implements Runnable{
 				}
 			}
 			
+			socket.close();
 	
 		} catch (IOException|JsonSyntaxException e) {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" from: "+hostname);
@@ -220,6 +238,7 @@ class ClientRunnable implements Runnable{
 				 
 				 TableItem new_item = new TableItem(MainWindow.getTable(), SWT.NONE);
 				 new_item.setText(new String[] { id,menu,price,paid,"Received" });
+				 
 				 MainWindow.getOrderItems().putIfAbsent(id, new_item);
 				 
 			 }

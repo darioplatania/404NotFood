@@ -1,19 +1,14 @@
 package it.polito.pl.FourZeroFourNotFood;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.paypal.api.payments.Address;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.CreditCard;
-import com.paypal.api.payments.Details;
 import com.paypal.api.payments.FundingInstrument;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;

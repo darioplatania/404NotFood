@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.custom.CLabel;
@@ -25,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 
 public class MainWindow {
@@ -91,6 +94,8 @@ public class MainWindow {
 		shell.setLayout(new GridLayout());
 		shell.setText(title);
 		
+		
+		
 		CLabel icon_lbl = new CLabel(shell,SWT.NONE);
 		icon_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		icon_lbl.setLayoutData(new GridData(SWT.CENTER,SWT.TOP,false,false));
@@ -99,10 +104,6 @@ public class MainWindow {
 		icon_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 	    icon_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
 		
-		
-		
-	    
-	    
 		Label orders_lbl = new Label(shell,SWT.NONE); 
 		orders_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 	    orders_lbl.setFont(SWTResourceManager.getFont(".SF NS Text", 23, SWT.NORMAL));
@@ -258,8 +259,14 @@ public class MainWindow {
 	            	
 	            	Order order = OrderDB.getInstance().get(id);
 		            
-		            for(OrderedFood of:order.getFoods())
+	            	
+	            	
+		            for(OrderedFood of:order.getFoods()){
+		            
+		            	
 		            	new TableItem(menu_table,SWT.NONE).setText(new String[]{of.getFood().getName(),of.getQuantity()+"",of.getFood().getPrice()*of.getQuantity()+" €"});
+		            
+		            }	
 		            new TableItem(menu_table,SWT.NONE).setText(new String[]{"Total","",order.getPrice()+" €"});
 		        		
 	            }

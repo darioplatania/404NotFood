@@ -13,6 +13,7 @@ namespace fez_spider
         {
             // Data buffer for incoming data.  
             byte[] bytes = new byte[1024];
+            
 
             // Connect to a remote device.  
             try
@@ -34,12 +35,12 @@ namespace fez_spider
 
                     Debug.Print("Socket connected to " + socket.RemoteEndPoint.ToString());
 
-                    // Encode the data string into a byte array.  
+                    // Encode the data string into a byte array.                      
                     byte[] msg = Encoding.UTF8.GetBytes("NEW_ORDER");
 
                     // Send the data through the socket.                      
-                    int bytesSent = socket.Send(msg);                   
-
+                    int bytesSent = socket.Send(msg);
+                    
                     // Receive the response from the remote device.  
                     //int bytesRec = sender.Receive(bytes);
                     //Console.WriteLine("Echoed test = {0}",

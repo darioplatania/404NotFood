@@ -116,7 +116,7 @@ namespace fez_spider
             Debug.Print("Init Menu!");
 
             /*inizio socket*/
-            SocketClient.StartClient();
+            SocketClient.StartClient();            
             /*fine socket*/
 
             /*load menu*/

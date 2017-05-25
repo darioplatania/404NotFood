@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GTM.GHIElectronics.LEDStrip</name>
+    </assembly>
+    <members>
+        <member name="T:Gadgeteer.Modules.GHIElectronics.LEDStrip">
+            <summary>An LEDStrip module for Microsoft .NET Gadgeteer</summary>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.#ctor(System.Int32)">
+            <summary>Constructor</summary>
+            <param name="socketNumber">The socket that this module is plugged in to.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.TurnLedOn(System.Int32)">
+            <summary>Turns the specified LED on.</summary>
+            <param name="led">The LED to turn on.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.TurnLedOff(System.Int32)">
+            <summary>Turns the specified LED off.</summary>
+            <param name="led">The LED to turn off.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.SetLed(System.Int32,System.Boolean)">
+            <summary>Sets the given LED to the given state.</summary>
+            <param name="led">The LED to change to set.</param>
+            <param name="state">The new LED state.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.SetBitmask(System.UInt32)">
+            <summary>Sets the LEDs on the module to the corresponding bit in the mask.</summary>
+            <param name="mask">The bit mask to set the LEDs to.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.TurnAllLedsOn">
+            <summary>Turns on all of the LEDs.</summary>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.TurnAllLedsOff">
+            <summary>Turns off all of the LEDs.</summary>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.SetLeds(System.Int32)">
+            <summary>Turns all of the LEDs on up until, but not including, the LED numbered by endIndex. The rest are turned off.</summary>
+            <param name="endIndex">The LED to stop before.</param>
+        </member>
+        <member name="M:Gadgeteer.Modules.GHIElectronics.LEDStrip.SetPercentage(System.Double)">
+            <summary>Turns on the LedCount * percentage LEDs starting at LED 0.</summary>
+            <param name="percentage">The amount of LEDs to turn on.</param>
+        </member>
+        <member name="P:Gadgeteer.Modules.GHIElectronics.LEDStrip.LedCount">
+            <summary>The number of LEDs on the module.</summary>
+        </member>
+        <member name="P:Gadgeteer.Modules.GHIElectronics.LEDStrip.Item(System.Int32)">
+            <summary>The state of the given LED.</summary>
+            <param name="index">The LED whose state to get or set.</param>
+            <returns>Whether or not the LED is on or off.</returns>
+        </member>
+    </members>
+</doc>

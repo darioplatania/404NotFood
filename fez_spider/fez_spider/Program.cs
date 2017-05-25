@@ -10,6 +10,7 @@ using GTM = Gadgeteer.Modules;
 using GHI.Glide;
 using GHI.Glide.UI;
 using System.IO;
+using System.Text;
 
 
 
@@ -17,11 +18,11 @@ namespace fez_spider
 {
     public partial class Program
     {
-        
-        private static GHI.Glide.Display.Window _mainwindow;             
+
+        private static GHI.Glide.Display.Window _mainwindow;
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _ordina;
-        private static GHI.Glide.Display.Window _pagamento;       
+        private static GHI.Glide.Display.Window _pagamento;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ingBtn;
@@ -35,24 +36,42 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
-        private GHI.Glide.UI.TextBlock _paypal;       
-        private  int qnt; 
-        private  Double price;
-        private  static Font font = Resources.GetFont(Resources.FontResources.NinaB);
-        private  Double getid;     
-        private  string getpizza;
-        private  Double getprice;
-        private  int getqnt;
-        private  int row = -1;
-        private  int count = 0;
-        private  int exist = 0;
-        private  int aux = 0;
-        private  int flagmdf = 0;    
-        private  string json;
+        private GHI.Glide.UI.TextBlock _paypal;
+        private int qnt;
+        private Double price;
+        private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
+        private Double getid;
+        private string getpizza;
+        private Double getprice;
+        private int getqnt;
+        private int row = -1;
+        private int count = 0;
+        private int exist = 0;
+        private int aux = 0;
+        private int flagmdf = 0;
+        private string json;
         byte[] result = new byte[65536];
 
+
+        private static string pendingOrderId = null;
+
+        /* Socket Variables */
+        private const String HOST = "192.168.1.9";
+        private const int PORT = 4096;
+        private SocketClient sockWrap = null;
+
+
+        private const String NEW_ORDER      = "NEW_ORDER\r\n";
+        private const String PAYMENT        = "PAYMENT\r\n";
+        private const string CLOSE          = "CLOSE\r\n";
+        private const string CANCEL_ORDER   = "CANCEL_ORDER\r\n";
+        private const string UPDATE_ORDER   = "UPDATE_ORDER\r\n";
+
+
+
         ArrayList payment = new ArrayList();
-        String url = "http://192.168.100.1:8080/food/webapi/food";
+        //String url = "http://192.168.100.1:8080/food/webapi/food";
+        String url = "http://404notfood.sloppy.zone/food/webapi/food";
         HttpWebRequest req;
         HttpWebResponse res;
         Stream stream;
@@ -115,9 +134,19 @@ namespace fez_spider
             
             Debug.Print("Init Menu!");
 
-            /*inizio socket*/
-            SocketClient.StartClient();            
-            /*fine socket*/
+            if (flagmdf != 1)
+            {
+
+                /*inizio socket*/
+
+                if (sockWrap == null)
+                    sockWrap = new SocketClient();
+
+                sockWrap.Connect(HOST, PORT);
+                /*fine socket*/
+
+
+            }
 
             /*load menu*/
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
@@ -189,15 +218,7 @@ namespace fez_spider
         void Populate()
         {
             Debug.Print("Populating...");          
-
-            /*populating iniziale*/
-            for (int i = 0; i < al.Count; i++)
-            {
-                Hashtable ht = al[i] as Hashtable;
-                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
-            }
-            _dataGrid.Invalidate();
-
+            
             /*se l'utente deve modificare l'ordine'*/
             if (flagmdf == 1)
             {               
@@ -220,6 +241,18 @@ namespace fez_spider
                 }               
                 _dataGrid.Invalidate();                
                 qnt = qnt_appoggio;
+            }else
+            {
+
+                //FIRST TIME 
+
+                /*populating iniziale*/
+                for (int i = 0; i < al.Count; i++)
+                {
+                    Hashtable ht = al[i] as Hashtable;
+                    _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+                }
+                _dataGrid.Invalidate();
             }            
 
 
@@ -268,14 +301,27 @@ namespace fez_spider
         
 
         /*ordBtn TapEvent*/
+
+
+
         void _ordBtn_PressEvent(object sender) {
 
-            var random = new Random(System.DateTime.Now.Millisecond);
-            uint randomNumber = (uint)random.Next();            
-            string id_ordine = randomNumber.ToString();
+            string id_ordine;
+            
+
+            if (pendingOrderId != null)
+                id_ordine = pendingOrderId;
+            else
+            {
+                var random = new Random(System.DateTime.Now.Millisecond);
+                uint randomNumber = (uint)random.Next();
+                id_ordine = randomNumber.ToString();
+            }
+
+
+            
+            
             string tot = price.ToString();
-
-
             Hashtable order = new Hashtable();
             order.Add("id", id_ordine);
             order.Add("price", tot);
@@ -300,12 +346,30 @@ namespace fez_spider
 
             order.Add("foods", foods);
 
+            pendingOrderId = id_ordine;
+
             string order_as_json = Json.NETMF.JsonSerializer.SerializeObject(order);
 
             // TODO: MANDARE order_as_json al Desktop tramite Socket
             Debug.Print(order_as_json);
 
-            /*load ordina*/            
+            if (sockWrap != null)
+            {
+
+                byte[] msg;
+                if(flagmdf==0)
+                    msg = Encoding.UTF8.GetBytes(NEW_ORDER);
+                else
+                    msg = Encoding.UTF8.GetBytes(UPDATE_ORDER);
+
+                sockWrap.Socket.Send(msg);
+                msg = Encoding.UTF8.GetBytes(order_as_json + "\r\n");
+                sockWrap.Socket.Send(msg);
+
+            }
+
+
+            /*load ordina*/
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
             _gridOrdine = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("gridOrdine");
@@ -338,6 +402,12 @@ namespace fez_spider
         /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)
         {
+            if (sockWrap != null)
+            {
+                byte[] msg = Encoding.UTF8.GetBytes(PAYMENT);
+                sockWrap.Socket.Send(msg);
+            }
+
             /*load pagamento*/
             _pagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Pagamento));
             Glide.MainWindow = _pagamento;                      
@@ -360,7 +430,16 @@ namespace fez_spider
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0            
             payment.Clear();
+
+            byte[] msg = Encoding.UTF8.GetBytes(CANCEL_ORDER);
+            sockWrap.Socket.Send(msg);
+            sockWrap.Socket.Close();
+            sockWrap = null;
+
             first_step();
+
+            
+
         }
 
         /*Delete_btn TapEvent*/
@@ -481,7 +560,7 @@ namespace fez_spider
          * CALLBACK 
          * *************/
         private void Button_PressEvent(object sender)
-        {           
+        {
             initMenu(); 
         }
        

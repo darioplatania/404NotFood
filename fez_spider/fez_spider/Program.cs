@@ -40,7 +40,7 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
-        private GHI.Glide.UI.TextBlock _paypal;
+        private GHI.Glide.UI.TextBlock _paypal;        
         private int qnt;
         private Double price;
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -53,7 +53,7 @@ namespace fez_spider
         private int exist = 0;
         private int aux = 0;
         private int flagmdf = 0;
-        private int flagstart = 0;
+        private int flagstart = 0;        
         private string json;
         byte[] result = new byte[65536];
 
@@ -133,9 +133,9 @@ namespace fez_spider
 
             _startbtn.Enabled = true;
             _mainwindow.Invalidate();  
-                     
-            /*press button event*/            
-           _startbtn.PressEvent += Button_PressEvent;           
+                        
+            /*press button event*/ 
+            _startbtn.PressEvent += Button_PressEvent;
 
             //_logo = (GHI.Glide.UI.Image)_mainwindow.GetChildByName("logo");            
             //_logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Jpeg);
@@ -426,9 +426,9 @@ namespace fez_spider
             _pagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Pagamento));
             Glide.MainWindow = _pagamento;                      
             
-            _paypal = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("paypal");           
-            _pagamento.Invalidate();
-        }
+            _paypal = (GHI.Glide.UI.TextBlock)_pagamento.GetChildByName("paypal");            
+            _pagamento.Invalidate();           
+        }        
 
         /*modifica ordine prima di pagare*/
         private void _mdfBtn_TapEvent(object sender)
@@ -480,7 +480,7 @@ namespace fez_spider
             getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0 
-            row = -1;           
+            row = -1;                
             payment.Clear();
 
             byte[] msg = Encoding.UTF8.GetBytes(CANCEL_ORDER);

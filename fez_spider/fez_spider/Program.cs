@@ -30,9 +30,13 @@ namespace fez_spider
         private GHI.Glide.UI.Button _payBtn;
         private GHI.Glide.UI.Button _annullaBtn;
         private GHI.Glide.UI.Button _mdfBtn;
+        private GHI.Glide.UI.Button _siBtn;
+        private GHI.Glide.UI.Button _noBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.DataGrid _gridOrdine;
         private GHI.Glide.UI.TextBlock _pCounter;
+        private GHI.Glide.UI.TextBlock _msgord1;
+        private GHI.Glide.UI.TextBlock _msgord2;
         private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
@@ -119,7 +123,7 @@ namespace fez_spider
 
             /*create button to start*/
            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
-           while((ethernetJ11D.IsNetworkUp == false) && (flagstart == 0))
+           while((ethernetJ11D.IsNetworkUp == false) && (flagstart != 1))
             {
                 _startbtn.Enabled = false;
                 _mainwindow.Invalidate();
@@ -371,31 +375,41 @@ namespace fez_spider
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
             Glide.MainWindow = _ordina;
             _gridOrdine = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("gridOrdine");
-            _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
-            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
-            _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
             _pfinal = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("pFinal");
 
-            _annullaBtn.TapEvent += _annullaBtn_TapEvent;
-            _mdfBtn.TapEvent += _mdfBtn_TapEvent;
-            _payBtn.TapEvent += _payBtn_TapEvent;
-
             /*Setup the dataGrid reference*/
-            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");          
+            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
 
-            /*Create our four columns*/            
+            /*Create our four columns*/
             _gridOrdine.AddColumn(new DataGridColumn("PIZZA", 125));
             _gridOrdine.AddColumn(new DataGridColumn("PREZZO", 80));
             _gridOrdine.AddColumn(new DataGridColumn("QNT", 50));
 
             foreach (Product p in payment)
-                _gridOrdine.AddItem(new DataGridItem(new object[3] {p.nome,p.prezzo,p.quantita }));
+                _gridOrdine.AddItem(new DataGridItem(new object[3] { p.nome, p.prezzo, p.quantita }));
 
             _pfinal.Text = price.ToString();
+                                    
+            _gridOrdine.Invalidate();
+                 
 
+            _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
+            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
+            _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
+            _siBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("siBtn");
+            _noBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("noBtn");
+            _msgord1 = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("msgord1");
+            _msgord2 = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("msgord2");
+
+            _msgord2.Visible = false;
             _ordina.Invalidate();
-            _gridOrdine.Invalidate();            
-        }       
+
+            _annullaBtn.TapEvent += _annullaBtn_TapEvent;
+            _mdfBtn.TapEvent += _mdfBtn_TapEvent;
+            _payBtn.TapEvent += _payBtn_TapEvent;
+            _siBtn.TapEvent += _siBtn_TapEvent;
+            _noBtn.TapEvent += _noBtn_TapEvent;           
+        }        
 
         /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)
@@ -424,6 +438,40 @@ namespace fez_spider
         /*chiamata quando annullo tutto l'ordine prima di pagare e torna all'inizio*/
         private void _annullaBtn_TapEvent(object sender)
         {
+            _gridOrdine.Visible = false;
+            _annullaBtn.Visible = false;
+            _payBtn.Visible = false;
+            _mdfBtn.Visible = false;
+            _msgord1.Visible = false;
+            _pfinal.Visible = false;
+
+            _msgord2.Visible = true;
+            _siBtn.Visible = true;
+            _noBtn.Visible = true;
+
+            _ordina.Invalidate();
+        }
+
+        /*pulsante no annulla ordine*/
+        private void _noBtn_TapEvent(object sender)
+        {
+            _gridOrdine.Visible = true;
+            _msgord1.Visible = true;
+            _pfinal.Visible = true;
+            _annullaBtn.Visible = true;
+            _payBtn.Visible = true;
+            _mdfBtn.Visible = true;
+
+            _msgord2.Visible = false;
+            _siBtn.Visible = false;
+            _noBtn.Visible = false;
+
+            _ordina.Invalidate();
+        }
+
+        /*pulsante si annulla ordine*/
+        private void _siBtn_TapEvent(object sender)
+        {
             getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0            
@@ -435,7 +483,6 @@ namespace fez_spider
             sockWrap = null;
 
             first_step();
-
         }
 
         /*Delete_btn TapEvent*/

@@ -94,7 +94,11 @@ namespace fez_spider
             ethernetJ11D.UseThisNetworkInterface();
             //ethernetJ11D.UseStaticIP("")
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
-            ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;                                     
+            ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
+
+            plus.ButtonPressed += Plus_ButtonPressed;
+            minus.ButtonPressed += Minus_ButtonPressed;
+
             new Thread(RunWebServer).Start();
 
             /*welcome into display*/
@@ -108,11 +112,9 @@ namespace fez_spider
         {            
             flagmdf = 0;
 
-            /*button plus(input 4)*/
-            plus.ButtonPressed += Plus_ButtonPressed;
+            /*button plus(input 4)*/            
             plus.TurnLedOff();
-            /*button minus(input 5)*/
-            minus.ButtonPressed += Minus_ButtonPressed;
+            /*button minus(input 5)*/           
             minus.TurnLedOff();
 
             Glide.FitToScreen = true;
@@ -472,9 +474,13 @@ namespace fez_spider
         /*pulsante si annulla ordine*/
         private void _siBtn_TapEvent(object sender)
         {
+            getid = 0;//set getid to 0
+            getpizza = null;//set getpizza null
+            getprice = 0;//set getprice to 0
             getqnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
-            qnt = 0;//set total qnt to 0            
+            qnt = 0;//set total qnt to 0 
+            row = -1;           
             payment.Clear();
 
             byte[] msg = Encoding.UTF8.GetBytes(CANCEL_ORDER);

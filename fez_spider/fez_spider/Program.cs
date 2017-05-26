@@ -65,20 +65,20 @@ namespace fez_spider
 
         private const String NEW_ORDER      = "NEW_ORDER\r\n";
         private const String PAYMENT        = "PAYMENT\r\n";
-        private const string CLOSE          = "CLOSE\r\n";
-        private const string CANCEL_ORDER   = "CANCEL_ORDER\r\n";
-        private const string UPDATE_ORDER   = "UPDATE_ORDER\r\n";
+        private const String CLOSE          = "CLOSE\r\n";
+        private const String CANCEL_ORDER   = "CANCEL_ORDER\r\n";
+        private const String UPDATE_ORDER   = "UPDATE_ORDER\r\n";
 
 
 
-        ArrayList payment = new ArrayList();
-        String url = "http://192.168.100.1:8080/food/webapi/food";
-        //String url = "http://404notfood.sloppy.zone/food/webapi/food";
+        private ArrayList payment = new ArrayList();
+        private String url = "http://192.168.100.1:8080/food/webapi/food";
+        //private String url = "http://404notfood.sloppy.zone/food/webapi/food";
         HttpWebRequest req;
-        HttpWebResponse res;
-        Stream stream;
-        StreamReader sr;
-        ArrayList al;
+        private HttpWebResponse res;
+        private Stream stream;
+        private StreamReader sr;
+        private ArrayList al;
 
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
@@ -155,8 +155,6 @@ namespace fez_spider
 
                 sockWrap.Connect(HOST, PORT);
                 /*fine socket*/
-
-
             }
 
             /*load menu*/
@@ -252,11 +250,9 @@ namespace fez_spider
                 }               
                 _dataGrid.Invalidate();                
                 qnt = qnt_appoggio;
-            }else
-            {
-
-                //FIRST TIME 
-
+            }
+            else
+            {               
                 /*populating iniziale*/
                 for (int i = 0; i < al.Count; i++)
                 {
@@ -264,9 +260,7 @@ namespace fez_spider
                     _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
                 }
                 _dataGrid.Invalidate();
-            }            
-
-
+            }
         }
 
         /*DataGrid TapCellEvent*/
@@ -312,13 +306,10 @@ namespace fez_spider
         
 
         /*ordBtn TapEvent*/
+        void _ordBtn_PressEvent(object sender)
+        {
 
-
-
-        void _ordBtn_PressEvent(object sender) {
-
-            string id_ordine;
-            
+            string id_ordine;            
 
             if (pendingOrderId != null)
                 id_ordine = pendingOrderId;
@@ -327,10 +318,7 @@ namespace fez_spider
                 var random = new Random(System.DateTime.Now.Millisecond);
                 uint randomNumber = (uint)random.Next();
                 id_ordine = randomNumber.ToString();
-            }
-
-
-            
+            }          
             
             string tot = price.ToString();
             Hashtable order = new Hashtable();
@@ -378,7 +366,6 @@ namespace fez_spider
                 sockWrap.Socket.Send(msg);
 
             }
-
 
             /*load ordina*/
             _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
@@ -449,8 +436,6 @@ namespace fez_spider
 
             first_step();
 
-            
-
         }
 
         /*Delete_btn TapEvent*/
@@ -476,13 +461,13 @@ namespace fez_spider
             Debug.Print("Annullato tutto! Qnt: " + qnt + " Prezzo: " + price);
         }
         
-        /*Ingredients_btn TapEvent*/
+        /*Ingredients_btn TapEvent
         void ingBtn_PressEvent(object sender)
         {
             ingredients();
         }        
 
-        /*Ingredients Function display*/
+        /*Ingredients Function display
         void ingredients()
         {
             switch(getpizza)
@@ -507,7 +492,7 @@ namespace fez_spider
                     Debug.Print("default case");
                     break;
             }
-        }
+        }*/
 
         /*Ethernet Network_Down Function*/
         void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
@@ -531,7 +516,6 @@ namespace fez_spider
             al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
             flagstart = 1;
             /*fine get menu*/
-
         }
 
         /*Ethernet Run Web_Server Function*/

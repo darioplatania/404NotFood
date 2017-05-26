@@ -49,6 +49,7 @@ namespace fez_spider
         private int exist = 0;
         private int aux = 0;
         private int flagmdf = 0;
+        private int flagstart = 0;
         private string json;
         byte[] result = new byte[65536];
 
@@ -56,7 +57,8 @@ namespace fez_spider
         private static string pendingOrderId = null;
 
         /* Socket Variables */
-        private const String HOST = "192.168.1.9";
+        //private const String HOST = "192.168.1.9";
+        private const String HOST = "192.168.100.1";
         private const int PORT = 4096;
         private SocketClient sockWrap = null;
 
@@ -70,8 +72,8 @@ namespace fez_spider
 
 
         ArrayList payment = new ArrayList();
-        //String url = "http://192.168.100.1:8080/food/webapi/food";
-        String url = "http://404notfood.sloppy.zone/food/webapi/food";
+        String url = "http://192.168.100.1:8080/food/webapi/food";
+        //String url = "http://404notfood.sloppy.zone/food/webapi/food";
         HttpWebRequest req;
         HttpWebResponse res;
         Stream stream;
@@ -116,7 +118,16 @@ namespace fez_spider
             Glide.MainWindow = _mainwindow;
 
             /*create button to start*/
-           _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");            
+           _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
+           while((ethernetJ11D.IsNetworkUp == false) && (flagstart == 0))
+            {
+                _startbtn.Enabled = false;
+                _mainwindow.Invalidate();
+            }
+
+            _startbtn.Enabled = true;
+            _mainwindow.Invalidate();  
+                     
             /*press button event*/            
            _startbtn.PressEvent += Button_PressEvent;           
 
@@ -509,7 +520,18 @@ namespace fez_spider
         {
             Debug.Print("Network is up!");
             Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
-           
+
+            /*inizio get menu*/
+            Debug.Print("GET MENU");
+            req = (HttpWebRequest)WebRequest.Create(url);
+            res = (HttpWebResponse)req.GetResponse();
+            stream = res.GetResponseStream();
+            sr = new StreamReader(stream);
+            json = sr.ReadToEnd();
+            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+            flagstart = 1;
+            /*fine get menu*/
+
         }
 
         /*Ethernet Run Web_Server Function*/
@@ -522,39 +544,14 @@ namespace fez_spider
                 Thread.Sleep(1000);
             }
             /*Start the server*/           
-            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);
-            //WebServer.DefaultEvent.WebEventReceived += DefaultEvent_WebEventReceived;
-
-            /*inizio get menu*/
-            Debug.Print("GET MENU");
-            req = (HttpWebRequest)WebRequest.Create(url);
-            res = (HttpWebResponse)req.GetResponse();
-            stream = res.GetResponseStream();
-            sr = new StreamReader(stream);
-            json = sr.ReadToEnd();
-            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-            /*fine get menu*/            
+            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);                                  
 
             while (true)
             {
                 Thread.Sleep(1000);
             }
         }
-
-        
-        /*void DefaultEvent_WebEventReceived(string path, WebServer.HttpMethod method, Responder responder)
-        {
-            if (method == WebServer.HttpMethod.GET)
-            {
-                Debug.Print("Get Riuscita");
-
-                string content = "<html><body><h1>Hello World!!</h1></body></html>";
-                byte[] bytes = new System.Text.UTF8Encoding().GetBytes(content);
-                responder.Respond(bytes, "text/html");                       
-            }
-            else
-                Debug.Print("Get Non Riuscita");
-        }*/
+              
 
         /****************
          * CALLBACK 

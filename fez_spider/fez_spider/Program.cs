@@ -100,20 +100,54 @@ namespace fez_spider
             /* References */
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
             _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
+            _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
+            _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
+            _qntCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("qntCounter");
+            _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
+            _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
+            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
 
-
+           
 
             /* Register Events to Buttons */
 
-            _startbtn.PressEvent += Start_PressEvent;
-
+            
             plus.ButtonPressed += Plus_ButtonPressed;
             minus.ButtonPressed += Minus_ButtonPressed;
+            _ordBtn.PressEvent += _ordBtn_PressEvent;
+            _deleteBtn.PressEvent += deleteBtn_PressEvent;
+            _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
+
+
+            /* Initializing Menu Page */
+
+            /*Setup the dataGrid reference*/
+
+
+            // Listen for tap cell events.
+
+
+            /*Create our four columns*/
+            _dataGrid.AddColumn(new DataGridColumn("ID", 0));
+            _dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
+            _dataGrid.AddColumn(new DataGridColumn("PREZZO", 80));
+            _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
+            _menu.AddChild(_dataGrid);
+            _dataGrid.Render();
 
             /* Shut down Light on Buttons */
             plus.TurnLedOff();
             minus.TurnLedOff();
+
+            /*
+             * Configure Joypad
+             * Create a timer & run method timer_trick when thr timer ticks (for joystick)
+             */
+            GT.Timer timer = new GT.Timer(200);
+            timer.Tick += Timer_Tick;
+            timer.Start();
 
             /*Ethernet Configuration*/
             ethernetJ11D.UseThisNetworkInterface();
@@ -122,7 +156,6 @@ namespace fez_spider
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
 
             /* Initialize Glide */
-
             GlideTouch.Initialize();
             Glide.FitToScreen = true;
 
@@ -140,8 +173,6 @@ namespace fez_spider
 
 
             initFezSettings();
-
-
             if(_mainwindow!=null)
                 loadGUI(_mainwindow);
 
@@ -150,70 +181,24 @@ namespace fez_spider
         #region Functions
      
 
-        void initMenu(ArrayList al)
+        void initMenu(ArrayList menu)
         {
             
             Debug.Print("Init Menu!");
 
+          
 
-            /*load menu*/
-            //_menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            for (int i = 0; i < menu.Count; i++)
+            {
+                Hashtable ht = menu[i] as Hashtable;
+                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+            }
+
+            _dataGrid.Invalidate();
+            
             Glide.MainWindow = _menu;
 
-            _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
-            _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
-            _qntCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("qntCounter");
-            _errMsg   = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");            
 
-            _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
-            if (flagmdf == 0)
-                _ordBtn.Enabled = false;
-            else
-                _ordBtn.Enabled = true;
-
-            _menu.Invalidate();
-            _ordBtn.PressEvent += _ordBtn_PressEvent;
-
-            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-
-            if (flagmdf == 0)
-                _deleteBtn.Enabled = false;
-            else
-                _deleteBtn.Enabled = true;
-
-            _menu.Invalidate();
-
-            _deleteBtn.PressEvent += deleteBtn_PressEvent;
-
-            //_ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
-            //_ingBtn.Visible = false;
-            //_menu.Invalidate();
-            //_ingBtn.PressEvent += ingBtn_PressEvent;      
-            
-            /*Setup the dataGrid reference*/
-            _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
-                        
-            // Listen for tap cell events.
-            _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
-
-            /*Create our four columns*/
-            _dataGrid.AddColumn(new DataGridColumn("ID", 0));
-            _dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
-            _dataGrid.AddColumn(new DataGridColumn("PREZZO", 80));
-            _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
-            
-            /*Populate the data grid with random data*/
-            Populate(al);
-
-            /*Add the data grid to the window before rendering it*/
-            _menu.AddChild(_dataGrid);            
-            _dataGrid.Render();            
-
-            /*Create a timer & run method timer_trick when thr timer ticks (for joystick)*/
-            GT.Timer timer = new GT.Timer(200);
-            timer.Tick += Timer_Tick; 
-            timer.Start(); 
-            
         }
 
         /*Timer_Tick function for joystick*/
@@ -517,12 +502,14 @@ namespace fez_spider
         void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
             Debug.Print("Network is down!");
+            _startbtn.PressEvent -= Start_PressEvent;
         }
 
         /*Ethernet Network_Up Function*/
         void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
 
+            _startbtn.PressEvent += Start_PressEvent;
 
 
         }

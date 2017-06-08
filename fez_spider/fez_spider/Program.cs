@@ -113,10 +113,16 @@ namespace fez_spider
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
             _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
 
+            /* Adding Service Logo */
+            Image _Servicelogo = new Image("service-logo", 255, 0, 0, 320, 100);
+            _mainwindow.AddChild(_Servicelogo);
+            _Servicelogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo_food), Bitmap.BitmapImageType.Jpeg);
+
+
             /* Adding Error Logo */
-            Image _logo = new Image("logo", 1000, 0, 0, displayTE35.Width, displayTE35.Height);
-            _errorWindow.AddChild(_logo);
-            _logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
+            Image _Errorlogo = new Image("error-logo", 1, 0, 0, displayTE35.Width, displayTE35.Height);
+            _errorWindow.AddChild(_Errorlogo);
+            _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
 
             /* Register Events to Buttons */
 

@@ -142,4 +142,7 @@
   <data name="Connection_error" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Connection_error.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
+  <data name="logo_food" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\logo-food.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
 </root>

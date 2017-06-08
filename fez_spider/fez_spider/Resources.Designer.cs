@@ -41,6 +41,7 @@ namespace fez_spider
         internal enum BinaryResources : short
         {
             Connection_error = -16116,
+            logo_food = -5226,
         }
         [System.SerializableAttribute()]
         internal enum StringResources : short

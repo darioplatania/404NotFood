@@ -142,6 +142,8 @@
     <None Include="Connection_error.png" />
     <None Include="Resources\ConnectionError.bmp" />
     <None Include="Connection_error.jpg" />
+    <None Include="Resources\Logo.jpg" />
+    <None Include="Resources\logo-food.jpg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

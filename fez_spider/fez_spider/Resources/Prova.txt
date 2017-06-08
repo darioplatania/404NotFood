@@ -2,5 +2,6 @@
   <Window Name="window" Width="320" Height="240" BackColor="e77575">
     <TextBlock Name="textBlock" X="110" Y="64" Width="100" Height="32" Alpha="255" Text="404NotFood" TextAlign="Center" Font="4" FontColor="414141"/>
 	<Button Name="startbtn" X="110" Y="150" Width="100" Height="32" Alpha="255" Text="Start" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<TextBlock Name="loading_lbl" X="70" Y="200" Width="200" Height="32" Alpha="255" Text="Loading, Please Wait..." TextAlign="Center" Font="4" FontColor="FFFFFF" Visible="false"/>
   </Window>
 </Glide>

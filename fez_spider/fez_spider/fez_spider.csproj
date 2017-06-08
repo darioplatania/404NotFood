@@ -137,6 +137,11 @@
   <ItemGroup>
     <None Include="Resources\Ordina.txt" />
     <None Include="Resources\Pagamento.txt" />
+    <None Include="Resources\ErrorWindow.txt" />
+    <None Include="Resources\ConnectionError.png" />
+    <None Include="Connection_error.png" />
+    <None Include="Resources\ConnectionError.bmp" />
+    <None Include="Connection_error.jpg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

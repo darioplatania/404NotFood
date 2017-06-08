@@ -136,4 +136,10 @@
   <data name="Pagamento" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Pagamento.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
+  <data name="ErrorWindow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ErrorWindow.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
+  <data name="Connection_error" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Connection_error.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
 </root>

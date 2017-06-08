@@ -20,6 +20,7 @@ namespace fez_spider
     {
 
         private static GHI.Glide.Display.Window _mainwindow;
+        private static GHI.Glide.Display.Window _errorWindow;
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _ordina;
         private static GHI.Glide.Display.Window _pagamento;
@@ -34,6 +35,7 @@ namespace fez_spider
         private GHI.Glide.UI.Button _noBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.DataGrid _gridOrdine;
+        private GHI.Glide.UI.TextBlock _loadingLbl;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _msgord1;
         private GHI.Glide.UI.TextBlock _msgord2;
@@ -99,6 +101,7 @@ namespace fez_spider
 
             /* References */
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
+            _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
             _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
             _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
@@ -108,12 +111,16 @@ namespace fez_spider
             _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
             _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+            _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
 
-           
+            /* Adding Error Logo */
+            Image _logo = new Image("logo", 1000, 0, 0, displayTE35.Width, displayTE35.Height);
+            _errorWindow.AddChild(_logo);
+            _logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
 
             /* Register Events to Buttons */
 
-            
+            _startbtn.PressEvent += Start_PressEvent;
             plus.ButtonPressed += Plus_ButtonPressed;
             minus.ButtonPressed += Minus_ButtonPressed;
             _ordBtn.PressEvent += _ordBtn_PressEvent;
@@ -149,15 +156,19 @@ namespace fez_spider
             timer.Tick += Timer_Tick;
             timer.Start();
 
+
+            /* Initialize Glide */
+            GlideTouch.Initialize();
+            Glide.FitToScreen = true;
+
             /*Ethernet Configuration*/
             ethernetJ11D.UseThisNetworkInterface();
             ethernetJ11D.UseStaticIP(ip_address, subnet, gateway, dns);
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
+            
 
-            /* Initialize Glide */
-            GlideTouch.Initialize();
-            Glide.FitToScreen = true;
+            
 
         }
 
@@ -173,8 +184,7 @@ namespace fez_spider
 
 
             initFezSettings();
-            if(_mainwindow!=null)
-                loadGUI(_mainwindow);
+                
 
         }
 
@@ -186,7 +196,7 @@ namespace fez_spider
             
             Debug.Print("Init Menu!");
 
-          
+          _dataGrid.Clear();
 
             for (int i = 0; i < menu.Count; i++)
             {
@@ -501,17 +511,17 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            Debug.Print("Network is down!");
-            _startbtn.PressEvent -= Start_PressEvent;
+
+
+
+            loadGUI(_errorWindow);
+
         }
 
         /*Ethernet Network_Up Function*/
         void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-
-            _startbtn.PressEvent += Start_PressEvent;
-
-
+            loadGUI(_mainwindow);
         }
 
         /****************
@@ -561,9 +571,12 @@ namespace fez_spider
         private void Start_PressEvent(object sender)
         {
 
-            /* TODO Service Discovery */
-
             ArrayList menu = new ArrayList();
+
+            _loadingLbl.Visible = true;
+            _mainwindow.Invalidate();
+
+            // TODO Service Discovery
 
             sockWrap = connectToDesktop(HOST, PORT);
             if (sockWrap != null)
@@ -575,8 +588,10 @@ namespace fez_spider
                 }
             }
 
+            _loadingLbl.Visible = false;
 
             
+
         }
 
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)

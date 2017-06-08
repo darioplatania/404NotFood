@@ -1,0 +1,4 @@
+<Glide>
+  <Window Name="error_window" Width="320" Height="240" BackColor="F5F5F5">
+  </Window>
+</Glide>

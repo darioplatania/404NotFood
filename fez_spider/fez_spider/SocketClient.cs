@@ -6,28 +6,34 @@ using System.Text;
 
 namespace fez_spider
 {
+
+    #region SocketClient definition
     public class SocketClient
     {
 
         private Socket _socket;
         public Socket Socket {
-                                get { return _socket; }
-                                private set { }
+            get { return _socket; }
+            private set { if (value != _socket) _socket = value; }
          } 
         
 
+        /// <summary>
+        /// Initialize Socket
+        /// </summary>
         public SocketClient()
         {
-            // Establish the remote endpoint for the socket.  
-            // This example uses port 11000 on the local computer.  
-
-            
             // Create a TCP/IP  socket.  
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
         }
 
 
+
+        /// <summary>
+        /// Connect to remote socket
+        /// </summary>
+        /// <param name="HOSTNAME"></param>
+        /// <param name="PORT"></param>
         public void Connect(String HOSTNAME, int PORT)
         {
             // Connect the socket to the remote endpoint. Catch any errors.  
@@ -40,17 +46,7 @@ namespace fez_spider
                 _socket.Connect(remoteEP);
 
                 Debug.Print("Socket connected to " + _socket.RemoteEndPoint.ToString());
-
-                    
-                // Receive the response from the remote device.  
-                //int bytesRec = sender.Receive(bytes);
-                //Console.WriteLine("Echoed test = {0}",
-                //Encoding.ASCII.GetString(bytes, 0, bytesRec));
-
-                // Release the socket.  
-                //sender.Shutdown(SocketShutdown.Both);
-                //sender.Close();
-
+                
             }catch (Exception e)
             {
                 Debug.Print("Unexpected exception : {0}" + e.ToString());
@@ -59,5 +55,8 @@ namespace fez_spider
             
 
         }
+
+
     }
+    #endregion
 }

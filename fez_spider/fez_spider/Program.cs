@@ -61,7 +61,7 @@ namespace fez_spider
         private static string pendingOrderId = null;
 
         /* Socket Variables */
-        private const String HOST = "192.168.1.9";
+        private const String HOST = "192.168.1.23";
         //private const String HOST = "192.168.100.1";
         private const int PORT = 4096;
         private SocketClient sockWrap = null;
@@ -82,91 +82,82 @@ namespace fez_spider
         private HttpWebResponse res;
         private Stream stream;
         private StreamReader sr;
-        private ArrayList al;
 
-        /*This method is run when the mainboard is powered up or reset*/
-        void ProgramStarted()
+
+
+        private static String ip_address = "192.168.1.253";
+        private static String subnet     = "255.255.255.0";
+        private static String gateway    = "192.168.1.1";
+        private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
+
+
+        private void initFezSettings()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
-            Debug.Print("Program Started");           
+            Debug.Print("Program Started");
 
-            /*Ethernet Configuration*/
-            ethernetJ11D.UseThisNetworkInterface();
-            //ethernetJ11D.UseStaticIP("")
-            ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
-            ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
+
+            /* References */
+            _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
+            _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
+
+
+
+            /* Register Events to Buttons */
+
+            _startbtn.PressEvent += Start_PressEvent;
 
             plus.ButtonPressed += Plus_ButtonPressed;
             minus.ButtonPressed += Minus_ButtonPressed;
 
-            new Thread(RunWebServer).Start();
-
-            /*welcome into display*/
-            first_step();
-        }
-
-
-
-        /****************
-         * FUNCTION 
-         * *************/
-        void first_step()
-        {            
-            flagmdf = 0;
-
-            /*button plus(input 4)*/            
+            /* Shut down Light on Buttons */
             plus.TurnLedOff();
-            /*button minus(input 5)*/           
             minus.TurnLedOff();
 
+            /*Ethernet Configuration*/
+            ethernetJ11D.UseThisNetworkInterface();
+            ethernetJ11D.UseStaticIP(ip_address, subnet, gateway, dns);
+            ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
+            ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
+
+            /* Initialize Glide */
+
+            GlideTouch.Initialize();
             Glide.FitToScreen = true;
-            _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));          
 
-            GlideTouch.Initialize();           
-            Glide.MainWindow = _mainwindow;
-
-            /*create button to start*/
-           _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
-           while((ethernetJ11D.IsNetworkUp == false) && (flagstart != 1))
-            {
-                _startbtn.Enabled = false;
-                _mainwindow.Invalidate();
-            }
-
-            _startbtn.Enabled = true;
-            _mainwindow.Invalidate();  
-                        
-            /*press button event*/ 
-            _startbtn.PressEvent += Button_PressEvent;
-
-            //_logo = (GHI.Glide.UI.Image)_mainwindow.GetChildByName("logo");            
-            //_logo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Jpeg);
-            //_logo.Invalidate();
-            //Bitmap prova = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Gif);
-
-            //displayTE35.SimpleGraphics.DisplayImage(prova, 30, 20);
-            //displayTE35.BacklightEnabled = true;
         }
 
-        void initMenu()
+        private void loadGUI(GHI.Glide.Display.Window window)
+        {
+            Glide.MainWindow = window;
+        }
+
+
+        /*This method is run when the mainboard is powered up or reset*/
+        void ProgramStarted()
+        {
+
+
+            initFezSettings();
+
+
+            if(_mainwindow!=null)
+                loadGUI(_mainwindow);
+
+        }
+
+        #region Functions
+     
+
+        void initMenu(ArrayList al)
         {
             
             Debug.Print("Init Menu!");
 
-            if (flagmdf != 1)
-            {
-
-                /*inizio socket*/
-
-                if (sockWrap == null)
-                    sockWrap = new SocketClient();
-
-                sockWrap.Connect(HOST, PORT);
-                /*fine socket*/
-            }
 
             /*load menu*/
-            _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            //_menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
             Glide.MainWindow = _menu;
 
             _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
@@ -179,15 +170,19 @@ namespace fez_spider
                 _ordBtn.Enabled = false;
             else
                 _ordBtn.Enabled = true;
+
             _menu.Invalidate();
             _ordBtn.PressEvent += _ordBtn_PressEvent;
 
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+
             if (flagmdf == 0)
                 _deleteBtn.Enabled = false;
             else
                 _deleteBtn.Enabled = true;
+
             _menu.Invalidate();
+
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
 
             //_ingBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ingBtn");
@@ -208,7 +203,7 @@ namespace fez_spider
             _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
             
             /*Populate the data grid with random data*/
-            Populate();
+            Populate(al);
 
             /*Add the data grid to the window before rendering it*/
             _menu.AddChild(_dataGrid);            
@@ -232,7 +227,7 @@ namespace fez_spider
         }
 
         /*Populate Grid function*/
-        void Populate()
+        void Populate(ArrayList al)
         {
             Debug.Print("Populating...");          
             
@@ -436,7 +431,7 @@ namespace fez_spider
         private void _mdfBtn_TapEvent(object sender)
         {
             flagmdf = 1;
-            initMenu();
+            //initMenu();
         }
 
         /*chiamata quando annullo tutto l'ordine prima di pagare e torna all'inizio*/
@@ -490,7 +485,8 @@ namespace fez_spider
             sockWrap.Socket.Close();
             sockWrap = null;
 
-            first_step();
+            // TODO FIX HERE
+            //first_step();
         }
 
         /*Delete_btn TapEvent*/
@@ -516,39 +512,7 @@ namespace fez_spider
             Debug.Print("Annullato tutto! Qnt: " + qnt + " Prezzo: " + price);
         }
         
-        /*Ingredients_btn TapEvent
-        void ingBtn_PressEvent(object sender)
-        {
-            ingredients();
-        }        
-
-        /*Ingredients Function display
-        void ingredients()
-        {
-            switch(getpizza)
-            {
-                case "Margherita0":
-                    Debug.Print("m0");                    
-                    break;
-
-                case "Margherita1":
-                    Debug.Print("m1");
-                    break;
-
-                case "Margherita2":
-                    Debug.Print("m2");
-                    break;
-
-                case "Margherita3":
-                    Debug.Print("m3");
-                    break;
-
-                default:
-                    Debug.Print("default case");
-                    break;
-            }
-        }*/
-
+        // TODO Handle THIS SITUATION
         /*Ethernet Network_Down Function*/
         void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
@@ -558,48 +522,76 @@ namespace fez_spider
         /*Ethernet Network_Up Function*/
         void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            Debug.Print("Network is up!");
-            Debug.Print("My IP is: " + ethernetJ11D.NetworkSettings.IPAddress);
 
-            /*inizio get menu*/
-            Debug.Print("GET MENU");
-            req = (HttpWebRequest)WebRequest.Create(url);
-            res = (HttpWebResponse)req.GetResponse();
-            stream = res.GetResponseStream();
-            sr = new StreamReader(stream);
-            json = sr.ReadToEnd();
-            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-            flagstart = 1;
-            /*fine get menu*/
+
+
         }
-
-        /*Ethernet Run Web_Server Function*/
-        void RunWebServer()
-        {
-            /*Wait for the network...*/
-            while (ethernetJ11D.IsNetworkUp == false)
-            {
-                Debug.Print("Waiting...");
-                Thread.Sleep(1000);
-            }
-            /*Start the server*/           
-            WebServer.StartLocalServer(ethernetJ11D.NetworkSettings.IPAddress, 80);                                  
-
-            while (true)
-            {
-                Thread.Sleep(1000);
-            }
-        }
-              
 
         /****************
          * CALLBACK 
          * *************/
-        private void Button_PressEvent(object sender)
+
+
+        private SocketClient connectToDesktop(String hostname,int port)
         {
-            initMenu(); 
+            SocketClient sockWrap = new SocketClient();
+
+            if (sockWrap == null)
+                return null;
+
+            try
+            {
+                sockWrap.Connect(hostname, port);
+                return sockWrap;
+            }catch(Exception ex){
+                return null;
+            }
+
+           
         }
-       
+
+
+        private ArrayList downloadMenu(String url)
+        {
+            /*inizio get menu*/
+            Debug.Print("GET MENU");
+            ArrayList al = new ArrayList();
+
+            HttpWebRequest  req = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+            Stream stream = res.GetResponseStream();
+            sr = new StreamReader(stream);
+            string json = sr.ReadToEnd();
+            
+            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+
+
+            return al;
+
+        }
+
+        private void Start_PressEvent(object sender)
+        {
+
+            /* TODO Service Discovery */
+
+            ArrayList menu = new ArrayList();
+
+            sockWrap = connectToDesktop(HOST, PORT);
+            if (sockWrap != null)
+            {
+                menu = downloadMenu(url);
+                if (menu != null)
+                {
+                    initMenu(menu);
+                }
+            }
+
+
+            
+        }
+
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
             plus.TurnLedOn();
@@ -745,4 +737,5 @@ namespace fez_spider
         }
 
     }
+    #endregion Functions
 }

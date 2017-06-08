@@ -61,8 +61,8 @@ namespace fez_spider
         private static string pendingOrderId = null;
 
         /* Socket Variables */
-        //private const String HOST = "192.168.1.9";
-        private const String HOST = "192.168.100.1";
+        private const String HOST = "192.168.1.9";
+        //private const String HOST = "192.168.100.1";
         private const int PORT = 4096;
         private SocketClient sockWrap = null;
 
@@ -76,8 +76,8 @@ namespace fez_spider
 
 
         private ArrayList payment = new ArrayList();
-        private String url = "http://192.168.100.1:8080/food/webapi/food";
-        //private String url = "http://404notfood.sloppy.zone/food/webapi/food";
+        //private String url = "http://192.168.100.1:8080/food/webapi/food";
+        private String url = "http://404notfood.sloppy.zone/food/webapi/food";
         HttpWebRequest req;
         private HttpWebResponse res;
         private Stream stream;
@@ -103,7 +103,9 @@ namespace fez_spider
 
             /*welcome into display*/
             first_step();
-        }      
+        }
+
+
 
         /****************
          * FUNCTION 

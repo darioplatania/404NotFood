@@ -15,6 +15,11 @@ import org.eclipse.swt.widgets.TableItem;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 
 
 class ClientRunnable implements Runnable{
@@ -22,10 +27,14 @@ class ClientRunnable implements Runnable{
 	
 	private static final String MSG_ORDER		 = "NEW_ORDER";
 	private static final String MSG_PAYMENT		 = "PAYMENT";
+	private static final String MSG_PAYMENT_P	 = "PAYMENT_PAYPAL";
 	private static final String MSG_CLOSE		 = "CLOSE";
 	private static final String MSG_UPDATE_ORDER = "UPDATE_ORDER";
 	private static final String MSG_CANCEL_ORDER = "CANCEL_ORDER";
+	private static final String MSG_USER_CONFIRM = "CONFIRM";
 	
+	//private static final String URL 			 = "http://404notfood.sloppy.zone/food/webapi/payment/";
+	private static final String URL = "http://localhost:8080/food/webapi/payment/";
 	
 	private OrderDB db;
 	
@@ -130,16 +139,59 @@ class ClientRunnable implements Runnable{
 			
 			while(!isEnded){
 				
-				System.out.println("Waiting for PAYMENT | UPDATE_ORDER | CANCEL_ORDER");
+				System.out.println("Waiting for PAYMENT | PAYMENT_PAYPAL | UPDATE_ORDER | CANCEL_ORDER");
+				PaymentWrapper paymentWrapper = new PaymentWrapper();
 				
 				switch(in.readLine()){
 				
 					case MSG_PAYMENT:
 						System.out.println("Waiting for Payment from: "+hostname);
-						if(PaymentWrapper.handlePayment(in.readLine(),order))
+						if(paymentWrapper.handlePayment(in.readLine(),order))
 							isEnded=true;
 						
 						break;
+						
+					case MSG_PAYMENT_P:
+						System.out.println("Initializing Paypal payment...");
+						String paymentId = null;
+						paymentId = paymentWrapper.handlePaymentPaypal(order);
+						
+						if(paymentId==null)
+							break;
+						
+						// wait for user confirm
+						System.out.println("Waiting for user confirm");
+						if(in.readLine().equalsIgnoreCase(MSG_USER_CONFIRM)){
+							
+							// check server response
+							try{
+								// create the client
+						        System.out.println(URL+paymentId);
+						        Client c = ClientBuilder.newClient();
+						        WebTarget target = c.target(URL+paymentId);
+								Response responseMsg = target.request()
+ 						   							   	     .get();
+								// print response
+								System.out.println(responseMsg.toString());
+								
+								// UPDATE GUI
+								if(responseMsg.getStatus()==204)
+									paymentWrapper.updateGUIOnResult(order.getid(), true);
+								else
+									paymentWrapper.updateGUIOnResult(order.getid(), false);
+
+									
+								isEnded=true;
+							} catch(Exception e){
+								e.printStackTrace();
+								System.out.println("Error while get information from server");
+								paymentWrapper.updateGUIOnResult(order.getid(), false);
+							}
+						}
+						
+						break;
+						
+						
 					case MSG_UPDATE_ORDER:
 						System.out.println("Waiting for UPDATED_ORDER from: "+hostname);
 						Order current_order = getOrderFromJson(in.readLine());

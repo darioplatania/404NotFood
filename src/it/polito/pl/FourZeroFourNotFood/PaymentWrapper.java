@@ -1,6 +1,8 @@
 package it.polito.pl.FourZeroFourNotFood;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.logging.Level;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -9,57 +11,58 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.CreditCard;
+import com.paypal.api.payments.Details;
 import com.paypal.api.payments.FundingInstrument;
+import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payer;
 import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.RedirectUrls;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException; 
 
 class PaymentWrapper {
 
-	public static boolean handlePayment(String cardAsJson,Order order){
-		
-		
-		// Replace these values with your clientId and secret. You can use these to get started right now.
-		String clientId = "Abn0dxjisnKjhpPKzZE2VMC4HRunPCwyw3VtpgEzovZmxKxtljGICyBCyp8Fs_qekr7NbKqfFfGIQUU5";
-		String clientSecret = "ENORQ1sWo1FU1v0nYt63L2zRXvBOd5GriNiaKi86PSRYyuplnySu0XnEIsUpMAFspFzNFseq_tOCWjZE";
-		
-		
-		/*
-		 * 
-		// Set address info
-		//Address billingAddress = new Address();
-		//billingAddress.setCity("Johnstown");
-		//billingAddress.setCountryCode("US");
-		//billingAddress.setLine1("52 N Main ST");
-		//billingAddress.setPostalCode("43210");
-		//billingAddress.setState("OH");
-
+	private static final String clientId = "Abn0dxjisnKjhpPKzZE2VMC4HRunPCwyw3VtpgEzovZmxKxtljGICyBCyp8Fs_qekr7NbKqfFfGIQUU5";
+	private static final String clientSecret = "ENORQ1sWo1FU1v0nYt63L2zRXvBOd5GriNiaKi86PSRYyuplnySu0XnEIsUpMAFspFzNFseq_tOCWjZE";
+	private Amount amount;
+	private Transaction transaction;
+	private RedirectUrls redirectUrls;
+	private ArrayList<Transaction> transactions;
 	
-		// Payment details
-		//Details details = new Details();
-		//details.setShipping("1");
-		//details.setSubtotal("5");
-		//details.setTax("1");
-		// Credit card info
-
-		// Create a Credit Card
+	public void initPayment(Order order){
 		
-		 CreditCard card = new CreditCard()
-		    .setType("visa")
-		    .setNumber("4567516310777851")
-		    .setExpireMonth(11)
-		    .setExpireYear(2018)
-		    .setCvv2("874")
-		    .setFirstName("Joe")
-		    .setLastName("Shopper");
-		   	.setBillingAddress(billingAddress);
-		*
-		*/
+		// Set redirect URLs
+		redirectUrls = new RedirectUrls();
+		redirectUrls.setCancelUrl("http://localhost:8080/food/webapi/payment");
+		redirectUrls.setReturnUrl("http://localhost:8080/food/webapi/payment");
+		
+		// Set total amount
+		amount = new Amount();
+		amount.setCurrency("EUR");
+		amount.setTotal(String.format(Locale.ROOT,"%.02f", order.getPrice()));
+	
+		// Transaction details
+		transaction = new Transaction();
+		transactions = new ArrayList<Transaction>();
+		transaction.setAmount(amount);
+		transaction.setDescription("Payment for Order: "+order.getId());
+		transactions.add(transaction);
+		
+		// Set payment details
+		Details details = new Details();
+		details.setShipping("0");
+		details.setSubtotal(String.format(Locale.ROOT,"%.02f", order.getPrice()));
+		details.setTax("0");
+		
+	}
+	
+	public boolean handlePayment(String cardAsJson,Order order){
+		
+		// Initializing payment
+		initPayment(order);
 		
 		// Parsing data of credit card
-		
 		CreditCard card;
 		Gson gson = new Gson();
 		
@@ -70,24 +73,6 @@ class PaymentWrapper {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" while paying");
 			return false;
 		}
-		
-		// Total amount
-		Amount amount = new Amount();
-		amount.setCurrency("EUR");
-		amount.setTotal(String.format("%.02f", order.getPrice()));
-		
-		//TODO: FIX THIS
-		//amount.setTotal(String.valueOf(order.getPrice()));
-		//amount.setDetails(details);
-	
-		// Transaction details
-		Transaction transaction = new Transaction();
-		transaction.setAmount(amount);
-		transaction.setDescription("Payment for Order: "+order.getId());
-	
-		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-		transactions.add(transaction);
-	
 		
 		// Set funding instrument
 		FundingInstrument fundingInstrument = new FundingInstrument();
@@ -101,8 +86,6 @@ class PaymentWrapper {
 		payer.setFundingInstruments(fundingInstrumentList);
 		payer.setPaymentMethod("credit_card");
 	
-		
-	
 		// Set payment details
 		Payment payment = new Payment();
 		payment.setIntent("sale");
@@ -110,7 +93,6 @@ class PaymentWrapper {
 		payment.setTransactions(transactions);
 		Payment createdPayment = null;
 	
-		
 		
 		try {
 			  // Create payment
@@ -126,15 +108,55 @@ class PaymentWrapper {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, e.getMessage());
 			updateGUIOnResult(order.getId(),false);
 			return false;
-		}
-
-		
-		
+		}	
 		
 	}
 	
 	
-	private static void updateGUIOnResult(final String id,boolean paid){
+	public String handlePaymentPaypal(Order order){
+		
+		initPayment(order);
+		
+		// Set payer details
+		Payer payer = new Payer();
+		payer.setPaymentMethod("paypal");
+		
+		// Add payment details
+		Payment payment = new Payment();
+		payment.setIntent("sale");
+		payment.setPayer(payer);
+		payment.setRedirectUrls(redirectUrls);
+		payment.setTransactions(transactions);
+		Payment createdPayment = null;
+		
+		// Create payment
+		try {
+			// Create payment
+			APIContext apiContext = new APIContext(clientId, clientSecret, "sandbox");
+			createdPayment = payment.create(apiContext);
+
+			Iterator<Links> links = createdPayment.getLinks().iterator();
+			while (links.hasNext()) {
+				Links link = links.next();
+				if (link.getRel().equalsIgnoreCase("approval_url")) {
+					// REDIRECT USER TO link.getHref()	
+					System.out.println(link.getHref());
+					
+					// mi ritorno l'id del pagamento
+					return createdPayment.getId();
+					
+				}	
+			}
+		} catch (PayPalRESTException e) {
+		    System.err.println(e.getDetails());
+		    return null;
+		}
+			
+		return null;
+	}
+	
+	
+	public static void updateGUIOnResult(final String id,boolean paid){
 		  // UPDATE GUI
 		  Display.getDefault().asyncExec(new Runnable() {
 				 public void run() {

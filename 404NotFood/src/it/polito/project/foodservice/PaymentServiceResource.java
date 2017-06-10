@@ -23,7 +23,7 @@ import com.wordnik.swagger.annotations.ApiResponses;
 @Api(value = "/payment", description = "paypal payments")
 public class PaymentServiceResource {
 
-	
+
 	@GET
 	@ApiOperation(value = "redirecting for client")
 	@ApiResponses(value = {
@@ -37,7 +37,7 @@ public class PaymentServiceResource {
 		}catch(SQLException e){
 			throw new ServiceUnavailableException();
 		}
-		
+
 		java.net.URI location = null;
 		try {
 			location = new java.net.URI("../continue_payment.html");
@@ -48,7 +48,7 @@ public class PaymentServiceResource {
 		// redirect user to html page
 	    return Response.temporaryRedirect(location).build();
 	}
-	
+
 	@GET
 	@Path("{id}")
 	@ApiOperation(value = "check payment")
@@ -65,16 +65,16 @@ public class PaymentServiceResource {
 		} catch(SQLException e){
 			throw new ServiceUnavailableException();
 		}
-				
+
 	}
-	
+
 	@GET
-	@Path()
+	@Path("cancel")
 	@ApiOperation(value = "cancel payment")
 	@ApiResponses(value = {
 		@ApiResponse(code = 200, message = "OK")})
 	public Response addPayment() {
-		
+
 		java.net.URI location = null;
 		try {
 			location = new java.net.URI("../cancel_payment.html");
@@ -85,7 +85,7 @@ public class PaymentServiceResource {
 		// redirect user to html page
 	    return Response.temporaryRedirect(location).build();
 	}
-	
-	
-	
+
+
+
 }

@@ -34,7 +34,7 @@ class PaymentWrapper {
 		
 		// Set redirect URLs
 		redirectUrls = new RedirectUrls();
-		redirectUrls.setCancelUrl("http://localhost:8080/food/webapi/payment");
+		redirectUrls.setCancelUrl("http://localhost:8080/food/webapi/cancel");
 		redirectUrls.setReturnUrl("http://localhost:8080/food/webapi/payment");
 		
 		// Set total amount
@@ -139,7 +139,7 @@ class PaymentWrapper {
 			while (links.hasNext()) {
 				Links link = links.next();
 				if (link.getRel().equalsIgnoreCase("approval_url")) {
-					// REDIRECT USER TO link.getHref()	
+					// TODO: REDIRECT USER TO link.getHref()	
 					System.out.println(link.getHref());
 					
 					// mi ritorno l'id del pagamento

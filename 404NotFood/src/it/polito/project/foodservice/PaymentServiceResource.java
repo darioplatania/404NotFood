@@ -68,6 +68,24 @@ public class PaymentServiceResource {
 				
 	}
 	
+	@GET
+	@Path()
+	@ApiOperation(value = "cancel payment")
+	@ApiResponses(value = {
+		@ApiResponse(code = 200, message = "OK")})
+	public Response addPayment() {
+		
+		java.net.URI location = null;
+		try {
+			location = new java.net.URI("../cancel_payment.html");
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// redirect user to html page
+	    return Response.temporaryRedirect(location).build();
+	}
+	
 	
 	
 }

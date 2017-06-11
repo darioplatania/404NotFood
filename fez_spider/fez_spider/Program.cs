@@ -124,8 +124,7 @@ namespace fez_spider
             _dataGrid.Invalidate();
 
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
-            _pCounter.Text = "0.00 EURO";
-
+            
             _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
 
             _ingredients = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("ingredientsLbl");
@@ -153,6 +152,9 @@ namespace fez_spider
             _ordBtn.PressEvent += _ordBtn_PressEvent;
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
             _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
+
+            _siBtn.TapEvent += _siBtn_TapEvent;
+            _noBtn.TapEvent += _noBtn_TapEvent;
 
 
             /* Initializing Menu Page */
@@ -253,6 +255,8 @@ namespace fez_spider
             selected_row = 0;
             updateSelectedValues(selected_row);
             updateIngredientsLabel();
+
+            _pCounter.Text = orders.Total.ToString();
             _dataGrid.SelectedIndex = selected_row;
             _dataGrid.Invalidate();
 
@@ -506,9 +510,7 @@ namespace fez_spider
 
             _annullaBtn.TapEvent += _annullaBtn_TapEvent;
             _mdfBtn.TapEvent += _mdfBtn_TapEvent;
-            _payBtn.TapEvent += _payBtn_TapEvent;
-            _siBtn.TapEvent += _siBtn_TapEvent;
-            _noBtn.TapEvent += _noBtn_TapEvent;           
+            _payBtn.TapEvent += _payBtn_TapEvent; 
         }        
 
         /*apre pagina per il pagamento*/
@@ -539,62 +541,46 @@ namespace fez_spider
         private void _annullaBtn_TapEvent(object sender)
         {
             Glide.MainWindow = _cancel;
-            _cancel.Invalidate();
         }
 
         /*pulsante no annulla ordine*/
         private void _noBtn_TapEvent(object sender)
         {
-            _gridOrdine.Visible = true;
-            _msgord1.Visible = true;
-            _pfinal.Visible = true;
-            _annullaBtn.Visible = true;
-            _payBtn.Visible = true;
-            _mdfBtn.Visible = true;
+            Glide.MainWindow = _menu;
+        }
 
-            _msgord2.Visible = false;
-            _siBtn.Visible = false;
-            _noBtn.Visible = false;
 
-            _ordina.Invalidate();
+        private void ResetStatus()
+        {
+            
+            orders.Clear();
+            orders.Total = 0;
+            orders.Price = 0;
+
+            _ingredients.Text = "";
+            _pCounter.Text = "";
+            
+            _dataGrid.Clear();
+            
         }
 
         /*pulsante si annulla ordine*/
         private void _siBtn_TapEvent(object sender)
         {
-            selected_id = "";//set selected_id to 0
-            selected_name = null;//set selected_name null
-            selected_price = 0;//set selected_price to 0
-            selected_qnt = 0;//set qnt to 0            
-            price = 0;//set total price to 0     
-            qnt = 0;//set total qnt to 0 
-            selected_row = -1;                
-            payment.Clear();
-
-            byte[] msg = Encoding.UTF8.GetBytes(CANCEL_ORDER);
-            sockWrap.Socket.Send(msg);
-            sockWrap.Socket.Close();
-            sockWrap = null;
-
-            // TODO FIX HERE
-            //first_step();
+            ResetStatus();
+            loadGUI(_mainwindow);
         }
 
         /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
         {
-            Glide.MainWindow = _cancel;
-            _cancel.Invalidate();
+            loadGUI(_cancel);
         }
         
-        // TODO Handle THIS SITUATION
         /*Ethernet Network_Down Function*/
         void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-
-
-
-            loadGUI(_errorWindow);
+           loadGUI(_errorWindow);
 
         }
 
@@ -665,7 +651,6 @@ namespace fez_spider
             if (menu != null) {
 
                 
-
                 _startbtn.Enabled = true;
                 _loadingLbl.Visible = false;
 
@@ -699,7 +684,7 @@ namespace fez_spider
                     _dataGrid.SetCellData(3, selected_row, new_qty);
                     _dataGrid.Invalidate();
 
-                    _pCounter.Text = orders.Price.ToString()+" EURO";
+                    _pCounter.Text = orders.Price.ToString();
 
 
                     _menu.Invalidate();
@@ -732,7 +717,7 @@ namespace fez_spider
 
                     _ordBtn.Enabled = true;
 
-                    _pCounter.Text   = orders.Price.ToString()+" EURO";
+                    _pCounter.Text   = orders.Price.ToString();
 
 
                     _dataGrid.SetCellData(3, selected_row, new_qty);

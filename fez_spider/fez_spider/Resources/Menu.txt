@@ -7,7 +7,11 @@
 	
 
 	
-	<TextBlock Name="pCounter" X="90" Y="202" Width="100" Height="32" Alpha="255" Text="0.00 EURO" TextAlign="Center" TextVerticalAlign="Middle" Font="6" FontColor="000000"/>
+	
+	<TextBlock Name="pCounter" X="90" Y="202" Width="50" Height="32" Alpha="255" Text="0.00" TextAlign="Center" TextVerticalAlign="Middle" Font="6" FontColor="000000"/>
+	<TextBlock Name="pLbl" X="140" Y="202" Width="100" Height="32" Alpha="255" Text=" EURO" TextAlign="Center" TextVerticalAlign="Middle" Font="6" FontColor="000000"/>
+	
+
 	<Button Name="deleteBtn" X="5" Y="202" Width="55" Height="32" Alpha="255" Text="X" Font="3" FontColor="e00000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
 	<Button Name="ordBtn" X="260" Y="202" Width="55" Height="32" Alpha="255" Text="V" Font="3" FontColor="12e000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
   </Window>

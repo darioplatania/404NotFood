@@ -1,9 +1,9 @@
 <Glide>
   <Window Name="cancel" Width="320" Height="240" BackColor="F5F5F5">
 	
-	<TextBlock Name="msgord2" X="65" Y="50" Width="180" Height="32" Alpha="255" Text="Desideri annullare l'ordine? " TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
-	<Button Name="siBtn" X="40" Y="100" Width="90" Height="32" Alpha="255" Text="Si" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-	<Button Name="noBtn" X="160" Y="100" Width="90" Height="32" Alpha="255" Text="No" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<TextBlock Name="msgord2" X="0" Y="50" Width="320" Height="32" Alpha="255" Text="Desideri annullare l'ordine? " TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<Button Name="siBtn" X="50" Y="100" Width="90" Height="32" Alpha="255" Text="Si" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="noBtn" X="170" Y="100" Width="90" Height="32" Alpha="255" Text="No" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
     
 
   </Window>

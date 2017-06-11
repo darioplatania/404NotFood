@@ -37,21 +37,29 @@ namespace fez_spider
         public void Connect(String HOSTNAME, int PORT)
         {
             // Connect the socket to the remote endpoint. Catch any errors.  
-            try {
 
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(HOSTNAME);
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
+            
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(HOSTNAME);
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
+
+            Debug.Print(remoteEP.Address.ToString());
+            try
+            {
 
                 _socket.Connect(remoteEP);
 
-                Debug.Print("Socket connected to " + _socket.RemoteEndPoint.ToString());
-                
-            }catch (Exception e)
-            {
-                Debug.Print("Unexpected exception : {0}" + e.ToString());
-            }
 
+            }
+            catch (SocketException se)
+            {
+                Debug.Print("SocketException: " + se.ToString());
+                _socket.Close();
+            }
+          
+     //       Debug.Print("Socket connected to " + _socket.RemoteEndPoint.ToString());
+                
+            
             
 
         }

@@ -51,6 +51,7 @@ namespace fez_spider
             Menu = -2554,
             ErrorWindow = 910,
             Ordina = 6285,
+            Annulla = 18971,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

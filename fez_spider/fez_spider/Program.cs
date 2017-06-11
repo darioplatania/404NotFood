@@ -1,18 +1,15 @@
 ﻿using Gadgeteer.Modules.GHIElectronics;
 using System;
 using System.Collections;
-using System.Threading;
 using System.Net;
 using Microsoft.SPOT;
-using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using GHI.Glide;
 using GHI.Glide.UI;
 using System.IO;
 using System.Text;
-
-
+using System.Net.Sockets;
 
 namespace fez_spider
 {
@@ -22,6 +19,8 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _mainwindow;
         private static GHI.Glide.Display.Window _errorWindow;
         private static GHI.Glide.Display.Window _menu;
+
+        private static GHI.Glide.Display.Window _cancel;
         private static GHI.Glide.Display.Window _ordina;
         private static GHI.Glide.Display.Window _pagamento;
         private GHI.Glide.UI.Button _startbtn;
@@ -40,17 +39,18 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _msgord1;
         private GHI.Glide.UI.TextBlock _msgord2;
         private GHI.Glide.UI.TextBlock _pfinal;
-        private GHI.Glide.UI.TextBlock _qntCounter;
         private GHI.Glide.UI.TextBlock _errMsg;
-        private GHI.Glide.UI.TextBlock _paypal;        
+        private GHI.Glide.UI.TextBlock _ingredients;
+        private GHI.Glide.UI.TextBlock _paypal;   
+             
         private int qnt;
         private Double price;
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
-        private Double getid;
-        private string getpizza;
-        private Double getprice;
-        private int getqnt;
-        private int row = -1;
+        private string selected_id;
+        private string selected_name;
+        private Double selected_price;
+        private int selected_qnt;
+        private int selected_row = 0;
         private int count = 0;
         private int exist = 0;
         private int aux = 0;
@@ -63,11 +63,9 @@ namespace fez_spider
         private static string pendingOrderId = null;
 
         /* Socket Variables */
-        private const String HOST = "192.168.1.23";
-        //private const String HOST = "192.168.100.1";
+        private const String HOST = "192.168.1.70";
         private const int PORT = 4096;
-        private SocketClient sockWrap = null;
-
+        
 
         private const String NEW_ORDER      = "NEW_ORDER\r\n";
         private const String PAYMENT        = "PAYMENT\r\n";
@@ -87,9 +85,15 @@ namespace fez_spider
 
 
 
-        private static String ip_address = "192.168.1.253";
+        /* Added by Melo */
+        private static ArrayList menu;
+        private static Orders orders;
+        private SocketClient sockWrap;
+
+
+        private static String ip_address = "192.168.2.2";
         private static String subnet     = "255.255.255.0";
-        private static String gateway    = "192.168.1.1";
+        private static String gateway    = "192.168.2.1";
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
 
@@ -103,15 +107,31 @@ namespace fez_spider
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            _cancel = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Annulla));
+
             _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
+
             _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
+
+            _siBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("siBtn");
+            _noBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("noBtn");
+
+
+            _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
+
             _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
+            _dataGrid.SelectedIndex = selected_row;
+            _dataGrid.Invalidate();
+
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
-            _qntCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("qntCounter");
+            _pCounter.Text = "0.00 EURO";
+
             _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
+
+            _ingredients = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("ingredientsLbl");
+
             _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-            _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
 
             /* Adding Service Logo */
             Image _Servicelogo = new Image("service-logo", 255, 0, 0, 320, 100);
@@ -120,7 +140,7 @@ namespace fez_spider
 
 
             /* Adding Error Logo */
-            Image _Errorlogo = new Image("error-logo", 1, 0, 0, displayTE35.Width, displayTE35.Height);
+            Image _Errorlogo = new Image("error-logo", 255, 0, 0, displayTE35.Width, displayTE35.Height);
             _errorWindow.AddChild(_Errorlogo);
             _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
 
@@ -129,6 +149,7 @@ namespace fez_spider
             _startbtn.PressEvent += Start_PressEvent;
             plus.ButtonPressed += Plus_ButtonPressed;
             minus.ButtonPressed += Minus_ButtonPressed;
+            _ordBtn.Enabled = false;
             _ordBtn.PressEvent += _ordBtn_PressEvent;
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
             _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
@@ -144,9 +165,10 @@ namespace fez_spider
 
             /*Create our four columns*/
             _dataGrid.AddColumn(new DataGridColumn("ID", 0));
-            _dataGrid.AddColumn(new DataGridColumn("PIZZA", 125));
-            _dataGrid.AddColumn(new DataGridColumn("PREZZO", 80));
-            _dataGrid.AddColumn(new DataGridColumn("QNT", 50));
+            
+            _dataGrid.AddColumn(new DataGridColumn("MEAL", 175));
+            _dataGrid.AddColumn(new DataGridColumn("PRICE", 50));
+            _dataGrid.AddColumn(new DataGridColumn("QTY", 30));
             _menu.AddChild(_dataGrid);
             _dataGrid.Render();
 
@@ -168,16 +190,18 @@ namespace fez_spider
             Glide.FitToScreen = true;
 
             /*Ethernet Configuration*/
-            ethernetJ11D.UseThisNetworkInterface();
+
+            ethernetJ11D.DebugPrintEnabled = true;
             ethernetJ11D.UseStaticIP(ip_address, subnet, gateway, dns);
+            ethernetJ11D.UseThisNetworkInterface();
             ethernetJ11D.NetworkUp += ethernetJ11D_NetworkUp;
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
             
 
-            
+
 
         }
-
+        
         private void loadGUI(GHI.Glide.Display.Window window)
         {
             Glide.MainWindow = window;
@@ -188,35 +212,54 @@ namespace fez_spider
         void ProgramStarted()
         {
 
+            menu = new ArrayList();
+            orders = new Orders();
 
+            
             initFezSettings();
                 
 
         }
 
         #region Functions
-     
 
-        void initMenu(ArrayList menu)
+        void initOrders()
         {
-            
-            Debug.Print("Init Menu!");
-
-          _dataGrid.Clear();
+            if (orders.Size() > 0)
+                orders.Clear();
 
             for (int i = 0; i < menu.Count; i++)
             {
                 Hashtable ht = menu[i] as Hashtable;
-                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+                orders.Add(new Product(ht["id"].ToString(),ht["name"].ToString(),double.Parse(ht["price"].ToString()),ht["ingredients"].ToString()), 0);
+            }
+               
+        }
+
+        void printDatagrid()
+        {
+            _dataGrid.Clear();
+
+            //  _dataGrid.RowCount = orders.Size();
+            _dataGrid.RowCount = 4;
+
+            Product p = null;
+            foreach (Order order in orders.List)
+            {
+                p = order.Product;
+                _dataGrid.AddItem(new DataGridItem(new object[4] { p.id, p.nome, p.prezzo, order.Quantity }));
             }
 
+            selected_row = 0;
+            updateSelectedValues(selected_row);
+            updateIngredientsLabel();
+            _dataGrid.SelectedIndex = selected_row;
             _dataGrid.Invalidate();
-            
-            Glide.MainWindow = _menu;
+
 
 
         }
-
+        
         /*Timer_Tick function for joystick*/
         private void Timer_Tick(GT.Timer timer)
         {
@@ -227,45 +270,47 @@ namespace fez_spider
                 Joystick_Down();
         }
 
-        /*Populate Grid function*/
-        void Populate(ArrayList al)
-        {
-            Debug.Print("Populating...");          
-            
-            /*se l'utente deve modificare l'ordine'*/
-            if (flagmdf == 1)
-            {               
-                _pCounter.Text = price.ToString();
-                _qntCounter.Text = qnt.ToString();
-                int qnt_appoggio = qnt;
-                
-                _dataGrid.Clear();
-                _menu.Invalidate();
-                _dataGrid.Invalidate();
 
-                for (int i = 0; i < al.Count; i++)
-                { 
-                Hashtable ht = al[i] as Hashtable;
-                qnt = 0;
-                foreach (Product p in payment)
-                    if (p.id == Double.Parse(ht["id"].ToString()))
-                        qnt = p.quantita;                   
-                _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
-                }               
-                _dataGrid.Invalidate();                
-                qnt = qnt_appoggio;
-            }
-            else
-            {               
-                /*populating iniziale*/
-                for (int i = 0; i < al.Count; i++)
-                {
-                    Hashtable ht = al[i] as Hashtable;
-                    _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
-                }
-                _dataGrid.Invalidate();
-            }
-        }
+
+        /*Populate Grid function*/
+        //void Populate(ArrayList al)
+        //{
+        //    Debug.Print("Populating...");          
+            
+        //    /*se l'utente deve modificare l'ordine'*/
+        //    if (flagmdf == 1)
+        //    {               
+        //        _pCounter.Text = price.ToString();
+        //        _qntCounter.Text = qnt.ToString();
+        //        int qnt_appoggio = qnt;
+                
+        //        _dataGrid.Clear();
+        //        _menu.Invalidate();
+        //        _dataGrid.Invalidate();
+
+        //        for (int i = 0; i < al.Count; i++)
+        //        { 
+        //        Hashtable ht = al[i] as Hashtable;
+        //        qnt = 0;
+        //        foreach (Product p in payment)
+        //            if (p.id == Double.Parse(ht["id"].ToString()))
+        //                qnt = p.quantita;                   
+        //        _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+        //        }               
+        //        _dataGrid.Invalidate();                
+        //        qnt = qnt_appoggio;
+        //    }
+        //    else
+        //    {               
+        //        /*populating iniziale*/
+        //        for (int i = 0; i < al.Count; i++)
+        //        {
+        //            Hashtable ht = al[i] as Hashtable;
+        //            _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
+        //        }
+        //        _dataGrid.Invalidate();
+        //    }
+        //}
 
         /*DataGrid TapCellEvent*/
         void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
@@ -280,17 +325,49 @@ namespace fez_spider
 
                 GlideUtils.Debug.Print("GetRowData[" + args.RowIndex + "] = ", data);
                 /*mem row index*/
-                row = args.RowIndex;
+                selected_row = args.RowIndex;
                 /*select id row*/
-                getid = Double.Parse(_dataGrid.GetRowData(args.RowIndex).GetValue(0).ToString());
+                selected_id = _dataGrid.GetRowData(args.RowIndex).GetValue(0).ToString();
                 /*select name row*/
-                getpizza = (string)_dataGrid.GetRowData(args.RowIndex).GetValue(1);
+                selected_name = _dataGrid.GetRowData(args.RowIndex).GetValue(1).ToString();
                 /*select price row*/
-                getprice = Double.Parse(_dataGrid.GetRowData(args.RowIndex).GetValue(2).ToString());
+                selected_price = Double.Parse(_dataGrid.GetRowData(args.RowIndex).GetValue(2).ToString());
                 /*select qnt row*/
-                getqnt = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(3);
-                Debug.Print("QNT tapcell: " + getqnt);                
+                selected_qnt = (int)_dataGrid.GetRowData(args.RowIndex).GetValue(3);
+
+
+                updateIngredientsLabel();
+                
+           
             }                   
+
+        }
+
+        void updateIngredientsLabel()
+        {
+            _errMsg.Text = "";
+
+            Product p = orders.GetProduct(selected_id);
+
+            if (p != null)
+                _ingredients.Text = "Ingredients: " + p.ingredients;
+            else
+                Debug.Print("Product at row " + selected_row + " not found");
+
+            _menu.Invalidate();
+        }
+
+        void updateSelectedValues(int selected_row)
+        {
+
+            /*select id row*/
+            selected_id = _dataGrid.GetRowData(selected_row).GetValue(0).ToString();
+            /*select name row*/
+            selected_name = _dataGrid.GetRowData(selected_row).GetValue(1).ToString();
+            /*select price row*/
+            selected_price = Double.Parse(_dataGrid.GetRowData(selected_row).GetValue(2).ToString());
+            /*select qnt row*/
+            selected_qnt = (int)_dataGrid.GetRowData(selected_row).GetValue(3);
 
         }
 
@@ -298,16 +375,41 @@ namespace fez_spider
         void Joystick_Up()
         {
             _dataGrid.ScrollUp(1);
-            _dataGrid.Invalidate();                 
+            selected_row--;
+
+            if (selected_row < 0)
+                selected_row = 0;
+
+            updateSelectedValues(selected_row);
+
+            _dataGrid.SelectedIndex = selected_row;
+            _dataGrid.Invalidate();
+
+            updateIngredientsLabel();
+                           
         }
 
         /*Joystick Down function*/
         void Joystick_Down()
         {
             _dataGrid.ScrollDown(1);
+            selected_row++;
+
+            if (selected_row == orders.Size())
+                selected_row = orders.Size() - 1;
+
+
+            updateSelectedValues(selected_row);
+
+            _dataGrid.SelectedIndex = selected_row;
             _dataGrid.Invalidate();
+
+
+            updateIngredientsLabel();
+
         }
         
+       
 
         /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender)
@@ -342,7 +444,7 @@ namespace fez_spider
 
                 Hashtable food = new Hashtable();
                 food.Add("food", new_food);
-                food.Add("quantity", p.quantita);
+                //food.Add("quantity", p.quantita);
 
                 foods.Add(food);
             }
@@ -381,12 +483,12 @@ namespace fez_spider
             _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
 
             /*Create our four columns*/
-            _gridOrdine.AddColumn(new DataGridColumn("PIZZA", 125));
-            _gridOrdine.AddColumn(new DataGridColumn("PREZZO", 80));
-            _gridOrdine.AddColumn(new DataGridColumn("QNT", 50));
+            _gridOrdine.AddColumn(new DataGridColumn("MEAL", 175));
+            _gridOrdine.AddColumn(new DataGridColumn("PRICE", 50));
+            _gridOrdine.AddColumn(new DataGridColumn("QTY", 30));
 
-            foreach (Product p in payment)
-                _gridOrdine.AddItem(new DataGridItem(new object[3] { p.nome, p.prezzo, p.quantita }));
+            //foreach (Product p in payment)
+            //    _gridOrdine.AddItem(new DataGridItem(new object[3] { p.nome, p.prezzo, p.quantita }));
 
             _pfinal.Text = price.ToString();
                                     
@@ -396,11 +498,9 @@ namespace fez_spider
             _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
             _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
             _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
-            _siBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("siBtn");
-            _noBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("noBtn");
             _msgord1 = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("msgord1");
-            _msgord2 = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("msgord2");
-
+            
+            
             _msgord2.Visible = false;
             _ordina.Invalidate();
 
@@ -432,24 +532,14 @@ namespace fez_spider
         private void _mdfBtn_TapEvent(object sender)
         {
             flagmdf = 1;
-            //initMenu();
+            //printDatagrid();
         }
 
         /*chiamata quando annullo tutto l'ordine prima di pagare e torna all'inizio*/
         private void _annullaBtn_TapEvent(object sender)
         {
-            _gridOrdine.Visible = false;
-            _annullaBtn.Visible = false;
-            _payBtn.Visible = false;
-            _mdfBtn.Visible = false;
-            _msgord1.Visible = false;
-            _pfinal.Visible = false;
-
-            _msgord2.Visible = true;
-            _siBtn.Visible = true;
-            _noBtn.Visible = true;
-
-            _ordina.Invalidate();
+            Glide.MainWindow = _cancel;
+            _cancel.Invalidate();
         }
 
         /*pulsante no annulla ordine*/
@@ -472,13 +562,13 @@ namespace fez_spider
         /*pulsante si annulla ordine*/
         private void _siBtn_TapEvent(object sender)
         {
-            getid = 0;//set getid to 0
-            getpizza = null;//set getpizza null
-            getprice = 0;//set getprice to 0
-            getqnt = 0;//set qnt to 0            
+            selected_id = "";//set selected_id to 0
+            selected_name = null;//set selected_name null
+            selected_price = 0;//set selected_price to 0
+            selected_qnt = 0;//set qnt to 0            
             price = 0;//set total price to 0     
             qnt = 0;//set total qnt to 0 
-            row = -1;                
+            selected_row = -1;                
             payment.Clear();
 
             byte[] msg = Encoding.UTF8.GetBytes(CANCEL_ORDER);
@@ -492,25 +582,9 @@ namespace fez_spider
 
         /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
-        {            
-            getqnt = 0;//set qnt to 0            
-            price = 0;//set total price to 0     
-            qnt = 0;//set total qnt to 0            
-            payment.Clear();
-                  
-            _pCounter.Text = price.ToString();
-            _qntCounter.Text = qnt.ToString();
-            _deleteBtn.Enabled = false;
-            _ordBtn.Enabled = false;
-            _menu.Invalidate();
-            
-            /*vedere se questo for va bene o c'è un altro modo??*/
-            for (int i = 0; i < 7; i++)
-            {
-                _dataGrid.SetCellData(3, i, qnt);
-                _dataGrid.Invalidate();                
-            }
-            Debug.Print("Annullato tutto! Qnt: " + qnt + " Prezzo: " + price);
+        {
+            Glide.MainWindow = _cancel;
+            _cancel.Invalidate();
         }
         
         // TODO Handle THIS SITUATION
@@ -535,20 +609,19 @@ namespace fez_spider
          * *************/
 
 
-        private SocketClient connectToDesktop(String hostname,int port)
+        private Socket connectToDesktop(String hostname,int port)
         {
-            SocketClient sockWrap = new SocketClient();
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPAddress ipAddress = IPAddress.Parse(hostname);
+            IPEndPoint serverEndPoint = new IPEndPoint(ipAddress, port);
 
-            if (sockWrap == null)
-                return null;
+            socket.Connect(serverEndPoint);
 
-            try
-            {
-                sockWrap.Connect(hostname, port);
-                return sockWrap;
-            }catch(Exception ex){
-                return null;
-            }
+            Debug.Print("avail: "+socket.Available.ToString());
+
+            return socket;
+
+            
 
            
         }
@@ -562,187 +635,130 @@ namespace fez_spider
 
             HttpWebRequest  req = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+
+            Debug.Print("Response: " + res.StatusCode);
             Stream stream = res.GetResponseStream();
             sr = new StreamReader(stream);
             string json = sr.ReadToEnd();
             
+
+            Debug.Print("json: " + json);
+
             al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
 
-
-
+            
             return al;
 
         }
 
         private void Start_PressEvent(object sender)
         {
+            
 
-            ArrayList menu = new ArrayList();
-
+            _startbtn.Enabled = false;
             _loadingLbl.Visible = true;
             _mainwindow.Invalidate();
 
             // TODO Service Discovery
+                
+            menu = downloadMenu(url);
+            if (menu != null) {
 
-            sockWrap = connectToDesktop(HOST, PORT);
-            if (sockWrap != null)
-            {
-                menu = downloadMenu(url);
-                if (menu != null)
-                {
-                    initMenu(menu);
-                }
+                
+
+                _startbtn.Enabled = true;
+                _loadingLbl.Visible = false;
+
+
+                Glide.MainWindow = _menu;
+
+                initOrders();
+                printDatagrid();
+                _menu.Invalidate();
+                    
             }
-
-            _loadingLbl.Visible = false;
 
             
 
         }
+
+        private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state) {
+
+            if (Glide.MainWindow == _menu)
+            {
+                if (selected_row >= 0)
+                {
+                    minus.TurnLedOn();
+
+                    int new_qty = orders.Decrement(selected_id);
+                    orders.printStatus();
+
+                    if (orders.Total == 0)
+                        _ordBtn.Enabled = false;
+
+                    _dataGrid.SetCellData(3, selected_row, new_qty);
+                    _dataGrid.Invalidate();
+
+                    _pCounter.Text = orders.Price.ToString()+" EURO";
+
+
+                    _menu.Invalidate();
+
+                    minus.TurnLedOff();
+                }
+
+            }else
+
+                Debug.Print("Minus Button Not Available in this Activity");
+
+        }
+
+
 
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
-            plus.TurnLedOn();
-            if (row == -1)
-            {
-                Debug.Print("Seleziona una pizza!!");
-                _errMsg.Text = "Select pizza!";
-                _errMsg.Visible = true;
-                _menu.Invalidate();
-            }           
-            else
-            {
-                _deleteBtn.Enabled = true;
-                _ordBtn.Enabled = true;
-                _errMsg.Visible = false;                
-                /*calculate price function*/               
-                price = price + getprice;
-                _pCounter.Text = price.ToString();
 
-                getqnt = getqnt + 1; //quantità della pizza selezionata
-                qnt = qnt + 1; //quantità totale
-                _qntCounter.Text = qnt.ToString();
-                _dataGrid.SetCellData(3, row, getqnt);               
-                _menu.Invalidate();
+            if (Glide.MainWindow == _menu)
+            {
 
-                /*inizio parte array*/
-                 
-                if(payment.Count == 0)
+                if (selected_row >= 0)
                 {
-                    Debug.Print("First insert into array");
-                    payment.Add(new Product(getid, getpizza, getprice, getqnt));                    
-                    //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
-                }                
-                   
+                    plus.TurnLedOn();
+
+                    _errMsg.Visible = false;
+
+                    int new_qty = orders.Increment(selected_id);
+                    orders.printStatus();
+
+                    _ordBtn.Enabled = true;
+
+                    _pCounter.Text   = orders.Price.ToString()+" EURO";
+
+
+                    _dataGrid.SetCellData(3, selected_row, new_qty);
+                    _dataGrid.Invalidate();
+
+                    _menu.Invalidate();
+
+                    plus.TurnLedOff();
+                }
                 else
                 {
-                    Debug.Print("Second or plus insert into array");
-                    exist = 0;
-                    foreach ( Product i in payment)
-                    {
-                      int indice = payment.IndexOf(i);
-                      //Debug.Print("Indice: " + indice);
-                    
-                      if(getid == i.id)
-                        {
-                            Debug.Print("Esiste già uno -- setto qnt+1");
-                            payment.RemoveAt(indice);
-                            payment.Insert(indice, new Product(getid, getpizza, getprice, getqnt));
-                            //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
-                            exist = 1;
-                            break;
-                        }                                         
-                    }
 
-                    if (exist == 0)
-                    {
-                        Debug.Print("Non esiste -- aggiungo");
-                        payment.Add(new Product(getid, getpizza, getprice, getqnt));
-                        //Debug.Print("Elementi presenti array(plus):  " + payment.Count);
-                    }                
+                    _errMsg.Text = "Select a Row!";
+                    _errMsg.Visible = true;
 
-                }              
-                /*fine parte array*/
+                }
 
-                Debug.Print("Hai Aggiunto: " + getpizza + " Qnt: " + getqnt);
-                Debug.Print("Prezzo Totale: " + price.ToString());
-            }
-            plus.TurnLedOff();
-
-        }
-
-        private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
-        {
-            minus.TurnLedOn();
-            count = 1;
-            
-            if (getqnt == 0)
-            {                
-                Debug.Print("Aggiungi pizza!");
-                _errMsg.Text = "Add pizza!";
-                _errMsg.Visible = true;                
                 _menu.Invalidate();
+
             }
             else
-            {
-                _errMsg.Visible = false;
+                Debug.Print("Plus Button Not Available in this Activity");
 
-                /*calculate price function*/
-                aux = getqnt;
-                price = price - getprice;
-                _pCounter.Text = price.ToString();
-                getqnt = getqnt - 1; //quantità della pizza selezionata
-                qnt = qnt - 1; //quantità totale    
-                _qntCounter.Text = qnt.ToString();
-                _dataGrid.SetCellData(3, row, getqnt);               
-                _menu.Invalidate();
-
-                if (qnt == 0)
-                {
-                    _ordBtn.Enabled = false;
-                    _deleteBtn.Enabled = false;
-                    _menu.Invalidate();                    
-                }
-
-                /*inizio parte array*/                
-                foreach (Product i in payment)
-                {
-                    int indice = payment.IndexOf(i);
-                    //Debug.Print("Indice: " + indice);
-
-                    if (getid == i.id && count == 1)
-                    {
-                        Debug.Print("IF");
-                        //Debug.Print("QNT: " + aux);
-                        if (aux >= 2)
-                        {
-                            Debug.Print("IF MAGGIORE DI UNO --- ELIMINO");
-                            payment.RemoveAt(indice);
-                            payment.Insert(indice, new Product(getid, getpizza, getprice, getqnt));
-                            count = 0;
-                            break;
-                        }
-                        else
-                        {
-                            Debug.Print("ELSE UNO --- ELIMINO");
-                            payment.RemoveAt(indice);
-                            count = 0;
-                            break;
-                        }                  
-                    }
-                      
-                }
-
-                //Debug.Print("Elementi presenti array(minus):  " + payment.Count);               
-                /*fine parte array*/
-
-                Debug.Print("Hai eliminato: " + getpizza + " Qnt: " + getqnt);
-                Debug.Print("Prezzo Totale: " + price.ToString());
-                Debug.Print("QNT dopo rimozione: " + getqnt);               
-            }
-            minus.TurnLedOff();
-
+            
         }
+
 
     }
     #endregion Functions

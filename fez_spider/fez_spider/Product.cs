@@ -5,17 +5,27 @@ namespace fez_spider
 {
     class Product
     {
-        public Double id { get; set; }
+        public string id { get; set; }
         public string nome { get; set; }
         public Double prezzo { get; set; }
-        public int quantita { get; set; }
+        public string ingredients { get; set; }
 
-        public Product(Double i, string n, Double p, int q)
+        public Product(string i, string n, Double p,string ing)
         {
             id = i;
             nome = n;
             prezzo = p;
-            quantita = q;
+            ingredients = ing;
+
+        }
+
+
+        //TODO DA RIMUOVERE
+        public Product(string i, string n, Double p, int q)
+        {
+            id = i;
+            nome = n;
+            prezzo = p;
             
         }
     }

@@ -27,10 +27,10 @@ namespace fez_spider {
         /// <summary>The LED Strip module using socket 8 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.LEDStrip ledStrip;
         
-        /// <summary>The Button module using socket 4 of the mainboard.</summary>
+        /// <summary>The Button module using socket 6 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Button plus;
         
-        /// <summary>The Button module using socket 5 of the mainboard.</summary>
+        /// <summary>The Button module using socket 11 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Button minus;
         
         /// <summary>The Joystick module using socket 9 of the mainboard.</summary>
@@ -62,8 +62,8 @@ namespace fez_spider {
             this.ethernetJ11D = new GTM.GHIElectronics.EthernetJ11D(7);
             this.usbClientEDP = new GTM.GHIElectronics.USBClientEDP(1);
             this.ledStrip = new GTM.GHIElectronics.LEDStrip(8);
-            this.plus = new GTM.GHIElectronics.Button(4);
-            this.minus = new GTM.GHIElectronics.Button(5);
+            this.plus = new GTM.GHIElectronics.Button(6);
+            this.minus = new GTM.GHIElectronics.Button(11);
             this.joystick = new GTM.GHIElectronics.Joystick(9);
         }
     }

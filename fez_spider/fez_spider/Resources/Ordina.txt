@@ -1,13 +1,12 @@
 <Glide>
   <Window Name="ordina" Width="320" Height="240" BackColor="FFFFFF">	
     <Button Name="annullaBtn" X="2" Y="200" Width="90" Height="32" Alpha="255" Text="Annulla" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-    <Button Name="payBtn" X="114" Y="200" Width="90" Height="32" Alpha="255" Text="Pagamento" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+    
+	<Button Name="payBtn" X="114" Y="200" Width="90" Height="32" Alpha="255" Text="Pagamento" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
     <Button Name="mdfBtn" X="228" Y="200" Width="90" Height="32" Alpha="255" Text="Modifica" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-	<Button Name="siBtn" X="40" Y="100" Width="90" Height="32" Alpha="255" Text="Si" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-	<Button Name="noBtn" X="160" Y="100" Width="90" Height="32" Alpha="255" Text="No" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-    <DataGrid Name="gridOrdine" X="5" Y="5" Width="310" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="20" HeadersBackColor="707476" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/>
+	<DataGrid Name="gridOrdine" X="5" Y="5" Width="310" Height="150" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="20" HeadersBackColor="707476" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/>
 	<TextBlock Name="msgord1" X="1" Y="162" Width="50" Height="32" Alpha="255" Text="Totale: " TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
-	<TextBlock Name="msgord2" X="65" Y="50" Width="180" Height="32" Alpha="255" Text="Desideri annullare l'ordine? " TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	
 	<TextBlock Name="pFinal" X="14" Y="162" Width="65" Height="32" Alpha="255" Text="0" TextAlign="Right" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
   </Window>
 </Glide>

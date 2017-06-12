@@ -16,10 +16,11 @@ namespace fez_spider
     public partial class Program
     {
 
+        #region Ghi.Glide Definitions 
+
         private static GHI.Glide.Display.Window _mainwindow;
         private static GHI.Glide.Display.Window _errorWindow;
         private static GHI.Glide.Display.Window _menu;
-
         private static GHI.Glide.Display.Window _cancel;
         private static GHI.Glide.Display.Window _ordina;
         private static GHI.Glide.Display.Window _pagamento;
@@ -37,8 +38,10 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _finalPrice;
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBlock _ingredients;
-        private GHI.Glide.UI.TextBlock _paypal;   
-             
+        private GHI.Glide.UI.TextBlock _paypal;
+
+        #endregion
+
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
         private string selected_id;
         private string selected_name;
@@ -73,19 +76,22 @@ namespace fez_spider
         private StreamReader sr;
 
 
-
-        /* Added by Melo */
+        
         private static ArrayList menu;
         private static Orders orders;
         private SocketClient sockWrap;
 
+
+        #region Fez Network Configuration
 
         private static String ip_address = "192.168.2.2";
         private static String subnet     = "255.255.255.0";
         private static String gateway    = "192.168.2.1";
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
+        #endregion
 
+        #region Fez Initialization on Startup
         private void initFezSettings()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
@@ -198,13 +204,7 @@ namespace fez_spider
 
 
         }
-        
-        private void loadGUI(GHI.Glide.Display.Window window)
-        {
-            Glide.MainWindow = window;
-            window.Invalidate();
-        }
-
+        #endregion
 
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
@@ -212,16 +212,71 @@ namespace fez_spider
 
             menu = new ArrayList();
             orders = new Orders();
-
-            
             initFezSettings();
                 
 
         }
 
-        #region Functions
+        #region Custom Function Implementation 
 
-        void initOrders()
+        private Socket connectToDesktop(String hostname, int port)
+        {
+            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IPAddress ipAddress = IPAddress.Parse(hostname);
+            IPEndPoint serverEndPoint = new IPEndPoint(ipAddress, port);
+
+            socket.Connect(serverEndPoint);
+
+            Debug.Print("avail: " + socket.Available.ToString());
+
+            return socket;
+
+
+
+
+        }
+        private ArrayList downloadMenu(String url)
+        {
+            /*inizio get menu*/
+            Debug.Print("GET MENU");
+            ArrayList al = new ArrayList();
+
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+
+            Debug.Print("Response: " + res.StatusCode);
+            Stream stream = res.GetResponseStream();
+            sr = new StreamReader(stream);
+            string json = sr.ReadToEnd();
+
+
+            //Debug.Print("json: " + json);
+
+            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+
+            return al;
+
+        }
+        private string RandomString(int Size)
+        {
+            Random random = new Random();
+            string input = "abcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder builder = new StringBuilder();
+            char ch;
+            for (int i = 0; i < Size; i++)
+            {
+                ch = input[random.Next(input.Length)];
+                builder.Append(ch);
+            }
+            return builder.ToString();
+        }
+        private void loadGUI(GHI.Glide.Display.Window window)
+        {
+            Glide.MainWindow = window;
+            window.Invalidate();
+        }
+        private void initOrders()
         {
             if (orders.Size() > 0)
                 orders.Clear();
@@ -233,8 +288,7 @@ namespace fez_spider
             }
                
         }
-
-        void printDatagrid()
+        private void printDatagrid()
         {
             _dataGrid.Clear();
             
@@ -258,7 +312,6 @@ namespace fez_spider
 
 
         }
-        
         /*Timer_Tick function for joystick*/
         private void Timer_Tick(GT.Timer timer)
         {
@@ -268,50 +321,6 @@ namespace fez_spider
             else if(pos.X < -0.50)
                 Joystick_Down();
         }
-
-
-
-        /*Populate Grid function*/
-        //void Populate(ArrayList al)
-        //{
-        //    Debug.Print("Populating...");          
-            
-        //    /*se l'utente deve modificare l'ordine'*/
-        //    if (flagmdf == 1)
-        //    {               
-        //        _pCounter.Text = price.ToString();
-        //        _qntCounter.Text = qnt.ToString();
-        //        int qnt_appoggio = qnt;
-                
-        //        _dataGrid.Clear();
-        //        _menu.Invalidate();
-        //        _dataGrid.Invalidate();
-
-        //        for (int i = 0; i < al.Count; i++)
-        //        { 
-        //        Hashtable ht = al[i] as Hashtable;
-        //        qnt = 0;
-        //        foreach (Product p in payment)
-        //            if (p.id == Double.Parse(ht["id"].ToString()))
-        //                qnt = p.quantita;                   
-        //        _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
-        //        }               
-        //        _dataGrid.Invalidate();                
-        //        qnt = qnt_appoggio;
-        //    }
-        //    else
-        //    {               
-        //        /*populating iniziale*/
-        //        for (int i = 0; i < al.Count; i++)
-        //        {
-        //            Hashtable ht = al[i] as Hashtable;
-        //            _dataGrid.AddItem(new DataGridItem(new object[4] { ht["id"], ht["name"], ht["price"], qnt }));
-        //        }
-        //        _dataGrid.Invalidate();
-        //    }
-        //}
-
-        /*DataGrid TapCellEvent*/
         void dataGrid_TapCellEvent(object sender, TapCellEventArgs args)
         {           
             // Get the data from the row we tapped.            
@@ -341,7 +350,6 @@ namespace fez_spider
             }                   
 
         }
-
         void updateIngredientsLabel()
         {
             _errMsg.Text = "";
@@ -355,7 +363,6 @@ namespace fez_spider
 
             _menu.Invalidate();
         }
-
         void updateSelectedValues(int selected_row)
         {
 
@@ -369,7 +376,6 @@ namespace fez_spider
             selected_qnt = (int)_dataGrid.GetRowData(selected_row).GetValue(3);
 
         }
-
         /*Joystick Up function*/
         void Joystick_Up()
         {
@@ -395,7 +401,6 @@ namespace fez_spider
             }
                            
         }
-
         /*Joystick Down function*/
         void Joystick_Down()
         {
@@ -423,8 +428,21 @@ namespace fez_spider
             
 
         }
-        
-       
+        private void ResetStatus()
+        {
+            orderId = "";
+            ORDER_CMD = NEW_ORDER;
+
+            orders.Clear();
+            orders.Total = 0;
+            orders.Price = 0;
+
+            _ingredients.Text = "";
+            _pCounter.Text = "";
+
+            _dataGrid.Clear();
+
+        }
         private string GetOrderAsJson()
         {
             Hashtable order = new Hashtable();
@@ -459,8 +477,12 @@ namespace fez_spider
             
         }
 
+        #endregion
+
+        #region Events Implementation
+
         /*ordBtn TapEvent*/
-        void _ordBtn_PressEvent(object sender)
+        private void _ordBtn_PressEvent(object sender)
         {
 
             
@@ -493,8 +515,6 @@ namespace fez_spider
             
 
         }
-
-        /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)
         {
             if (sockWrap != null)
@@ -514,21 +534,6 @@ namespace fez_spider
         {
             Glide.MainWindow = _menu;
         }
-        private void ResetStatus()
-        {
-            orderId = "";
-            ORDER_CMD = NEW_ORDER;
-
-            orders.Clear();
-            orders.Total = 0;
-            orders.Price = 0;
-
-            _ingredients.Text = "";
-            _pCounter.Text = "";
-            
-            _dataGrid.Clear();
-            
-        }
         private void _backBtn_TapEvent(object sender)
         {
             loadGUI(_menu);
@@ -546,77 +551,17 @@ namespace fez_spider
 
             loadGUI(_cancel);
         }
-        
         /*Ethernet Network_Down Function*/
-        void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
+        private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
            loadGUI(_errorWindow);
 
         }
-
         /*Ethernet Network_Up Function*/
-        void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
+        private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
             loadGUI(_mainwindow);
         }
-        
-
-        private Socket connectToDesktop(String hostname,int port)
-        {
-            Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPAddress ipAddress = IPAddress.Parse(hostname);
-            IPEndPoint serverEndPoint = new IPEndPoint(ipAddress, port);
-
-            socket.Connect(serverEndPoint);
-
-            Debug.Print("avail: "+socket.Available.ToString());
-
-            return socket;
-
-            
-
-           
-        }
-
-
-        private ArrayList downloadMenu(String url)
-        {
-            /*inizio get menu*/
-            Debug.Print("GET MENU");
-            ArrayList al = new ArrayList();
-
-            HttpWebRequest  req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-
-            Debug.Print("Response: " + res.StatusCode);
-            Stream stream = res.GetResponseStream();
-            sr = new StreamReader(stream);
-            string json = sr.ReadToEnd();
-            
-
-            //Debug.Print("json: " + json);
-
-            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-
-            
-            return al;
-
-        }
-
-        private string RandomString(int Size)
-        {
-            Random random = new Random();
-            string input = "abcdefghijklmnopqrstuvwxyz0123456789";
-            StringBuilder builder = new StringBuilder();
-            char ch;
-            for (int i = 0; i < Size; i++)
-            {
-                ch = input[random.Next(input.Length)];
-                builder.Append(ch);
-            }
-            return builder.ToString();
-        }
-
         private void Start_PressEvent(object sender)
         {
 
@@ -654,7 +599,6 @@ namespace fez_spider
             
 
         }
-
         private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state) {
 
             if (Glide.MainWindow == _menu)
@@ -687,9 +631,6 @@ namespace fez_spider
                 Debug.Print("Minus Button Not Available in this Activity");
 
         }
-
-
-
         private void Plus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state)
         {
 
@@ -736,8 +677,7 @@ namespace fez_spider
 
             
         }
-
+        #endregion
 
     }
-    #endregion Functions
 }

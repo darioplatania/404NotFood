@@ -25,19 +25,17 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _pagamento;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
-        private GHI.Glide.UI.Button _ingBtn;
         private GHI.Glide.UI.Button _ordBtn;
         private GHI.Glide.UI.Button _payBtn;
-        private GHI.Glide.UI.Button _annullaBtn;
-        private GHI.Glide.UI.Button _mdfBtn;
+        private GHI.Glide.UI.Button _backBtn;
         private GHI.Glide.UI.Button _siBtn;
         private GHI.Glide.UI.Button _noBtn;
         private GHI.Glide.UI.DataGrid _dataGrid;
         private GHI.Glide.UI.DataGrid _gridOrdine;
         private GHI.Glide.UI.TextBlock _loadingLbl;
         private GHI.Glide.UI.TextBlock _pCounter;
+        private GHI.Glide.UI.TextBlock _finalPrice;
         private GHI.Glide.UI.TextBlock _msgord1;
-        private GHI.Glide.UI.TextBlock _msgord2;
         private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBlock _ingredients;
@@ -108,6 +106,7 @@ namespace fez_spider
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
             _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
             _cancel = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Annulla));
+            _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
 
             _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
 
@@ -124,6 +123,7 @@ namespace fez_spider
             _dataGrid.Invalidate();
 
             _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
+            _finalPrice = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("finalPrice");
             
             _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
 
@@ -131,6 +131,12 @@ namespace fez_spider
 
             _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
             _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+
+
+            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
+            _backBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("backBtn");
+            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
+
 
             /* Adding Service Logo */
             Image _Servicelogo = new Image("service-logo", 255, 0, 0, 320, 100);
@@ -156,6 +162,8 @@ namespace fez_spider
             _siBtn.TapEvent += _siBtn_TapEvent;
             _noBtn.TapEvent += _noBtn_TapEvent;
 
+            _backBtn.TapEvent += _backBtn_TapEvent;
+
 
             /* Initializing Menu Page */
 
@@ -171,8 +179,19 @@ namespace fez_spider
             _dataGrid.AddColumn(new DataGridColumn("MEAL", 175));
             _dataGrid.AddColumn(new DataGridColumn("PRICE", 50));
             _dataGrid.AddColumn(new DataGridColumn("QTY", 30));
-            _menu.AddChild(_dataGrid);
+            _dataGrid.RowCount = 4;
             _dataGrid.Render();
+
+
+            /*Create our four columns*/
+            _gridOrdine.AddColumn(new DataGridColumn("ID", 0));
+            _gridOrdine.AddColumn(new DataGridColumn("MEAL", 175));
+            _gridOrdine.AddColumn(new DataGridColumn("PRICE", 50));
+            _gridOrdine.AddColumn(new DataGridColumn("QTY", 30));
+            _gridOrdine.Render();
+
+
+
 
             /* Shut down Light on Buttons */
             plus.TurnLedOff();
@@ -207,6 +226,7 @@ namespace fez_spider
         private void loadGUI(GHI.Glide.Display.Window window)
         {
             Glide.MainWindow = window;
+            window.Invalidate();
         }
 
 
@@ -241,10 +261,7 @@ namespace fez_spider
         void printDatagrid()
         {
             _dataGrid.Clear();
-
-            //  _dataGrid.RowCount = orders.Size();
-            _dataGrid.RowCount = 4;
-
+            
             Product p = null;
             foreach (Order order in orders.List)
             {
@@ -254,6 +271,8 @@ namespace fez_spider
 
             selected_row = 0;
             updateSelectedValues(selected_row);
+
+
             updateIngredientsLabel();
 
             _pCounter.Text = orders.Total.ToString();
@@ -378,38 +397,54 @@ namespace fez_spider
         /*Joystick Up function*/
         void Joystick_Up()
         {
-            _dataGrid.ScrollUp(1);
-            selected_row--;
+            if (Glide.MainWindow == _menu)
+            {
+                _dataGrid.ScrollUp(1);
+                selected_row--;
 
-            if (selected_row < 0)
-                selected_row = 0;
+                if (selected_row < 0)
+                    selected_row = 0;
 
-            updateSelectedValues(selected_row);
+                updateSelectedValues(selected_row);
 
-            _dataGrid.SelectedIndex = selected_row;
-            _dataGrid.Invalidate();
+                _dataGrid.SelectedIndex = selected_row;
+                _dataGrid.Invalidate();
 
-            updateIngredientsLabel();
+                updateIngredientsLabel();
+            }else if(Glide.MainWindow == _ordina)
+            {
+                _gridOrdine.ScrollUp(1);
+                _gridOrdine.Invalidate();
+                
+            }
                            
         }
 
         /*Joystick Down function*/
         void Joystick_Down()
         {
-            _dataGrid.ScrollDown(1);
-            selected_row++;
+            if (Glide.MainWindow == _menu)
+            {
+                _dataGrid.ScrollDown(1);
+                selected_row++;
 
-            if (selected_row == orders.Size())
-                selected_row = orders.Size() - 1;
-
-
-            updateSelectedValues(selected_row);
-
-            _dataGrid.SelectedIndex = selected_row;
-            _dataGrid.Invalidate();
+                if (selected_row == orders.Size())
+                    selected_row = orders.Size() - 1;
 
 
-            updateIngredientsLabel();
+                updateSelectedValues(selected_row);
+
+                _dataGrid.SelectedIndex = selected_row;
+                _dataGrid.Invalidate();
+
+
+                updateIngredientsLabel();
+            }else if(Glide.MainWindow == _ordina)
+            {
+                _gridOrdine.ScrollDown(1);
+                _gridOrdine.Invalidate();
+            }
+            
 
         }
         
@@ -418,99 +453,17 @@ namespace fez_spider
         /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender)
         {
-
-            string id_ordine;            
-
-            if (pendingOrderId != null)
-                id_ordine = pendingOrderId;
-            else
-            {
-                var random = new Random(System.DateTime.Now.Millisecond);
-                uint randomNumber = (uint)random.Next();
-                id_ordine = randomNumber.ToString();
-            }          
             
-            string tot = price.ToString();
-            Hashtable order = new Hashtable();
-            order.Add("id", id_ordine);
-            order.Add("price", tot);
+
+            foreach (Order o in orders.List)
+                if (o.Quantity > 0)
+                    _gridOrdine.AddItem(new DataGridItem(new object[4] { o.Product.id, o.Product.nome,o.Product.prezzo, o.Quantity }));
+
+            _finalPrice.Text = orders.Price + " EURO";
+
             
-            // Preparing order array list
-            ArrayList foods = new ArrayList();
-            
-            foreach (Product p in payment)
-            {
-                // Preparing food array list
-                Hashtable new_food = new Hashtable();
-                new_food.Add("name",p.nome);
-                new_food.Add("price",p.prezzo);
-                
+            loadGUI(_ordina);
 
-                Hashtable food = new Hashtable();
-                food.Add("food", new_food);
-                //food.Add("quantity", p.quantita);
-
-                foods.Add(food);
-            }
-
-            order.Add("foods", foods);
-
-            pendingOrderId = id_ordine;
-
-            string order_as_json = Json.NETMF.JsonSerializer.SerializeObject(order);
-
-            // TODO: MANDARE order_as_json al Desktop tramite Socket
-            Debug.Print(order_as_json);
-
-            if (sockWrap != null)
-            {
-
-                byte[] msg;
-                if(flagmdf==0)
-                    msg = Encoding.UTF8.GetBytes(NEW_ORDER);
-                else
-                    msg = Encoding.UTF8.GetBytes(UPDATE_ORDER);
-
-                sockWrap.Socket.Send(msg);
-                msg = Encoding.UTF8.GetBytes(order_as_json + "\r\n");
-                sockWrap.Socket.Send(msg);
-
-            }
-
-            /*load ordina*/
-            _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
-            Glide.MainWindow = _ordina;
-            _gridOrdine = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("gridOrdine");
-            _pfinal = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("pFinal");
-
-            /*Setup the dataGrid reference*/
-            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
-
-            /*Create our four columns*/
-            _gridOrdine.AddColumn(new DataGridColumn("MEAL", 175));
-            _gridOrdine.AddColumn(new DataGridColumn("PRICE", 50));
-            _gridOrdine.AddColumn(new DataGridColumn("QTY", 30));
-
-            //foreach (Product p in payment)
-            //    _gridOrdine.AddItem(new DataGridItem(new object[3] { p.nome, p.prezzo, p.quantita }));
-
-            _pfinal.Text = price.ToString();
-                                    
-            _gridOrdine.Invalidate();
-                 
-
-            _annullaBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("annullaBtn");
-            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
-            _mdfBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("mdfBtn");
-            _msgord1 = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("msgord1");
-            
-            
-            _msgord2.Visible = false;
-            _ordina.Invalidate();
-
-            _annullaBtn.TapEvent += _annullaBtn_TapEvent;
-            _mdfBtn.TapEvent += _mdfBtn_TapEvent;
-            _payBtn.TapEvent += _payBtn_TapEvent; 
         }        
 
         /*apre pagina per il pagamento*/
@@ -530,18 +483,8 @@ namespace fez_spider
             _pagamento.Invalidate();           
         }        
 
-        /*modifica ordine prima di pagare*/
-        private void _mdfBtn_TapEvent(object sender)
-        {
-            flagmdf = 1;
-            //printDatagrid();
-        }
-
-        /*chiamata quando annullo tutto l'ordine prima di pagare e torna all'inizio*/
-        private void _annullaBtn_TapEvent(object sender)
-        {
-            Glide.MainWindow = _cancel;
-        }
+        
+        
 
         /*pulsante no annulla ordine*/
         private void _noBtn_TapEvent(object sender)
@@ -562,6 +505,11 @@ namespace fez_spider
             
             _dataGrid.Clear();
             
+        }
+
+        private void _backBtn_TapEvent(object sender)
+        {
+            loadGUI(_menu);
         }
 
         /*pulsante si annulla ordine*/

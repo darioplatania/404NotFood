@@ -133,9 +133,6 @@
   <data name="Ordina" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Ordina.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
-  <data name="Pagamento" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\Pagamento.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
-  </data>
   <data name="ErrorWindow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ErrorWindow.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
@@ -147,5 +144,17 @@
   </data>
   <data name="Annulla" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\Annulla.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
+  <data name="creditcard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>creditcard.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="paypal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>paypal.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="ScegliPagamento" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\ScegliPagamento.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
+  <data name="PaymentCreditCard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\PaymentCreditCard.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
 </root>

@@ -25,7 +25,8 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _menu;
         private static GHI.Glide.Display.Window _cancel;
         private static GHI.Glide.Display.Window _ordina;
-        private static GHI.Glide.Display.Window _pagamento;
+        private static GHI.Glide.Display.Window _scegliPagamento;
+        private static GHI.Glide.Display.Window _credit_card_payment;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ordBtn;
@@ -40,8 +41,11 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _finalPrice;
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBlock _ingredients;
-        private GHI.Glide.UI.TextBlock _paypal;
-
+        private GHI.Glide.UI.TextBox _input_creditCard_owner;
+        private GHI.Glide.UI.TextBox _input_creditCard_number;
+        private GHI.Glide.UI.Dropdown _input_expiration_month;
+        private GHI.Glide.UI.Dropdown _input_expiration_year;
+    
         #endregion
 
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -55,6 +59,8 @@ namespace fez_spider
         private static GHI.Glide.Display.Window previousWindow;
         byte[] result = new byte[65536];
 
+        private List months_list;
+        private List years_list;
 
         private static string orderId = null;
 
@@ -144,14 +150,65 @@ namespace fez_spider
             _finalPrice = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("finalPrice");
             _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
 
-            /* NetworkErrorWindow */
-            _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
-            // NetworkErrorWindow.Adding Error Logo
-            Image _Errorlogo = new Image("error-logo", 255, 0, 0, displayTE35.Width, displayTE35.Height);
-            _errorWindow.AddChild(_Errorlogo);
-            _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
+
+            /* Choose Payment */
+            _scegliPagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ScegliPagamento));
+            Image _creditCard = new Image("credit-card", 255, 22, 66, 128, 128);
+            _creditCard.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.creditcard), Bitmap.BitmapImageType.Jpeg);
+            
+            Image _paypal = new Image("paypal", 255, 170, 66, 128, 128);
+            _paypal.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.paypal), Bitmap.BitmapImageType.Jpeg);
+            _scegliPagamento.AddChild(_creditCard);
+            _scegliPagamento.AddChild(_paypal);
+
+
+
+            /* Payment Via Credit Card*/
+            _credit_card_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.PaymentCreditCard));
+            _input_creditCard_owner = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("card_owner");
+            _input_creditCard_number = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("card_number");
+            _input_expiration_month = (GHI.Glide.UI.Dropdown)_credit_card_payment.GetChildByName("expiration_date_month");
+            _input_expiration_year = (GHI.Glide.UI.Dropdown)_credit_card_payment.GetChildByName("expiration_date_year");
+
+
+            ArrayList months = new ArrayList()
+            {
+                new object[2] {"January",1},
+                new object[2] {"February",2},
+                new object[2] {"March",3},
+                new object[2] {"April",4},
+                new object[2] {"May",5},
+                new object[2] {"June",6},
+                new object[2] {"July",7},
+                new object[2] {"August",8},
+                new object[2] {"September",9},
+                new object[2] {"October",10},
+                new object[2] {"November",11},
+                new object[2] {"December",12}
+            };
+
+            months_list = new List(months,150);
+
+            ArrayList years = new ArrayList();
+            
+            //TODO get current year
+            for(int i = 2017; i < 2027; i++)
+                years.Add(new object[2] { i.ToString(), i });
+            
+            years_list = new List(years, 150);
+            
 
             
+            /* NetworkErrorWindow */
+            _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
+            
+            // NetworkErrorWindow.Adding Error Logo
+            Image _Errorlogo = new Image("error-logo", 255, 0, 0, displayTE35.Width, displayTE35.Height);
+            _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
+            _errorWindow.AddChild(_Errorlogo);
+
+
+
             /* Register Events to Buttons */
 
             _startbtn.PressEvent += Start_PressEvent;
@@ -164,11 +221,18 @@ namespace fez_spider
             _siBtn.TapEvent += _siBtn_TapEvent;
             _noBtn.TapEvent += _noBtn_TapEvent;
             _backBtn.TapEvent += _backBtn_TapEvent;
+            _payBtn.TapEvent += _payBtn_TapEvent;
+            _creditCard.TapEvent += _creditcard_TapEvent;
+            _paypal.TapEvent += _paypal_TapEvent;
+            _input_creditCard_owner.TapEvent += new OnTap(Glide.OpenKeyboard);
+            _input_creditCard_number.TapEvent += new OnTap(Glide.OpenKeyboard);
+            _input_expiration_month.TapEvent += monthsTapEvent;
+            _input_expiration_year.TapEvent += yearsTapEvent;
 
 
-            
+
             /* Init Datagrids */
-            
+
             /* _menu -> _dataGrid */
             _dataGrid.AddColumn(new DataGridColumn("ID", 0));
             _dataGrid.AddColumn(new DataGridColumn("MEAL", 175));
@@ -528,18 +592,22 @@ namespace fez_spider
         }
         private void _payBtn_TapEvent(object sender)
         {
-            if (sockWrap != null)
-            {
-                byte[] msg = Encoding.UTF8.GetBytes(PAYMENT);
-                sockWrap.Socket.Send(msg);
-            }
-
-            /*load pagamento*/
-            _pagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Pagamento));
-            Glide.MainWindow = _pagamento;                      
-            
-            _paypal = (GHI.Glide.UI.TextBlock)_pagamento.GetChildByName("paypal");            
-            _pagamento.Invalidate();           
+            loadGUI(_scegliPagamento);       
+        }
+        private void _creditcard_TapEvent(object sender)
+        {
+            loadGUI(_credit_card_payment);
+        }
+        private void monthsTapEvent(object sender)
+        {
+            Glide.OpenList(sender, months_list);
+        }
+        private void yearsTapEvent(object sender)
+        {
+            Glide.OpenList(sender, years_list);
+        }
+        private void _paypal_TapEvent(object sender)
+        {
         }
         private void _noBtn_TapEvent(object sender)
         {

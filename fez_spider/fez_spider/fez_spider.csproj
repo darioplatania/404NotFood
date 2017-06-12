@@ -146,6 +146,10 @@
     <None Include="Resources\Logo.jpg" />
     <None Include="Resources\logo-food.jpg" />
     <None Include="Resources\Annulla.txt" />
+    <None Include="Resources\ScegliPagamento.txt" />
+    <None Include="creditcard.jpg" />
+    <None Include="paypal.jpg" />
+    <None Include="Resources\PaymentCreditCard.txt" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

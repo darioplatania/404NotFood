@@ -38,20 +38,23 @@ namespace fez_spider
             return ((byte[])(Microsoft.SPOT.ResourceUtility.GetObject(ResourceManager, id)));
         }
         [System.SerializableAttribute()]
-        internal enum BinaryResources : short
-        {
-            Connection_error = -16116,
-            logo_food = -5226,
-        }
-        [System.SerializableAttribute()]
         internal enum StringResources : short
         {
-            Pagamento = -6655,
+            PaymentCreditCard = -23819,
             Window = -5489,
             Menu = -2554,
             ErrorWindow = 910,
             Ordina = 6285,
             Annulla = 18971,
+            ScegliPagamento = 26704,
+        }
+        [System.SerializableAttribute()]
+        internal enum BinaryResources : short
+        {
+            Connection_error = -16116,
+            paypal = -11989,
+            creditcard = -5944,
+            logo_food = -5226,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

@@ -565,7 +565,37 @@ namespace fez_spider
             return value.ToString("yyyyMMddHHmmssfff");
            
         }
+        private void processPayment(string creditCard) {
+            Debug.Print(creditCard);
+        }
+        /*
+             
+              TYPE             PREFIX      LENGTH
+              
+              Visa             4           13,16
+              Master Card      51 to 55    16
+              American Expr.   34, 37      15
+              
+        */
+        private String GetCardTypeFromNumber(string number)
+        {
+            string retval = null;
+            string prefix = number.Substring(0, 2);
 
+            if (prefix.Equals("34") || prefix.Equals("37"))
+                retval = "American Express";
+            else if (prefix.Equals("51") || prefix.Equals("52") || prefix.Equals("53") || prefix.Equals("54") || prefix.Equals("55"))
+                retval = "Master Card";
+            else
+            {
+                prefix = number.Substring(0, 1);
+                if (prefix.Equals("4"))
+                    retval = "Visa";
+            }
+            
+
+            return retval;
+        }
         #endregion
 
         #region Events Implementation
@@ -618,7 +648,71 @@ namespace fez_spider
         }
         private void _ccConfirmBtnTapEvent(object sender)
         {
-            Debug.Print("Confirm Payment");
+            string message = "";
+
+
+            string owner    = _input_creditCard_owner.Text;
+            string number   = _input_creditCard_number.Text;
+            string cvv      = _input_creditCard_cvv.Text;
+            string month    = _input_expiration_month.Text;
+            string year     = _input_expiration_year.Text;
+            string type     = null;
+
+            int month_as_number = 0;
+            
+            if(!owner.Equals("") && !number.Equals("") && !cvv.Equals(""))
+            {
+                //TODO REPLACE ALL Special Symbols from number
+                type = GetCardTypeFromNumber(number);
+
+                if (type != null)
+                {
+                    if ((type.Equals("Visa") && (number.Length < 13 || number.Length > 16))
+                    || ((type.Equals("Master Card") && number.Length != 16))
+                    || ((type.Equals("American Express") && number.Length != 15)))
+                        message = "Wrong Card Number";
+                    else if (cvv.Length > 3)
+                        message = "CVV length more than 3";
+                    else if (month.Equals("Month") || year.Equals("Year"))
+                        message = "Wrong Expiration Date";
+                    else
+                    {
+                        //Process Payment
+                        month_as_number = int.Parse(_input_expiration_month.Value.ToString());
+                        Debug.Print(owner + " " + number + " " + cvv + " " + month_as_number + " " + year);
+
+                        string[] splitted = owner.Split(' ');
+                        string firstname = splitted[0];
+                        string lastname = splitted[1];
+
+
+                        Hashtable card = new Hashtable();
+                        card.Add("firstname", firstname);
+                        card.Add("lastname", lastname);
+                        card.Add("cvv2", cvv);
+                        card.Add("number", number);
+                        card.Add("expireMonth", month_as_number);
+                        card.Add("expireYear", year);
+                        card.Add("type", type);
+
+                        string card_as_json = Json.NETMF.JsonSerializer.SerializeObject(card);
+
+                        processPayment(card_as_json);
+
+                    }
+                }
+                else
+                    message = "Wrong Card Number";
+
+                
+
+            }
+            else
+                message = "Please fill in all fields";
+            
+            _ccErrMsg.Text = message;
+            _credit_card_payment.Invalidate();
+
         }
         private void monthsTapEvent(object sender)
         {
@@ -664,7 +758,7 @@ namespace fez_spider
             loadGUI(_errorWindow);
 
         }
-        /*Ethernet Network_Up Function*/
+        ///*Ethernet Network_Up Function*/
         private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
             int timeout = 10000;

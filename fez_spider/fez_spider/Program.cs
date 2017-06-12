@@ -453,8 +453,8 @@ namespace fez_spider
         /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender)
         {
+            _gridOrdine.Clear();
             
-
             foreach (Order o in orders.List)
                 if (o.Quantity > 0)
                     _gridOrdine.AddItem(new DataGridItem(new object[4] { o.Product.id, o.Product.nome,o.Product.prezzo, o.Quantity }));
@@ -587,7 +587,8 @@ namespace fez_spider
 
         private void Start_PressEvent(object sender)
         {
-            
+
+            ResetStatus();
 
             _startbtn.Enabled = false;
             _loadingLbl.Visible = true;

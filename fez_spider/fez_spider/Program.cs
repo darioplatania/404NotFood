@@ -102,53 +102,61 @@ namespace fez_spider
             Debug.Print("Program Started");
 
 
-            /* References */
+            /*
+             * Configure Joypad
+             * Create a timer & run method timer_trick when thr timer ticks (for joystick)
+             */
+            GT.Timer timer = new GT.Timer(200);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
+            /* MainWindow */
             _mainwindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Window));
-            _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
-            _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
-            _cancel = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Annulla));
-            _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
-
-            _dataGrid = (DataGrid)_menu.GetChildByName("dataGrid");
-
             _startbtn = (GHI.Glide.UI.Button)_mainwindow.GetChildByName("startbtn");
-
-            _siBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("siBtn");
-            _noBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("noBtn");
-
-
             _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
 
-            _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
-            _dataGrid.SelectedIndex = selected_row;
-            _dataGrid.Invalidate();
-
-            _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
-            _finalPrice = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("finalPrice");
-            
-            _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
-
-            _ingredients = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("ingredientsLbl");
-
-            _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
-            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
-
-
-            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
-            _backBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("backBtn");
-            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
-
-
-            /* Adding Service Logo */
+            // MainWindow.Adding Service Logo
             Image _Servicelogo = new Image("service-logo", 255, 0, 0, 320, 100);
             _mainwindow.AddChild(_Servicelogo);
             _Servicelogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo_food), Bitmap.BitmapImageType.Jpeg);
 
 
-            /* Adding Error Logo */
+            /* Menu */
+            _menu = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Menu));
+            _dataGrid = (GHI.Glide.UI.DataGrid)_menu.GetChildByName("dataGrid");
+            _dataGrid.SelectedIndex = selected_row;
+            _pCounter = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("pCounter");
+            _errMsg = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("errMsg");
+            _ingredients = (GHI.Glide.UI.TextBlock)_menu.GetChildByName("ingredientsLbl");
+            _ordBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("ordBtn");
+            _deleteBtn = (GHI.Glide.UI.Button)_menu.GetChildByName("deleteBtn");
+
+            /* Cancel */
+            _cancel = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Annulla));
+            _siBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("siBtn");
+            _noBtn = (GHI.Glide.UI.Button)_cancel.GetChildByName("noBtn");
+
+            /* Order */
+            _ordina = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.Ordina));
+            _backBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("backBtn");
+            _payBtn = (GHI.Glide.UI.Button)_ordina.GetChildByName("payBtn");
+            _finalPrice = (GHI.Glide.UI.TextBlock)_ordina.GetChildByName("finalPrice");
+            _gridOrdine = (DataGrid)_ordina.GetChildByName("gridOrdine");
+
+            /* NetworkErrorWindow */
+            _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
+            // NetworkErrorWindow.Adding Error Logo
             Image _Errorlogo = new Image("error-logo", 255, 0, 0, displayTE35.Width, displayTE35.Height);
             _errorWindow.AddChild(_Errorlogo);
             _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
+
+
+
+
+
+
+
+
 
             /* Register Events to Buttons */
 
@@ -159,32 +167,24 @@ namespace fez_spider
             _ordBtn.PressEvent += _ordBtn_PressEvent;
             _deleteBtn.PressEvent += deleteBtn_PressEvent;
             _dataGrid.TapCellEvent += new OnTapCell(dataGrid_TapCellEvent);
-
             _siBtn.TapEvent += _siBtn_TapEvent;
             _noBtn.TapEvent += _noBtn_TapEvent;
-
             _backBtn.TapEvent += _backBtn_TapEvent;
 
 
-            /* Initializing Menu Page */
-
-            /*Setup the dataGrid reference*/
-
-
-            // Listen for tap cell events.
-
-
-            /*Create our four columns*/
-            _dataGrid.AddColumn(new DataGridColumn("ID", 0));
             
+            /* Init Datagrids */
+            
+            /* _menu -> _dataGrid */
+            _dataGrid.AddColumn(new DataGridColumn("ID", 0));
             _dataGrid.AddColumn(new DataGridColumn("MEAL", 175));
             _dataGrid.AddColumn(new DataGridColumn("PRICE", 50));
             _dataGrid.AddColumn(new DataGridColumn("QTY", 30));
             _dataGrid.RowCount = 4;
             _dataGrid.Render();
 
-
-            /*Create our four columns*/
+            
+            /* _ordina -> _gridOrdine */
             _gridOrdine.AddColumn(new DataGridColumn("ID", 0));
             _gridOrdine.AddColumn(new DataGridColumn("MEAL", 175));
             _gridOrdine.AddColumn(new DataGridColumn("PRICE", 50));
@@ -192,20 +192,12 @@ namespace fez_spider
             _gridOrdine.Render();
 
 
-
+            /* End Init Datagrids */
 
             /* Shut down Light on Buttons */
             plus.TurnLedOff();
             minus.TurnLedOff();
-
-            /*
-             * Configure Joypad
-             * Create a timer & run method timer_trick when thr timer ticks (for joystick)
-             */
-            GT.Timer timer = new GT.Timer(200);
-            timer.Tick += Timer_Tick;
-            timer.Start();
-
+            
 
             /* Initialize Glide */
             GlideTouch.Initialize();
@@ -534,17 +526,11 @@ namespace fez_spider
             
             _paypal = (GHI.Glide.UI.TextBlock)_pagamento.GetChildByName("paypal");            
             _pagamento.Invalidate();           
-        }        
-
-        
-        
-
+        }
         private void _noBtn_TapEvent(object sender)
         {
             Glide.MainWindow = _menu;
         }
-
-
         private void ResetStatus()
         {
             ORDER_CMD = NEW_ORDER;
@@ -559,21 +545,21 @@ namespace fez_spider
             _dataGrid.Clear();
             
         }
-
         private void _backBtn_TapEvent(object sender)
         {
             loadGUI(_menu);
         }
-
         private void _siBtn_TapEvent(object sender)
         {
             ResetStatus();
             loadGUI(_mainwindow);
         }
-
-        void deleteBtn_PressEvent(object sender)
+        private void deleteBtn_PressEvent(object sender)
         {
             ORDER_CMD = CANCEL_ORDER;
+
+            //TODO SEND CANCEL_ORDER IN SOCKET
+
             loadGUI(_cancel);
         }
         
@@ -589,11 +575,7 @@ namespace fez_spider
         {
             loadGUI(_mainwindow);
         }
-
-        /****************
-         * CALLBACK 
-         * *************/
-
+        
 
         private Socket connectToDesktop(String hostname,int port)
         {

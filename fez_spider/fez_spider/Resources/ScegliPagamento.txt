@@ -1,6 +1,8 @@
 <Glide>
   
   <Window Name="menu" Width="320" Height="240" BackColor="FFFFFF">
+	
+	<Button Name="BackToOrderBtn" X="5" Y="5" Width="20" Height="24" Alpha="255" Text="X" Font="3" FontColor="e00000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
 	<TextBlock Name="paymentLbl" X="0" Y="15" Width="320" Height="32" Alpha="255" Text="Choose Payment Method" TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
 	
   </Window>

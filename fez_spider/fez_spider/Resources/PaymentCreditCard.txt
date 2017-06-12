@@ -14,8 +14,12 @@
 	<TextBlock Name="cvv_label" X="275" Y="127" Width="35" Height="32" Alpha="255" Text="CVV" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
 	<TextBox Name="cvv" X="220" Y="160" Width="90" Height="32" Alpha="255" Text="" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
 	
-	<Button Name="backBtn" X="5" Y="202" Width="55" Height="32" Alpha="255" Text="Back" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
-	<Button Name="ordBtn" X="260" Y="202" Width="55" Height="32" Alpha="255" Text="V" Font="3" FontColor="12e000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+
+	<Button Name="ccBackBtn" X="5" Y="202" Width="55" Height="32" Alpha="255" Text="Back" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	
+	<TextBlock Name="ccErrMsg" X="65" Y="202" Width="190" Height="32" Alpha="255" Text="" TextAlign="Center" TextVerticalAlign="Middle" Font="5" FontColor="e00000"/>
+	
+	<Button Name="ccConfirmBtn" X="260" Y="202" Width="55" Height="32" Alpha="255" Text="V" Font="3" FontColor="12e000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
 
 
   </Window>

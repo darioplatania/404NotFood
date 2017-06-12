@@ -43,9 +43,14 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _ingredients;
         private GHI.Glide.UI.TextBox _input_creditCard_owner;
         private GHI.Glide.UI.TextBox _input_creditCard_number;
+        private GHI.Glide.UI.TextBox _input_creditCard_cvv;
         private GHI.Glide.UI.Dropdown _input_expiration_month;
         private GHI.Glide.UI.Dropdown _input_expiration_year;
-    
+        private GHI.Glide.UI.Button _ccBackBtn;
+        private GHI.Glide.UI.Button _ccConfirmBtn;
+        private GHI.Glide.UI.TextBlock _ccErrMsg;
+        private GHI.Glide.UI.Button _backToOrderBtn;
+
         #endregion
 
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -153,6 +158,7 @@ namespace fez_spider
 
             /* Choose Payment */
             _scegliPagamento = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ScegliPagamento));
+            _backToOrderBtn = (GHI.Glide.UI.Button)_scegliPagamento.GetChildByName("BackToOrderBtn");
             Image _creditCard = new Image("credit-card", 255, 22, 66, 128, 128);
             _creditCard.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.creditcard), Bitmap.BitmapImageType.Jpeg);
             
@@ -167,9 +173,13 @@ namespace fez_spider
             _credit_card_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.PaymentCreditCard));
             _input_creditCard_owner = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("card_owner");
             _input_creditCard_number = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("card_number");
+            _input_creditCard_cvv = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("cvv");
             _input_expiration_month = (GHI.Glide.UI.Dropdown)_credit_card_payment.GetChildByName("expiration_date_month");
             _input_expiration_year = (GHI.Glide.UI.Dropdown)_credit_card_payment.GetChildByName("expiration_date_year");
-
+            _input_creditCard_cvv = (GHI.Glide.UI.TextBox)_credit_card_payment.GetChildByName("cvv");
+            _ccBackBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccBackBtn");
+            _ccConfirmBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccConfirmBtn");
+            _ccErrMsg = (GHI.Glide.UI.TextBlock)_credit_card_payment.GetChildByName("ccErrMsg");
 
             ArrayList months = new ArrayList()
             {
@@ -226,8 +236,12 @@ namespace fez_spider
             _paypal.TapEvent += _paypal_TapEvent;
             _input_creditCard_owner.TapEvent += new OnTap(Glide.OpenKeyboard);
             _input_creditCard_number.TapEvent += new OnTap(Glide.OpenKeyboard);
+            _input_creditCard_cvv.TapEvent += new OnTap(Glide.OpenKeyboard);
             _input_expiration_month.TapEvent += monthsTapEvent;
             _input_expiration_year.TapEvent += yearsTapEvent;
+            _ccBackBtn.TapEvent += _ccBackBtnTapEvent;
+            _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
+            _backToOrderBtn.TapEvent += _backToOrderBtnTapEvent;
 
 
 
@@ -582,7 +596,7 @@ namespace fez_spider
 
             _finalPrice.Text = orders.Price + " EURO";
 
-            
+            previousWindow = Glide.MainWindow;
             loadGUI(_ordina);
 
 
@@ -598,6 +612,14 @@ namespace fez_spider
         {
             loadGUI(_credit_card_payment);
         }
+        private void _ccBackBtnTapEvent(object sender)
+        {
+            loadGUI(_scegliPagamento);
+        }
+        private void _ccConfirmBtnTapEvent(object sender)
+        {
+            Debug.Print("Confirm Payment");
+        }
         private void monthsTapEvent(object sender)
         {
             Glide.OpenList(sender, months_list);
@@ -608,6 +630,10 @@ namespace fez_spider
         }
         private void _paypal_TapEvent(object sender)
         {
+        }
+        private void _backToOrderBtnTapEvent(object sender)
+        {
+            loadGUI(_ordina);
         }
         private void _noBtn_TapEvent(object sender)
         {

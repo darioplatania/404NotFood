@@ -86,8 +86,8 @@ namespace fez_spider
         private static String ORDER_CMD = null;
 
         private ArrayList payment = new ArrayList();
-        //private String url = "http://192.168.100.1:8080/food/webapi/food";
-        private String url = "http://404notfood.sloppy.zone/food/webapi/food";
+        private String url = "http://192.168.2.1:8080/food/webapi/food";
+        //private String url = "http://404notfood.sloppy.zone/food/webapi/food";
         HttpWebRequest req;
         private HttpWebResponse res;
         private Stream stream;
@@ -278,7 +278,6 @@ namespace fez_spider
             _dataGrid.AddColumn(new DataGridColumn("MEAL", 175));
             _dataGrid.AddColumn(new DataGridColumn("PRICE", 50));
             _dataGrid.AddColumn(new DataGridColumn("QTY", 30));
-            _dataGrid.RowCount = 4;
             _dataGrid.Render();
 
             
@@ -350,21 +349,28 @@ namespace fez_spider
         {
             /*inizio get menu*/
             Debug.Print("GET MENU");
-            ArrayList al = new ArrayList();
+
+            ArrayList al = null;
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-            Debug.Print("Response: " + res.StatusCode);
-            Stream stream = res.GetResponseStream();
-            sr = new StreamReader(stream);
-            string json = sr.ReadToEnd();
 
+            if (res.StatusCode.ToString().Equals("200"))
+            {
 
-            //Debug.Print("json: " + json);
+                Debug.Print("Response: " + res.StatusCode);
 
-            al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+                Stream stream = res.GetResponseStream();
+                sr = new StreamReader(stream);
+                string json = sr.ReadToEnd();
 
+                Debug.Print("Menu: " + json);
+                
+
+                al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+                
+            }
 
             return al;
 
@@ -401,7 +407,12 @@ namespace fez_spider
         private void printDatagrid()
         {
             _dataGrid.Clear();
-            
+
+            if (orders.Size() > 3)
+                _dataGrid.RowCount = 4;
+            else
+                _dataGrid.RowCount = 3;
+
             Product p = null;
             foreach (Order order in orders.List)
             {
@@ -416,6 +427,8 @@ namespace fez_spider
             updateIngredientsLabel();
 
             _pCounter.Text = orders.Total.ToString();
+            _menu.Invalidate();
+
             _dataGrid.SelectedIndex = selected_row;
             _dataGrid.Invalidate();
 
@@ -491,6 +504,7 @@ namespace fez_spider
         {
             if (Glide.MainWindow == _menu)
             {
+
                 _dataGrid.ScrollUp(1);
                 selected_row--;
 
@@ -503,6 +517,7 @@ namespace fez_spider
                 _dataGrid.Invalidate();
 
                 updateIngredientsLabel();
+
             }else if(Glide.MainWindow == _ordina)
             {
                 _gridOrdine.ScrollUp(1);
@@ -823,9 +838,12 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            previousWindow = Glide.MainWindow;
-            timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
-            loadGUI(_errorWindow);
+            if (startup)
+            {
+                previousWindow = Glide.MainWindow;
+                timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
+                loadGUI(_errorWindow);
+            }
 
         }
         ///*Ethernet Network_Up Function*/
@@ -846,7 +864,9 @@ namespace fez_spider
         private void Start_PressEvent(object sender)
         {
 
+            _loadingLbl.Text = "Loading, Please Wait..";
             
+
             _startbtn.Enabled = false;
             _loadingLbl.Visible = true;
             _mainwindow.Invalidate();
@@ -859,21 +879,20 @@ namespace fez_spider
             // TODO Service Discovery
 
             menu = downloadMenu(url);
-            if (menu != null) {
+            if (menu != null)
+            {
 
-                
+
                 _startbtn.Enabled = true;
                 _loadingLbl.Visible = false;
-
-
-                Glide.MainWindow = _menu;
-
+                
                 initOrders();
+
+                loadGUI(_menu);
+
                 printDatagrid();
 
-
-                _menu.Invalidate();
-                    
+                
             }
 
             

@@ -72,6 +72,7 @@ namespace fez_spider
         private const String UPDATE_ORDER   = "UPDATE_ORDER\r\n";
 
 
+        private static String ORDER_CMD = null;
 
         private ArrayList payment = new ArrayList();
         //private String url = "http://192.168.100.1:8080/food/webapi/food";
@@ -449,10 +450,58 @@ namespace fez_spider
         }
         
        
+        private string GetOrderAsJson()
+        {
+            Hashtable order = new Hashtable();
+            order.Add("id", "123456"); //Scegliere id_ordine random
+            order.Add("price", orders.Price.ToString());
+            
+            ArrayList foods = new ArrayList();
+            Product p;
+            foreach (Order o in orders.List)
+            {
+                if (o.Quantity == 0)
+                    continue;
+
+                p = o.Product;
+                Hashtable new_food = new Hashtable();
+                new_food.Add("name", p.nome);
+                new_food.Add("price", p.prezzo);
+
+
+                Hashtable food = new Hashtable();
+                food.Add("food", new_food);
+                food.Add("ingredients", p.ingredients);
+                food.Add("quantity", o.Quantity);
+
+                foods.Add(food);
+            }
+
+            order.Add("foods", foods);
+            
+            return Json.NETMF.JsonSerializer.SerializeObject(order);
+            
+            
+        }
 
         /*ordBtn TapEvent*/
         void _ordBtn_PressEvent(object sender)
         {
+
+            
+            String order_as_json = GetOrderAsJson();
+
+            Debug.Print(ORDER_CMD);
+            Debug.Print(order_as_json);
+
+            /* Send Socket */
+
+
+            /* Update Command */
+            ORDER_CMD = UPDATE_ORDER;
+
+            /* Update GUI */
+
             _gridOrdine.Clear();
             
             foreach (Order o in orders.List)
@@ -464,7 +513,11 @@ namespace fez_spider
             
             loadGUI(_ordina);
 
-        }        
+
+
+            
+
+        }
 
         /*apre pagina per il pagamento*/
         private void _payBtn_TapEvent(object sender)
@@ -486,7 +539,6 @@ namespace fez_spider
         
         
 
-        /*pulsante no annulla ordine*/
         private void _noBtn_TapEvent(object sender)
         {
             Glide.MainWindow = _menu;
@@ -495,7 +547,8 @@ namespace fez_spider
 
         private void ResetStatus()
         {
-            
+            ORDER_CMD = NEW_ORDER;
+
             orders.Clear();
             orders.Total = 0;
             orders.Price = 0;
@@ -512,16 +565,15 @@ namespace fez_spider
             loadGUI(_menu);
         }
 
-        /*pulsante si annulla ordine*/
         private void _siBtn_TapEvent(object sender)
         {
             ResetStatus();
             loadGUI(_mainwindow);
         }
 
-        /*Delete_btn TapEvent*/
         void deleteBtn_PressEvent(object sender)
         {
+            ORDER_CMD = CANCEL_ORDER;
             loadGUI(_cancel);
         }
         
@@ -590,6 +642,8 @@ namespace fez_spider
 
             ResetStatus();
 
+            ORDER_CMD = NEW_ORDER;
+
             _startbtn.Enabled = false;
             _loadingLbl.Visible = true;
             _mainwindow.Invalidate();
@@ -608,6 +662,8 @@ namespace fez_spider
 
                 initOrders();
                 printDatagrid();
+
+
                 _menu.Invalidate();
                     
             }
@@ -626,7 +682,7 @@ namespace fez_spider
                     minus.ButtonPressed -= Minus_ButtonPressed;
 
                     int new_qty = orders.Decrement(selected_id);
-                    orders.printStatus();
+                    //orders.printStatus();
 
                     if (orders.Total == 0)
                         _ordBtn.Enabled = false;
@@ -665,7 +721,7 @@ namespace fez_spider
                     _errMsg.Visible = false;
 
                     int new_qty = orders.Increment(selected_id);
-                    orders.printStatus();
+                    //orders.printStatus();
 
                     _ordBtn.Enabled = true;
 

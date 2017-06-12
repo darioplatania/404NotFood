@@ -623,6 +623,7 @@ namespace fez_spider
                 if (selected_row >= 0)
                 {
                     minus.TurnLedOn();
+                    minus.ButtonPressed -= Minus_ButtonPressed;
 
                     int new_qty = orders.Decrement(selected_id);
                     orders.printStatus();
@@ -638,6 +639,7 @@ namespace fez_spider
 
                     _menu.Invalidate();
 
+                    minus.ButtonPressed += Minus_ButtonPressed;
                     minus.TurnLedOff();
                 }
 
@@ -658,6 +660,7 @@ namespace fez_spider
                 if (selected_row >= 0)
                 {
                     plus.TurnLedOn();
+                    plus.ButtonPressed -= Plus_ButtonPressed;
 
                     _errMsg.Visible = false;
 
@@ -674,6 +677,8 @@ namespace fez_spider
 
                     _menu.Invalidate();
 
+
+                    plus.ButtonPressed += Plus_ButtonPressed;
                     plus.TurnLedOff();
                 }
                 else

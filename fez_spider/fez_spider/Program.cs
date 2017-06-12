@@ -27,6 +27,7 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _ordina;
         private static GHI.Glide.Display.Window _scegliPagamento;
         private static GHI.Glide.Display.Window _credit_card_payment;
+        private static GHI.Glide.Display.Window _paypal_payment;
         private static GHI.Glide.Display.Window _processingPaymentWindow;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
@@ -226,6 +227,13 @@ namespace fez_spider
             Image _processingThumb = new Image("processing-thumb", 255, 86, 56, 128, 128);
             _processingThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.processingPayment), Bitmap.BitmapImageType.Jpeg);
             _processingPaymentWindow.AddChild(_processingThumb);
+
+
+            /* Payment Via Paypal */
+            _paypal_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paypalPaymentWindow));
+            Image _qrcodeSample = new Image("qrcode", 255, 0, 0, 320, 240);
+            _qrcodeSample.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.sample_qrcode), Bitmap.BitmapImageType.Jpeg);
+            _paypal_payment.AddChild(_qrcodeSample);
 
             /* NetworkErrorWindow */
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
@@ -592,8 +600,13 @@ namespace fez_spider
             loadGUI(_processingPaymentWindow);
 
 
+            //TODO PROCESS PAYMENT
+
             _ccConfirmBtn.Enabled = true;
             _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
+
+            System.Threading.Thread.Sleep(3000);
+            loadGUI(_mainwindow);
 
         }
         /*
@@ -780,6 +793,7 @@ namespace fez_spider
         }
         private void _paypal_TapEvent(object sender)
         {
+            loadGUI(_paypal_payment);
         }
         private void _backToOrderBtnTapEvent(object sender)
         {

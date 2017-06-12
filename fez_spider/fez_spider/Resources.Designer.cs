@@ -47,6 +47,7 @@ namespace fez_spider
             americanexpress = -9027,
             creditcard = -5944,
             logo_food = -5226,
+            sample_qrcode = -5062,
             mastercard = 29263,
         }
         [System.SerializableAttribute()]
@@ -58,6 +59,7 @@ namespace fez_spider
             Menu = -2554,
             ErrorWindow = 910,
             Ordina = 6285,
+            paypalPaymentWindow = 12245,
             Annulla = 18971,
             ScegliPagamento = 26704,
         }

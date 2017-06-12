@@ -1,0 +1,7 @@
+<Glide>
+
+  <Window Name="menu" Width="320" Height="240" BackColor="FFFFFF">
+
+  </Window>
+
+</Glide>

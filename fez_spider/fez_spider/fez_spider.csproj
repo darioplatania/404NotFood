@@ -155,6 +155,8 @@
     <None Include="mastercard.jpg" />
     <None Include="processingPayment.jpg" />
     <None Include="Resources\processingPaymentWindow.txt" />
+    <None Include="Resources\paypalPaymentWindow.txt" />
+    <None Include="Resources\sample_qrcode.jpeg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

@@ -180,6 +180,17 @@ namespace fez_spider
             _ccBackBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccBackBtn");
             _ccConfirmBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccConfirmBtn");
             _ccErrMsg = (GHI.Glide.UI.TextBlock)_credit_card_payment.GetChildByName("ccErrMsg");
+            Image _visaThumb = new Image("visa-thumb", 255,20, 25, 48, 30);
+            _visaThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.visa), Bitmap.BitmapImageType.Jpeg);
+            Image _mastercardThumb = new Image("mastercard-thumb", 255, 20, 60, 48, 30);
+            _mastercardThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.mastercard), Bitmap.BitmapImageType.Jpeg);
+            Image _americanexpressThumb = new Image("americanexpress-thumb", 255, 20, 95, 48, 30);
+            _americanexpressThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.americanexpress), Bitmap.BitmapImageType.Jpeg);
+
+            _credit_card_payment.AddChild(_visaThumb);
+            _credit_card_payment.AddChild(_mastercardThumb);
+            _credit_card_payment.AddChild(_americanexpressThumb);
+
 
             ArrayList months = new ArrayList()
             {

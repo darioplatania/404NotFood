@@ -136,6 +136,7 @@
     <None Include="Resources\start.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="visa.jpg" />
     <None Include="Resources\Ordina.txt" />
     <None Include="Resources\Pagamento.txt" />
     <None Include="Resources\ErrorWindow.txt" />
@@ -150,6 +151,8 @@
     <None Include="creditcard.jpg" />
     <None Include="paypal.jpg" />
     <None Include="Resources\PaymentCreditCard.txt" />
+    <None Include="americanexpress.jpg" />
+    <None Include="mastercard.jpg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

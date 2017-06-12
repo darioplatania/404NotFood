@@ -51,10 +51,13 @@ namespace fez_spider
         [System.SerializableAttribute()]
         internal enum BinaryResources : short
         {
+            visa = -21004,
             Connection_error = -16116,
             paypal = -11989,
+            americanexpress = -9027,
             creditcard = -5944,
             logo_food = -5226,
+            mastercard = 29263,
         }
         [System.SerializableAttribute()]
         internal enum FontResources : short

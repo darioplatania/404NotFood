@@ -19,15 +19,7 @@ namespace fez_spider
 
         }
 
-
-        //TODO DA RIMUOVERE
-        public Product(string i, string n, Double p, int q)
-        {
-            id = i;
-            nome = n;
-            prezzo = p;
-            
-        }
+        
     }
 }
 

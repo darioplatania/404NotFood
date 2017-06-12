@@ -571,8 +571,7 @@ namespace fez_spider
             _mainwindow.Invalidate();
 
             ResetStatus();
-
-            //TODO Generate New Order Random Id
+            
             orderId = RandomString(32);
             Debug.Print("orderId: " + orderId);
 

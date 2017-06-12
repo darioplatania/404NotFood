@@ -36,6 +36,7 @@
 	<target name="init" depends="clean">
 		<!-- make directories -->
 	    <mkdir dir="${build.dir}"/>
+		<mkdir dir="${web.lib.dir}"/>
 		<mkdir dir="${gen.dir}"/>
 		<mkdir dir="${gen-tomcat-service.dir}"/>		
 		<mkdir dir="${gen-war.dir}"/>

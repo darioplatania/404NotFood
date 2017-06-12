@@ -35,30 +35,20 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _loadingLbl;
         private GHI.Glide.UI.TextBlock _pCounter;
         private GHI.Glide.UI.TextBlock _finalPrice;
-        private GHI.Glide.UI.TextBlock _msgord1;
-        private GHI.Glide.UI.TextBlock _pfinal;
         private GHI.Glide.UI.TextBlock _errMsg;
         private GHI.Glide.UI.TextBlock _ingredients;
         private GHI.Glide.UI.TextBlock _paypal;   
              
-        private int qnt;
-        private Double price;
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
         private string selected_id;
         private string selected_name;
         private Double selected_price;
         private int selected_qnt;
         private int selected_row = 0;
-        private int count = 0;
-        private int exist = 0;
-        private int aux = 0;
-        private int flagmdf = 0;
-        private int flagstart = 0;        
-        private string json;
         byte[] result = new byte[65536];
 
 
-        private static string pendingOrderId = null;
+        private static string orderId = null;
 
         /* Socket Variables */
         private const String HOST = "192.168.1.70";
@@ -150,14 +140,7 @@ namespace fez_spider
             _errorWindow.AddChild(_Errorlogo);
             _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
 
-
-
-
-
-
-
-
-
+            
             /* Register Events to Buttons */
 
             _startbtn.PressEvent += Start_PressEvent;
@@ -445,7 +428,7 @@ namespace fez_spider
         private string GetOrderAsJson()
         {
             Hashtable order = new Hashtable();
-            order.Add("id", "123456"); //Scegliere id_ordine random
+            order.Add("id", orderId); //Scegliere id_ordine random
             order.Add("price", orders.Price.ToString());
             
             ArrayList foods = new ArrayList();
@@ -533,6 +516,7 @@ namespace fez_spider
         }
         private void ResetStatus()
         {
+            orderId = "";
             ORDER_CMD = NEW_ORDER;
 
             orders.Clear();
@@ -610,7 +594,7 @@ namespace fez_spider
             string json = sr.ReadToEnd();
             
 
-            Debug.Print("json: " + json);
+            //Debug.Print("json: " + json);
 
             al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
 
@@ -619,19 +603,36 @@ namespace fez_spider
 
         }
 
+        private string RandomString(int Size)
+        {
+            Random random = new Random();
+            string input = "abcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder builder = new StringBuilder();
+            char ch;
+            for (int i = 0; i < Size; i++)
+            {
+                ch = input[random.Next(input.Length)];
+                builder.Append(ch);
+            }
+            return builder.ToString();
+        }
+
         private void Start_PressEvent(object sender)
         {
 
-            ResetStatus();
-
-            ORDER_CMD = NEW_ORDER;
-
+            
             _startbtn.Enabled = false;
             _loadingLbl.Visible = true;
             _mainwindow.Invalidate();
 
+            ResetStatus();
+
+            //TODO Generate New Order Random Id
+            orderId = RandomString(32);
+            Debug.Print("orderId: " + orderId);
+
             // TODO Service Discovery
-                
+
             menu = downloadMenu(url);
             if (menu != null) {
 

@@ -11,6 +11,8 @@ using System.IO;
 using System.Text;
 using System.Net.Sockets;
 
+
+
 namespace fez_spider
 {
     public partial class Program
@@ -218,6 +220,8 @@ namespace fez_spider
         }
 
         #region Custom Function Implementation 
+
+        //TODO Commentare sopra ogni signature
 
         private Socket connectToDesktop(String hostname, int port)
         {

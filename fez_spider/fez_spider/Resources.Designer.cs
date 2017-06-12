@@ -46,8 +46,8 @@ namespace fez_spider
             paypal = -11989,
             americanexpress = -9027,
             creditcard = -5944,
-            logo_food = -5226,
             sample_qrcode = -5062,
+            logo = 17715,
             mastercard = 29263,
         }
         [System.SerializableAttribute()]

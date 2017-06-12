@@ -144,7 +144,6 @@
     <None Include="Connection_error.png" />
     <None Include="Resources\ConnectionError.bmp" />
     <None Include="Connection_error.jpg" />
-    <None Include="Resources\Logo.jpg" />
     <None Include="Resources\logo-food.jpg" />
     <None Include="Resources\Annulla.txt" />
     <None Include="Resources\ScegliPagamento.txt" />
@@ -157,6 +156,7 @@
     <None Include="Resources\processingPaymentWindow.txt" />
     <None Include="Resources\paypalPaymentWindow.txt" />
     <None Include="Resources\sample_qrcode.jpeg" />
+    <None Include="Resources\logo.jpg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

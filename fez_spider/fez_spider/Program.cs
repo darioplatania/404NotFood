@@ -130,9 +130,9 @@ namespace fez_spider
             _loadingLbl = (GHI.Glide.UI.TextBlock)_mainwindow.GetChildByName("loading_lbl");
 
             // MainWindow.Adding Service Logo
-            Image _Servicelogo = new Image("service-logo", 255, 0, 0, 320, 100);
+            Image _Servicelogo = new Image("service-logo", 255, 96, 10, 128, 128);
             _mainwindow.AddChild(_Servicelogo);
-            _Servicelogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo_food), Bitmap.BitmapImageType.Jpeg);
+            _Servicelogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.logo), Bitmap.BitmapImageType.Jpeg);
 
 
             /* Menu */

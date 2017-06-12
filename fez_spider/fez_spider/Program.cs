@@ -670,8 +670,18 @@ namespace fez_spider
         {
             loadGUI(_credit_card_payment);
         }
+        private void resetPaymentInputs()
+        {
+            _input_creditCard_owner.Text = "";
+            _input_creditCard_number.Text = "";
+            _input_creditCard_cvv.Text = "";
+            _input_expiration_month.Text = "Month";
+            _input_expiration_year.Text = "Year";
+            _credit_card_payment.Invalidate();
+        }
         private void _ccBackBtnTapEvent(object sender)
         {
+            resetPaymentInputs();
             loadGUI(_scegliPagamento);
         }
         private void _ccConfirmBtnTapEvent(object sender)
@@ -737,6 +747,7 @@ namespace fez_spider
 
                         string card_as_json = Json.NETMF.JsonSerializer.SerializeObject(card);
 
+                        resetPaymentInputs();
                         processPayment(card_as_json);
 
                     }

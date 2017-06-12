@@ -163,6 +163,12 @@
   <data name="mastercard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>mastercard.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
+  <data name="processingPayment" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>processingPayment.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="processingPaymentWindow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\processingPaymentWindow.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
   <data name="visa" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>visa.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
   </data>

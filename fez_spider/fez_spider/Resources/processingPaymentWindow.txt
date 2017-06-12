@@ -1,0 +1,7 @@
+<Glide>
+  <Window Name="payment_credit_card" Width="320" Height="240" BackColor="FFFFFF">   
+	 <TextBlock Name="label" X="0" Y="200" Width="320" Height="32" Alpha="255" Text="Processing payment..." TextAlign="Center" TextVerticalAlign="Middle" Font="5" FontColor="000000"/>
+	
+  </Window>
+
+</Glide>

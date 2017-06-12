@@ -5,7 +5,7 @@
 	
 	<Button Name="backBtn" X="5" Y="200" Width="90" Height="32" Alpha="255" Text="Back" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
     
-	<Button Name="payBtn" X="228" Y="200" Width="90" Height="32" Alpha="255" Text="Pagamento" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	<Button Name="payBtn" X="228" Y="200" Width="90" Height="32" Alpha="255" Text="Payment" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
 	
 	<TextBlock Name="finalPrice" X="90" Y="202" Width="150" Height="32" Alpha="255" Text="" TextAlign="Center" TextVerticalAlign="Middle" Font="5" FontColor="000000"/>
 	

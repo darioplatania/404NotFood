@@ -27,6 +27,7 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _ordina;
         private static GHI.Glide.Display.Window _scegliPagamento;
         private static GHI.Glide.Display.Window _credit_card_payment;
+        private static GHI.Glide.Display.Window _processingPaymentWindow;
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ordBtn;
@@ -217,9 +218,15 @@ namespace fez_spider
                 years.Add(new object[2] { i.ToString(), i });
             
             years_list = new List(years, 150);
-            
 
-            
+
+
+            /* Processing Payment Window */
+            _processingPaymentWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.processingPaymentWindow));
+            Image _processingThumb = new Image("processing-thumb", 255, 86, 56, 128, 128);
+            _processingThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.processingPayment), Bitmap.BitmapImageType.Jpeg);
+            _processingPaymentWindow.AddChild(_processingThumb);
+
             /* NetworkErrorWindow */
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
             
@@ -577,7 +584,17 @@ namespace fez_spider
            
         }
         private void processPayment(string creditCard) {
+
+            _ccConfirmBtn.Enabled = false;
+            _ccConfirmBtn.TapEvent -= _ccConfirmBtnTapEvent;
+
             Debug.Print(creditCard);
+            loadGUI(_processingPaymentWindow);
+
+
+            _ccConfirmBtn.Enabled = true;
+            _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
+
         }
         /*
              
@@ -681,11 +698,23 @@ namespace fez_spider
                     if ((type.Equals("Visa") && (number.Length < 13 || number.Length > 16))
                     || ((type.Equals("Master Card") && number.Length != 16))
                     || ((type.Equals("American Express") && number.Length != 15)))
+                    {
                         message = "Wrong Card Number";
+                        _ccErrMsg.Text = message;
+                        _credit_card_payment.Invalidate();
+                    }
                     else if (cvv.Length > 3)
-                        message = "CVV length more than 3";
-                    else if (month.Equals("Month") || year.Equals("Year"))
+                    {
                         message = "Wrong Expiration Date";
+                        _ccErrMsg.Text = message;
+                        _credit_card_payment.Invalidate();
+                    }
+                    else if (month.Equals("Month") || year.Equals("Year"))
+                    {
+                        message = "Wrong Expiration Date";
+                        _ccErrMsg.Text = message;
+                        _credit_card_payment.Invalidate();
+                    }
                     else
                     {
                         //Process Payment
@@ -712,17 +741,22 @@ namespace fez_spider
 
                     }
                 }
-                else
-                    message = "Wrong Card Number";
+                else {
 
+                    message = "Wrong Card Number";
+                    _ccErrMsg.Text = message;
+                    _credit_card_payment.Invalidate();
+                }
+                
                 
 
             }
-            else
+            else { 
                 message = "Please fill in all fields";
-            
-            _ccErrMsg.Text = message;
-            _credit_card_payment.Invalidate();
+                _ccErrMsg.Text = message;
+                _credit_card_payment.Invalidate();
+
+            }
 
         }
         private void monthsTapEvent(object sender)

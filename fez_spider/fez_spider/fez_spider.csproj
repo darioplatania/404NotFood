@@ -153,6 +153,8 @@
     <None Include="Resources\PaymentCreditCard.txt" />
     <None Include="americanexpress.jpg" />
     <None Include="mastercard.jpg" />
+    <None Include="processingPayment.jpg" />
+    <None Include="Resources\processingPaymentWindow.txt" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

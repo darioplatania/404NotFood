@@ -50,6 +50,9 @@ namespace fez_spider
         private Double selected_price;
         private int selected_qnt;
         private int selected_row = 0;
+        private static double timestamp;
+        private static bool startup = false;
+        private static GHI.Glide.Display.Window previousWindow;
         byte[] result = new byte[65536];
 
 
@@ -278,7 +281,6 @@ namespace fez_spider
         private void loadGUI(GHI.Glide.Display.Window window)
         {
             Glide.MainWindow = window;
-            window.Invalidate();
         }
         private void initOrders()
         {
@@ -480,6 +482,11 @@ namespace fez_spider
             
             
         }
+        private string GetTimeStamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssfff");
+           
+        }
 
         #endregion
 
@@ -558,13 +565,25 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-           loadGUI(_errorWindow);
+            previousWindow = Glide.MainWindow;
+            timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
+            loadGUI(_errorWindow);
 
         }
         /*Ethernet Network_Up Function*/
         private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            loadGUI(_mainwindow);
+            int timeout = 10000;
+            double up_timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
+            //Debug.Print(up_timestamp + " - " + timestamp + " = " + (up_timestamp - timestamp));
+            if ((up_timestamp - timestamp) < timeout && startup)
+                loadGUI(previousWindow);
+            else {
+                startup = true;
+                loadGUI(_mainwindow);
+            }
+
+
         }
         private void Start_PressEvent(object sender)
         {

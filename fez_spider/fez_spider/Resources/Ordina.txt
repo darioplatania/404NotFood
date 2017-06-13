@@ -1,7 +1,7 @@
 <Glide>
   <Window Name="ordina" Width="320" Height="240" BackColor="FFFFFF">	
     
-	<DataGrid Name="gridOrdine" X="5" Y="5" Width="310" Height="160" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="True" ScrollbarWidth="20" HeadersBackColor="e00000" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/>
+	<DataGrid Name="gridOrdine" X="5" Y="5" Width="310" Height="160" Alpha="255" Font="4" RowCount="5" RowHeight="30" Draggable="True" TappableCells="True" SortableHeaders="True" ShowHeaders="True" ShowScrollbar="False" ScrollbarWidth="20" HeadersBackColor="e00000" HeadersFontColor="FFFFFF" ItemsBackColor="FFFFFF" ItemsAltBackColor="F4F4F4" ItemsFontColor="000000" SelectedItemBackColor="FFF299" SelectedItemFontColor="000000" GridColor="BFC5C9" ScrollbarBackColor="C0C0C0" ScrollbarScrubberColor="000000"/>
 	
 	<Button Name="backBtn" X="5" Y="200" Width="90" Height="32" Alpha="255" Text="Back" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
     

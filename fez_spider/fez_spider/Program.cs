@@ -353,8 +353,6 @@ namespace fez_spider
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
         {
-            
-
             menu = new ArrayList();
             orders = new Orders();
             initFezSettings();
@@ -803,6 +801,7 @@ namespace fez_spider
             resetPaymentInputs();
             loadGUI(_scegliPagamento);
         }
+        
         private void _ccConfirmBtnTapEvent(object sender)
         {
             string message = "";
@@ -816,17 +815,80 @@ namespace fez_spider
             string type     = null;
 
             int month_as_number = 0;
+
+            number  = number.Trim();
+            cvv     = cvv.Trim();
+
+            bool valid_owner = true;
+            bool valid_cvv = true;
+            bool valid_number = true;
+
+
             
-            if(!owner.Equals("") && !number.Equals("") && !cvv.Equals(""))
+
+            if (!owner.Equals("") && !number.Equals("") && !cvv.Equals(""))
             {
-                //TODO REPLACE ALL Special Symbols from number
+
+
+                owner = owner.TrimStart();
+                owner = owner.TrimEnd();
+                foreach (char c in owner.ToCharArray())
+                {
+                    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == ' ' || c=='à' || c=='ò' || c=='è' || c=='é' || c=='ù')
+                        continue;
+                    else
+                    {
+                        valid_owner = false;
+                        break;
+                    }
+                    
+                }
+
+                if (!valid_owner) {
+                    message = "Wrong Name";
+                    _ccErrMsg.Text = message;
+                    _credit_card_payment.Invalidate();
+                    return;
+                }
+
+
+                number.Trim(); //Removing spaces
+                foreach (char c in number.ToCharArray())
+                {
+                    if (c < '0' || c > '9') { 
+                        valid_number = false;
+                        break;
+                    }
+
+                }
+
+                if (!valid_number)
+                {
+                    message = "Wrong Number";
+                    _ccErrMsg.Text = message;
+                    _credit_card_payment.Invalidate();
+                    return;
+                }
+                
+
                 type = GetCardTypeFromNumber(number);
 
                 if (type != null)
                 {
-                    if (cvv.Length > 3)
+
+                    foreach (char c in cvv.ToCharArray())
                     {
-                        message = "Wrong Expiration Date";
+                        if (c < '0' || c > '9')
+                        {
+                            valid_cvv = false;
+                            break;
+                        }
+                            
+                    }
+
+                    if (cvv.Length < 3 || !valid_cvv)
+                    {
+                        message = "Wrong CVV";
                         _ccErrMsg.Text = message;
                         _credit_card_payment.Invalidate();
                     }
@@ -842,9 +904,19 @@ namespace fez_spider
                         month_as_number = int.Parse(_input_expiration_month.Value.ToString());
                         Debug.Print(owner + " " + number + " " + cvv + " " + month_as_number + " " + year);
 
+
+                        
                         string[] splitted = owner.Split(' ');
-                        string firstname = splitted[0];
-                        string lastname = splitted[1];
+                        string firstname = "";
+
+                        // Supporting multiple names
+                        for (int i = 0; i < splitted.Length-1; i++)
+                            if (i == 0)
+                                firstname = splitted[i];
+                            else
+                                firstname += " " + splitted[i];
+
+                        string lastname = splitted[splitted.Length-1];
 
 
                         Hashtable card = new Hashtable();

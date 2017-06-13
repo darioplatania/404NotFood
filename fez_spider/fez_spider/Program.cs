@@ -864,7 +864,7 @@ namespace fez_spider
 
                 if (!valid_number)
                 {
-                    message = "Wrong Number";
+                    message = "Wrong Card Number";
                     _ccErrMsg.Text = message;
                     _credit_card_payment.Invalidate();
                     return;

@@ -333,13 +333,13 @@ namespace fez_spider
             {
                 switch (type)
                 {
-                    case "Visa":
+                    case "visa":
                         _visaThumb.Alpha = 255;
                         break;
-                    case "Master Card":
+                    case "mastercard":
                         _mastercardThumb.Alpha = 255;
                         break;
-                    case "American Express":
+                    case "amex":
                         _americanexpressThumb.Alpha = 255;
                         break;
                 }
@@ -725,14 +725,14 @@ namespace fez_spider
             string prefix = number.Substring(0, 2);
 
             if ((prefix.Equals("34") || prefix.Equals("37")) && number.Length == 15)
-                retval = "American Express";
+                retval = "amex";
             else if ((prefix.Equals("51") || prefix.Equals("52") || prefix.Equals("53") || prefix.Equals("54") || prefix.Equals("55")) && number.Length==16)
-                retval = "Master Card";
+                retval = "mastercard";
             else
             {
                 prefix = number.Substring(0, 1);
                 if (prefix.Equals("4") && (number.Length >= 13 && number.Length <= 16))
-                    retval = "Visa";
+                    retval = "visa";
             }
             
 

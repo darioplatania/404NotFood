@@ -111,6 +111,9 @@ namespace fez_spider
         private static String gateway    = "192.168.2.1";
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
+
+        private static int led_position;
+
         #endregion
 
         #region Fez Initialization on Startup
@@ -119,6 +122,9 @@ namespace fez_spider
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
             Debug.Print("Program Started");
 
+
+            /* Init Led Position */
+            led_position = 0;
 
             /*
              * Configure Joypad
@@ -347,11 +353,12 @@ namespace fez_spider
         /*This method is run when the mainboard is powered up or reset*/
         void ProgramStarted()
         {
+            
 
             menu = new ArrayList();
             orders = new Orders();
             initFezSettings();
-                
+
 
         }
 
@@ -418,9 +425,51 @@ namespace fez_spider
             }
             return builder.ToString();
         }
+
+        private void progressLed(GHI.Glide.Display.Window window)
+        {
+
+            if (window != _cancel)
+            {
+                if (window == _mainwindow)
+                {
+                    led_position = 0;
+                }
+                else if (window == _menu)
+                {
+                    led_position = 1;
+                }
+                else if (window == _ordina)
+                {
+                    led_position = 2;
+                }
+                else if (window == _scegliPagamento)
+                {
+                    led_position = 3;
+                }
+                else if (window == _credit_card_payment || window == _paypal_payment)
+                {
+                    led_position = 4;
+                }
+                else if (window == _processingPaymentWindow)
+                {
+                    led_position = 5;
+                }//else if successfull payment led_position = 6
+
+                ledStrip.TurnAllLedsOff();
+                ledStrip.TurnLedOn(led_position);
+            }
+            
+        }
+
         private void loadGUI(GHI.Glide.Display.Window window)
         {
+            int led_position = 0;
+
             Glide.MainWindow = window;
+            progressLed(window);
+            
+
         }
         private void initOrders()
         {
@@ -585,6 +634,8 @@ namespace fez_spider
         }
         private void ResetStatus()
         {
+            led_position = 0;
+
             orderId = "";
             ORDER_CMD = NEW_ORDER;
 
@@ -596,6 +647,8 @@ namespace fez_spider
             _pCounter.Text = "";
 
             _dataGrid.Clear();
+
+            ledStrip.TurnLedOn(led_position);
 
         }
         private string GetOrderAsJson()
@@ -846,7 +899,7 @@ namespace fez_spider
         }
         private void _noBtn_TapEvent(object sender)
         {
-            Glide.MainWindow = _menu;
+            loadGUI(_menu);
         }
         private void _backBtn_TapEvent(object sender)
         {
@@ -921,7 +974,7 @@ namespace fez_spider
                 loadGUI(_menu);
 
                 printDatagrid();
-
+            
                 
             }
 

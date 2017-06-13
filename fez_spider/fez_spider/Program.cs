@@ -886,7 +886,7 @@ namespace fez_spider
                             
                     }
 
-                    if (cvv.Length < 3 || !valid_cvv)
+                    if (cvv.Length != 3 || !valid_cvv)
                     {
                         message = "Wrong CVV";
                         _ccErrMsg.Text = message;

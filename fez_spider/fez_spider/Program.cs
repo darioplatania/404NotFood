@@ -66,6 +66,10 @@ namespace fez_spider
         private static GHI.Glide.Display.Window previousWindow;
         byte[] result = new byte[65536];
 
+
+        private static Image _visaThumb;
+        private static Image _mastercardThumb;
+        private static Image _americanexpressThumb;
         private List months_list;
         private List years_list;
 
@@ -182,11 +186,11 @@ namespace fez_spider
             _ccBackBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccBackBtn");
             _ccConfirmBtn = (GHI.Glide.UI.Button)_credit_card_payment.GetChildByName("ccConfirmBtn");
             _ccErrMsg = (GHI.Glide.UI.TextBlock)_credit_card_payment.GetChildByName("ccErrMsg");
-            Image _visaThumb = new Image("visa-thumb", 255,20, 25, 48, 30);
+            _visaThumb = new Image("visa-thumb", 128,20, 25, 48, 30);
             _visaThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.visa), Bitmap.BitmapImageType.Jpeg);
-            Image _mastercardThumb = new Image("mastercard-thumb", 255, 20, 60, 48, 30);
+            _mastercardThumb = new Image("mastercard-thumb", 128, 20, 60, 48, 30);
             _mastercardThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.mastercard), Bitmap.BitmapImageType.Jpeg);
-            Image _americanexpressThumb = new Image("americanexpress-thumb", 255, 20, 95, 48, 30);
+            _americanexpressThumb = new Image("americanexpress-thumb", 128, 20, 95, 48, 30);
             _americanexpressThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.americanexpress), Bitmap.BitmapImageType.Jpeg);
 
             _credit_card_payment.AddChild(_visaThumb);
@@ -262,6 +266,7 @@ namespace fez_spider
             _paypal.TapEvent += _paypal_TapEvent;
             _input_creditCard_owner.TapEvent += new OnTap(Glide.OpenKeyboard);
             _input_creditCard_number.TapEvent += new OnTap(Glide.OpenKeyboard);
+            _input_creditCard_number.ValueChangedEvent += _input_creditCard_number_ValueChangedEvent;
             _input_creditCard_cvv.TapEvent += new OnTap(Glide.OpenKeyboard);
             _input_expiration_month.TapEvent += monthsTapEvent;
             _input_expiration_year.TapEvent += yearsTapEvent;
@@ -311,6 +316,31 @@ namespace fez_spider
 
 
 
+        }
+
+        private void _input_creditCard_number_ValueChangedEvent(object sender)
+        {
+            string number = _input_creditCard_number.Text;
+            
+            string type = GetCardTypeFromNumber(number);
+            if (type != null)
+            {
+                switch (type)
+                {
+                    case "Visa":
+                        _visaThumb.Alpha = 255;
+                        break;
+                    case "Master Card":
+                        _mastercardThumb.Alpha = 255;
+                        break;
+                    case "American Express":
+                        _americanexpressThumb.Alpha = 255;
+                        break;
+                }
+            }
+            
+            
+            
         }
         #endregion
 
@@ -635,17 +665,22 @@ namespace fez_spider
         */
         private String GetCardTypeFromNumber(string number)
         {
+
+            if (number.Length < 13)
+                return null;
+
             string retval = null;
+
             string prefix = number.Substring(0, 2);
 
-            if (prefix.Equals("34") || prefix.Equals("37"))
+            if ((prefix.Equals("34") || prefix.Equals("37")) && number.Length == 15)
                 retval = "American Express";
-            else if (prefix.Equals("51") || prefix.Equals("52") || prefix.Equals("53") || prefix.Equals("54") || prefix.Equals("55"))
+            else if ((prefix.Equals("51") || prefix.Equals("52") || prefix.Equals("53") || prefix.Equals("54") || prefix.Equals("55")) && number.Length==16)
                 retval = "Master Card";
             else
             {
                 prefix = number.Substring(0, 1);
-                if (prefix.Equals("4"))
+                if (prefix.Equals("4") && (number.Length >= 13 && number.Length <= 16))
                     retval = "Visa";
             }
             
@@ -705,6 +740,9 @@ namespace fez_spider
             _input_creditCard_cvv.Text = "";
             _input_expiration_month.Text = "Month";
             _input_expiration_year.Text = "Year";
+            _visaThumb.Alpha = 128;
+            _mastercardThumb.Alpha = 128;
+            _americanexpressThumb.Alpha = 128;
             _credit_card_payment.Invalidate();
         }
         private void _ccBackBtnTapEvent(object sender)
@@ -733,15 +771,7 @@ namespace fez_spider
 
                 if (type != null)
                 {
-                    if ((type.Equals("Visa") && (number.Length < 13 || number.Length > 16))
-                    || ((type.Equals("Master Card") && number.Length != 16))
-                    || ((type.Equals("American Express") && number.Length != 15)))
-                    {
-                        message = "Wrong Card Number";
-                        _ccErrMsg.Text = message;
-                        _credit_card_payment.Invalidate();
-                    }
-                    else if (cvv.Length > 3)
+                    if (cvv.Length > 3)
                     {
                         message = "Wrong Expiration Date";
                         _ccErrMsg.Text = message;

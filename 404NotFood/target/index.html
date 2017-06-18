@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>404NotFood web service</title>
+<title>404NotFood RestAPI Client</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+<script src="function.js"></script>
+<noscript>
+  <div id="noscript-warning">Javascript is disabled</div>
+</noscript>
+
 </head>
 <body>
-<h2>404NotFood RESTful Web Service</h2>
-The food web service example. Main resource is <a href="webapi/food">here</a>.
+  <nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        404NotFood RestAPI Client
+      </a>
+    </div>
+  </div>
+</nav>
+<br><br><br>
+    <div id="main" class="container">
+      <table class="table table-striped">
+    <tr><td style="width: 1px;"></td><td><b>Item</b></td><td><b>Options</b></td></tr>
+    <tr id="content"/>
+</table>
+<button class="btn btn-primary" onclick="addItem()">Add item <span class="glyphicon glyphicon-plus"></span></button>
+
+</div>
+<br><br>
+
 </body>
 </html>

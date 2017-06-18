@@ -19,7 +19,7 @@ import org.json.simple.JSONObject;
 
 public class FoodServiceImpl {
 
-		private static final String url = "jdbc:mysql://localhost:3306/Food_DB";
+		private static final String url = "jdbc:mysql://172.18.0.2:3306/Food_DB";
 		private static final String username = "root";
 		private static final String password = "root";
 		private static final String max_pool = "200";

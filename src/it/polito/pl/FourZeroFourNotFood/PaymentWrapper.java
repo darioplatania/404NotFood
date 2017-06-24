@@ -34,8 +34,8 @@ class PaymentWrapper {
 		
 		// Set redirect URLs
 		redirectUrls = new RedirectUrls();
-		redirectUrls.setCancelUrl("http://localhost:8080/food/webapi/payment/cancel");
-		redirectUrls.setReturnUrl("http://localhost:8080/food/webapi/payment");
+		redirectUrls.setCancelUrl("http://95.85.47.151:8080/food/webapi/payment/cancel");
+		redirectUrls.setReturnUrl("http://95.85.47.151:8080/food/webapi/payment");
 		
 		// Set total amount
 		amount = new Amount();

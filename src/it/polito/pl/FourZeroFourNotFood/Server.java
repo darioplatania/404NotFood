@@ -31,10 +31,10 @@ class ClientRunnable implements Runnable{
 	private static final String MSG_CLOSE		 = "CLOSE";
 	private static final String MSG_UPDATE_ORDER = "UPDATE_ORDER";
 	private static final String MSG_CANCEL_ORDER = "CANCEL_ORDER";
-	private static final String MSG_USER_CONFIRM = "CONFIRM";
+	private static final String MSG_USER_CONFIRM = "PAYMENT_CONFIRM";
 	
-	//private static final String URL 			 = "http://404notfood.sloppy.zone/food/webapi/payment/";
-	private static final String URL = "http://localhost:8080/food/webapi/payment/";
+	private static final String URL 			 = "http://95.85.47.151:8080/food/webapi/payment/";
+	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
 	
 	private OrderDB db;
 	
@@ -70,7 +70,6 @@ class ClientRunnable implements Runnable{
 			}while(dispatcher(in.readLine()));
 			
 			
-			// TODO: 2.2 Close Order Updating DB
 			try {
 				closeConnection();
 				LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Connection closed with host: "+hostname);
@@ -109,7 +108,6 @@ class ClientRunnable implements Runnable{
 	
 	private void handleOrder(){
 		
-		// TODO: 2.1 Follow order workflow
 		
 		Order 			order;
 		BufferedReader	in;
@@ -179,7 +177,9 @@ class ClientRunnable implements Runnable{
 									paymentWrapper.updateGUIOnResult(order.getid(), true);
 								else
 									paymentWrapper.updateGUIOnResult(order.getid(), false);
-
+								
+								
+								// TODO: inviare alla schedina che il pagamento è OK oppure no
 									
 								isEnded=true;
 							} catch(Exception e){

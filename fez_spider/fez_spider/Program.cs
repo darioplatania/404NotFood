@@ -758,6 +758,24 @@ namespace fez_spider
 
             /* Send Socket */
 
+            byte[] msg_header = Encoding.UTF8.GetBytes(ORDER_CMD);
+            byte[] msg_body = Encoding.UTF8.GetBytes(order_as_json + "\r\n");
+
+
+            try
+            {
+                _socket.Send(msg_header);
+                _socket.Send(msg_body);
+
+            }catch(SocketException ex)
+            {
+                Debug.Print("SocketException: " + ex.ToString());
+                _socket.Close();
+                loadGUI(_mainwindow);
+                return;
+            }
+
+
 
             /* Update Command */
             ORDER_CMD = UPDATE_ORDER;

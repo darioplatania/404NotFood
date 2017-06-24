@@ -48,10 +48,12 @@ namespace fez_spider
         private GHI.Glide.UI.TextBox _input_creditCard_cvv;
         private GHI.Glide.UI.Dropdown _input_expiration_month;
         private GHI.Glide.UI.Dropdown _input_expiration_year;
+        private GHI.Glide.UI.Button _paypal_doneBtn;
         private GHI.Glide.UI.Button _ccBackBtn;
         private GHI.Glide.UI.Button _ccConfirmBtn;
         private GHI.Glide.UI.TextBlock _ccErrMsg;
         private GHI.Glide.UI.Button _backToOrderBtn;
+        private Image _qrCodeSample;
 
         #endregion
 
@@ -84,6 +86,7 @@ namespace fez_spider
         private const String NEW_ORDER      = "NEW_ORDER\r\n";
         private const String PAYMENT_CARD   = "PAYMENT_CARD\r\n";
         private const String PAYMENT_PAYPAL   = "PAYMENT_PAYPAL\r\n";
+        private const String PAYMENT_CONFIRM = "PAYMENT_CONFIRM\r\n";
         private const String CLOSE          = "CLOSE\r\n";
         private const String CANCEL_ORDER   = "CANCEL_ORDER\r\n";
         private const String UPDATE_ORDER   = "UPDATE_ORDER\r\n";
@@ -244,9 +247,13 @@ namespace fez_spider
 
             /* Payment Via Paypal */
             _paypal_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paypalPaymentWindow));
-            //Image _qrcodeSample = new Image("qrcode", 255, 0, 0, 320, 240);
-            //_qrcodeSample.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.sample_qrcode), Bitmap.BitmapImageType.Jpeg);
-            //_paypal_payment.AddChild(_qrcodeSample);
+            _paypal_doneBtn = (GHI.Glide.UI.Button)_paypal_payment.GetChildByName("doneBtn");
+            _paypal_doneBtn.Visible = false;
+            _paypal_doneBtn.Enabled = false;
+            _qrCodeSample = new Image("qrcode", 255, 80, 20, 160, 160);
+            _qrCodeSample.Visible = false;
+            _paypal_payment.AddChild(_qrCodeSample);
+            
 
             /* NetworkErrorWindow */
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
@@ -279,6 +286,7 @@ namespace fez_spider
             _input_creditCard_cvv.TapEvent += new OnTap(Glide.OpenKeyboard);
             _input_expiration_month.TapEvent += monthsTapEvent;
             _input_expiration_year.TapEvent += yearsTapEvent;
+            _paypal_doneBtn.PressEvent += _paypal_doneBtn_PressEvent;
             _ccBackBtn.TapEvent += _ccBackBtnTapEvent;
             _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
             _backToOrderBtn.TapEvent += _backToOrderBtnTapEvent;
@@ -323,6 +331,56 @@ namespace fez_spider
             ethernetJ11D.NetworkDown += ethernetJ11D_NetworkDown;
             
 
+
+
+        }
+
+        private void _paypal_doneBtn_PressEvent(object sender)
+        {
+
+            _paypal_doneBtn.Enabled = false;
+            _paypal_doneBtn.Visible = false;
+            _qrCodeSample.Visible = false;
+            _qrCodeSample.Bitmap = null;
+            _paypal_payment.Invalidate();
+
+            try
+            {
+
+
+                _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_CONFIRM));
+
+                byte[] response = new byte[3];
+                _socket.Receive(response, 3, SocketFlags.None);
+
+                var stream = new MemoryStream(response);
+                StreamReader sr = new StreamReader(stream);
+                string response_as_str = sr.ReadToEnd();
+
+
+                if (response_as_str == "+OK")
+                {
+                    // TODO OK GO TO SUCCESS AND THEN START
+
+                    System.Threading.Thread.Sleep(3000);
+                    loadGUI(_mainwindow);
+
+                }
+                else if (response_as_str == "ERR")
+                {
+                    //TODO ERR GO TO CHOOSE PAYMENT
+                    System.Threading.Thread.Sleep(3000);
+                    loadGUI(_scegliPagamento);
+                }
+
+
+            }
+            catch(SocketException ex)
+            {
+                Debug.Print(ex.Message);
+                _socket.Close();
+                loadGUI(_mainwindow);
+            }
 
 
         }
@@ -735,8 +793,7 @@ namespace fez_spider
 
             }else {
                 byte[] response = new byte[3];
-                _socket.ReceiveTimeout = 40000;
-
+                
                 try
                 {
                     _socket.Receive(response, 3, SocketFlags.None);
@@ -1042,9 +1099,101 @@ namespace fez_spider
         private void _paypal_TapEvent(object sender)
         {
             loadGUI(_paypal_payment);
+            _paypal_doneBtn.Visible = true;
+            _paypal_payment.Invalidate();
+
 
             // 0. Sending PAYMENT_PAYPAL
-            Debug.Print("PAYMENT_PAYPAL");
+
+            try
+            {
+                _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_PAYPAL));
+
+                byte[] response = new byte[3];
+                _socket.Receive(response,3,SocketFlags.None);
+
+                var stream = new MemoryStream(response);
+                StreamReader sr = new StreamReader(stream);
+                string response_as_str = sr.ReadToEnd();
+
+                if (response_as_str == "+OK")
+                {
+
+                    
+                    _paypal_doneBtn.Enabled = true;
+                    _paypal_payment.Invalidate();
+
+                    //TODO leggi stream
+
+                    Debug.Print("Aspetto immagine");
+
+                    byte[] size = new byte[5];
+
+                    _socket.Receive(size, 5, SocketFlags.None);
+
+                    stream = new MemoryStream(size);
+                    sr = new StreamReader(stream);
+                    string size_as_str = sr.ReadToEnd();
+
+
+                    
+                    int len = int.Parse(size_as_str);
+
+
+
+                    byte[] img = new byte[len];
+                    Array.Clear(img, 0, len);
+                    
+
+                    int tmp = 0;
+                    int count = 0;
+                    while(count < len)
+                    {
+                        if (count + 1024 > len)
+                            tmp = len - count;
+                        else
+                            tmp = 1024;
+
+                        count += _socket.Receive(img, count,tmp, SocketFlags.None);
+                      
+                    }
+
+                    Debug.Print("count: " + count);
+
+                    byte[] end = new byte[3];
+
+                    _socket.Receive(end, 3, SocketFlags.None);
+
+                    stream = new MemoryStream(end);
+                    sr = new StreamReader(stream);
+                    Debug.Print("Ho ricevuto --> " + sr.ReadToEnd());
+
+                    // Render QR CODE + DONE button
+                    _qrCodeSample.Bitmap = new Bitmap(img, Bitmap.BitmapImageType.Jpeg);
+                    _qrCodeSample.Visible = true;
+                    _paypal_payment.Invalidate();
+
+                    
+
+                }
+                else if (response_as_str == "ERR")
+                {
+                    //TODO loadGUI(error_payment)
+
+                    System.Threading.Thread.Sleep(3000);
+                    loadGUI(_mainwindow);
+
+                }
+
+
+
+
+            }
+            catch(SocketException ex)
+            {
+                Debug.Print(ex.Message);
+            }
+
 
             // Waiting for Response
                 // 1. PAYMENT_OK
@@ -1090,7 +1239,6 @@ namespace fez_spider
             try
             {
                 _socket.Send(msg_cancel);
-
             }catch(SocketException ex)
             {
                 Debug.Print(ex.Message);
@@ -1103,10 +1251,6 @@ namespace fez_spider
         }
         private void deleteBtn_PressEvent(object sender)
         {
-            ORDER_CMD = CANCEL_ORDER;
-
-            //TODO SEND CANCEL_ORDER IN SOCKET
-
             loadGUI(_cancel);
         }
         /*Ethernet Network_Down Function*/
@@ -1153,6 +1297,8 @@ namespace fez_spider
 
             // Socket connection
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _socket.ReceiveTimeout = 40000;
+
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry(HOST);
             IPAddress ipAddress = ipHostInfo.AddressList[0];

@@ -181,18 +181,21 @@ class ClientRunnable implements Runnable{
 								System.out.println(responseMsg.toString());
 								
 								// UPDATE GUI
-								if(responseMsg.getStatus()==204)
+								if(responseMsg.getStatus()==204){
+									socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 									paymentWrapper.updateGUIOnResult(order.getid(), true);
-								else
+									isEnded=true;
+
+								}
+								else{
+									socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
 									paymentWrapper.updateGUIOnResult(order.getid(), false);
-								
-								
-								// TODO: inviare alla schedina che il pagamento è OK oppure no
+								}
 									
-								isEnded=true;
 							} catch(Exception e){
 								e.printStackTrace();
 								System.out.println("Error while get information from server");
+								socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
 								paymentWrapper.updateGUIOnResult(order.getid(), false);
 							}
 						}

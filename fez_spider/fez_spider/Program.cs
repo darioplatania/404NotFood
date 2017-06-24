@@ -76,7 +76,8 @@ namespace fez_spider
         private static string orderId = null;
 
         /* Socket Variables */
-        private const String HOST = "192.168.1.70";
+        private Socket _socket = null;
+        private const String HOST = "172.20.10.3";
         private const int PORT = 4096;
         
 
@@ -109,6 +110,7 @@ namespace fez_spider
         private static String ip_address = "192.168.2.2";
         private static String subnet     = "255.255.255.0";
         private static String gateway    = "192.168.2.1";
+
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
 
@@ -1060,28 +1062,61 @@ namespace fez_spider
             orderId = RandomString(32);
             Debug.Print("orderId: " + orderId);
 
-            // TODO Service Discovery
 
-            menu = downloadMenu(url);
-            if (menu != null)
+            // Socket connection
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(HOST);
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
+
+            Debug.Print("Connecting to: "+remoteEP.Address.ToString());
+            _socket.Connect(remoteEP);
+
+            if (_socket.RemoteEndPoint.ToString()==(HOST+":"+PORT))
+                Debug.Print("Socket connected to " + _socket.RemoteEndPoint.ToString());
+            else {
+
+                Debug.Print("Failed connecting socket");
+                _socket = null;
+
+            }
+
+
+            // Gestire Errore
+
+            if (_socket != null)
             {
+                menu = downloadMenu(url);
+                if (menu != null)
+                {
 
 
+                    _startbtn.Enabled = true;
+                    _loadingLbl.Visible = false;
+
+                    initOrders();
+
+                    loadGUI(_menu);
+
+                    printDatagrid();
+
+
+                }
+            }else
+            {
                 _startbtn.Enabled = true;
                 _loadingLbl.Visible = false;
+                loadGUI(_mainwindow);
                 
-                initOrders();
 
-                loadGUI(_menu);
-
-                printDatagrid();
-            
-                
             }
+
 
             
 
         }
+
         private void Minus_ButtonPressed(GTM.GHIElectronics.Button sender, GTM.GHIElectronics.Button.ButtonState state) {
 
             if (Glide.MainWindow == _menu)

@@ -85,10 +85,10 @@ public class MainWindow {
 	 */
 	protected void createContents() {
 		
+		//Display display = new Display();
 		shell = new Shell();
 		/*
-		Display display = new Display();
-	    Image bg_Image = new Image(display, "background.png"); 
+		Image bg_Image = new Image(display, "background.png"); 
 	    shell.setBackgroundImage(bg_Image);
 	    shell.setBackgroundMode(SWT.INHERIT_FORCE);  
 		*/
@@ -100,7 +100,7 @@ public class MainWindow {
 		
 		shell.setLayout(new GridLayout());
 		shell.setText(title);
-				
+		
 		CLabel icon_lbl = new CLabel(shell,SWT.NONE);
 		icon_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		icon_lbl.setLayoutData(new GridData(SWT.CENTER,SWT.TOP,false,false));
@@ -178,6 +178,13 @@ public class MainWindow {
 			}
 	    	
 	    });
+	    
+		shell.addListener(SWT.Close, new Listener() {
+		      public void handleEvent(Event event) {
+		        System.exit(0);
+		      }
+		    });
+	    
 	    
 	    Label items_lbl = new Label(shell,SWT.NONE); 
 	    items_lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));

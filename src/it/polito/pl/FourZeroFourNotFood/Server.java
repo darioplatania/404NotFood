@@ -1,11 +1,16 @@
 package it.polito.pl.FourZeroFourNotFood;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import org.eclipse.swt.SWT;
@@ -15,6 +20,7 @@ import org.eclipse.swt.widgets.TableItem;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import javax.imageio.ImageIO;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -32,13 +38,13 @@ class ClientRunnable implements Runnable{
 	private static final String MSG_UPDATE_ORDER = "UPDATE_ORDER";
 	private static final String MSG_CANCEL_ORDER = "CANCEL_ORDER";
 	private static final String MSG_USER_CONFIRM = "PAYMENT_CONFIRM";
-	private static final String MSG_PAYMENT_OK = "+OK";
-	private static final String MSG_PAYMENT_ERR = "ERR";
+	private static final String MSG_PAYMENT_OK   = "+OK";
+	private static final String MSG_PAYMENT_ERR  = "ERR";
 
-
-	
 	private static final String URL 			 = "http://95.85.47.151:8080/food/webapi/payment/";
 	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
+	private static final String filePath = "../QRcode.jpg";
+	
 	
 	private OrderDB db;
 	
@@ -180,10 +186,11 @@ class ClientRunnable implements Runnable{
 								// print response
 								System.out.println(responseMsg.toString());
 								
-								// UPDATE GUI
+								// UPDATE GUI & send +OK QRCode
 								if(responseMsg.getStatus()==204){
 									socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 									paymentWrapper.updateGUIOnResult(order.getid(), true);
+									sendQR(order.getId());
 									isEnded=true;
 
 								}
@@ -242,6 +249,19 @@ class ClientRunnable implements Runnable{
 		
 		
 		
+	}
+
+	private void sendQR(String id) throws IOException {
+        OutputStream outputStream = socket.getOutputStream();
+        BufferedImage image = ImageIO.read(new File(filePath+id+".jpg"));
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", byteArrayOutputStream);
+
+        byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+        outputStream.write(size);
+        outputStream.write(byteArrayOutputStream.toByteArray());
+        outputStream.flush();
 	}
 
 	private void remove(String id) {

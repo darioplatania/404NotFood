@@ -142,7 +142,7 @@ class PaymentWrapper {
 				if (link.getRel().equalsIgnoreCase("approval_url")) {
 					// TODO: REDIRECT USER TO link.getHref()	
 					System.out.println(link.getHref());
-					QR_generator.generate(link.getHref());
+					QR_generator.generate(link.getHref(), order.getid());
 					
 					// mi ritorno l'id del pagamento
 					return createdPayment.getId();

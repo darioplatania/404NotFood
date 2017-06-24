@@ -20,12 +20,12 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 public class QR_generator {
 	private static final int size = 160;
 	private static final String fileType = "jpg";
-	private static final String filePath = "../QRcode.jpg";
+	private static final String filePath = "../QRcode";
 	
-	public static void generate(String link){
+	public static void generate(String link, String id){
 		String myCodeText = link;
 		
-		File myFile = new File(filePath);
+		File myFile = new File(filePath+id+".jpg");
 		try {
 			
 			Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
@@ -60,7 +60,7 @@ public class QR_generator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("\n\nYou have successfully created QR Code.");
+		System.out.println("You have successfully created QR Code.");
 	}
 
 	

@@ -1,4 +1,4 @@
-window.url = "http://95.85.47.151:8080/food/webapi/food";
+window.url = "http://95.85.47.151:8080/food/webapi/food/";
 
 $(document).ready(function() {
     $.ajax({

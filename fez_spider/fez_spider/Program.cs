@@ -90,8 +90,8 @@ namespace fez_spider
         private static String ORDER_CMD = null;
 
         private ArrayList payment = new ArrayList();
-        private String url = "http://192.168.2.1:8080/food/webapi/food";
-        //private String url = "http://404notfood.sloppy.zone/food/webapi/food";
+        //private String url = "http://192.168.2.1:8080/food/webapi/food";
+        private String url = "http://95.85.47.151:8080/food/webapi/food";
         HttpWebRequest req;
         private HttpWebResponse res;
         private Stream stream;
@@ -241,9 +241,9 @@ namespace fez_spider
 
             /* Payment Via Paypal */
             _paypal_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paypalPaymentWindow));
-            Image _qrcodeSample = new Image("qrcode", 255, 0, 0, 320, 240);
-            _qrcodeSample.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.sample_qrcode), Bitmap.BitmapImageType.Jpeg);
-            _paypal_payment.AddChild(_qrcodeSample);
+            //Image _qrcodeSample = new Image("qrcode", 255, 0, 0, 320, 240);
+            //_qrcodeSample.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.sample_qrcode), Bitmap.BitmapImageType.Jpeg);
+            //_paypal_payment.AddChild(_qrcodeSample);
 
             /* NetworkErrorWindow */
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
@@ -634,6 +634,8 @@ namespace fez_spider
         {
             led_position = 0;
 
+            _ordBtn.Enabled = false;
+
             orderId = "";
             ORDER_CMD = NEW_ORDER;
 
@@ -964,6 +966,33 @@ namespace fez_spider
         private void _paypal_TapEvent(object sender)
         {
             loadGUI(_paypal_payment);
+
+            // 0. Sending PAYMENT_PAYPAL
+            Debug.Print("PAYMENT_PAYPAL");
+
+            // Waiting for Response
+                // 1. PAYMENT_OK
+                    // 1.1 Waiting for byte stream
+                    // 1.2 Render QR Code
+                    // 1.3 Wait for user tap Done Button
+                    //1.4 Send Payment_Confirm to Server
+                        // 1.4.1 OK 
+                            //1.4.1.1 Go to END PAGE
+                        // 1.4.2 ERR
+                            // 1.4.2.1 Go TO ERR PAGE
+                            // 1.4.2.2 Redirect to Choose Payment after 5 seconds
+                        
+
+                // 2. PAYMENT_ERR
+                    // 2.1 Go To ERR PAGE
+                    // 2.2 Redirect to Choose Payment after 5 seconds
+
+
+
+
+
+
+
         }
         private void _backToOrderBtnTapEvent(object sender)
         {

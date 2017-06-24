@@ -7,8 +7,6 @@ $(document).ready(function() {
        var i = 0;
        var text = "";
        while(i!=data.length){
-         if(data[i].id==sessionStorage.lastitem)
-            text="success";
          document.getElementById("content").insertAdjacentHTML("afterend", "<tr class='"+text+"'><td><span class='label label-info'>"+data[i].id+"</span></td><td><p><b><p>Name: "+data[i].name+"</p></b></p><p><p>Price: "+data[i].price+"€</p></p><p>Ingredients: "+data[i].ingredients+"</p></p></td><td><!--<button class='btn btn-block btn-warning'>Edit <span class='glyphicon glyphicon-pencil'></span></button><p></p>--!><button class='btn btn-sm btn-danger' onclick='deleteItem("+data[i].id+")'>Delete <span class='glyphicon glyphicon-remove'></span></button></td></tr>");
          i++;
        }
@@ -40,7 +38,7 @@ function addItem(){
         if(price != null) {
           price = parseFloat(price)
           var ingredients = prompt("Ingredients: ", "ingredients here")
-          if(ingredients !== null){
+          if(ingredients != null){
 
             // create json object
             var JSONObject= {"name":name, "price":price, "ingredients":ingredients};

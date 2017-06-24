@@ -52,5 +52,6 @@
 	<classpathentry kind="lib" path="lib/lib/wadl-core-1.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/lib/wadl-xslt-1.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/lib/xsom-20140925.jar"/>
+	<classpathentry kind="lib" path="lib/lib/core-3.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

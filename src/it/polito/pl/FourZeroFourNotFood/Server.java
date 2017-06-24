@@ -26,12 +26,16 @@ class ClientRunnable implements Runnable{
 
 	
 	private static final String MSG_ORDER		 = "NEW_ORDER";
-	private static final String MSG_PAYMENT		 = "PAYMENT";
+	private static final String MSG_PAYMENT		 = "PAYMENT_CARD";
 	private static final String MSG_PAYMENT_P	 = "PAYMENT_PAYPAL";
 	private static final String MSG_CLOSE		 = "CLOSE";
 	private static final String MSG_UPDATE_ORDER = "UPDATE_ORDER";
 	private static final String MSG_CANCEL_ORDER = "CANCEL_ORDER";
 	private static final String MSG_USER_CONFIRM = "PAYMENT_CONFIRM";
+	private static final String MSG_PAYMENT_OK = "+OK";
+	private static final String MSG_PAYMENT_ERR = "ERR";
+
+
 	
 	private static final String URL 			 = "http://95.85.47.151:8080/food/webapi/payment/";
 	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
@@ -144,9 +148,13 @@ class ClientRunnable implements Runnable{
 				
 					case MSG_PAYMENT:
 						System.out.println("Waiting for Payment from: "+hostname);
-						if(paymentWrapper.handlePayment(in.readLine(),order))
+						if(paymentWrapper.handlePayment(in.readLine(),order)){
+							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 							isEnded=true;
-						
+						}else{
+							isEnded=false;
+							socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
+						}
 						break;
 						
 					case MSG_PAYMENT_P:
@@ -196,8 +204,10 @@ class ClientRunnable implements Runnable{
 						System.out.println("Waiting for UPDATED_ORDER from: "+hostname);
 						Order current_order = getOrderFromJson(in.readLine());
 						
-						if(current_order.getid().equals(order.getid()))
+						if(current_order.getid().equals(order.getid())){
+							remove(order.getid());
 							this.db.add(current_order);
+						}
 						else
 							LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, "Cannot update different order ids received from "+hostname);
 						
@@ -210,33 +220,7 @@ class ClientRunnable implements Runnable{
 						
 						
 					case MSG_CANCEL_ORDER:
-						final String id_to_remove = order.getId();
-						this.db.remove(id_to_remove);
-						Display.getDefault().asyncExec(new Runnable(){
-								
-							@Override
-							public void run() {
-								TableItem item_to_remove = MainWindow.getOrderItems().get(id_to_remove);
-								MainWindow.getTable().remove(MainWindow.getTable().indexOf(item_to_remove));
-								MainWindow.getOrderItems().remove(id_to_remove);
-								LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Order "+id_to_remove+" canceled from "+hostname);
-							
-								if(MainWindow.selected_id.equals(id_to_remove)){
-									MainWindow.getMenuTable().removeAll();
-									MainWindow.selected_id = "";
-								}
-								
-								
-								
-								
-							}
-							
-							
-							
-						});
-						
-						
-						
+						remove(order.getId());
 						isEnded=true;
 						break;
 						
@@ -256,7 +240,28 @@ class ClientRunnable implements Runnable{
 		
 		
 	}
-	
+
+	private void remove(String id) {
+			String id_to_remove = id;
+			this.db.remove(id_to_remove);
+			Display.getDefault().asyncExec(new Runnable(){
+					
+				@Override
+				public void run() {
+					TableItem item_to_remove = MainWindow.getOrderItems().get(id_to_remove);
+					MainWindow.getTable().remove(MainWindow.getTable().indexOf(item_to_remove));
+					MainWindow.getOrderItems().remove(id_to_remove);
+					LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Order "+id_to_remove+" canceled from "+hostname);
+				
+					if(MainWindow.selected_id.equals(id_to_remove)){
+						MainWindow.getMenuTable().removeAll();
+						MainWindow.selected_id = "";
+					}	
+					
+				}
+			});		
+	}
+
 	private Order getOrderFromJson(String json){
 		return new Gson().fromJson(json, Order.class);
 	}
@@ -291,7 +296,8 @@ class ClientRunnable implements Runnable{
 				 TableItem new_item = new TableItem(MainWindow.getTable(), SWT.NONE);
 				 new_item.setText(new String[] { id,menu,price,paid,"Received" });
 				 
-				 MainWindow.getOrderItems().putIfAbsent(id, new_item);
+				 MainWindow.getOrderItems().put(id, new_item);
+				 
 				 
 			 }
 			});

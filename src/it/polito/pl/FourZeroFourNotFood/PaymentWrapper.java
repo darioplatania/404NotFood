@@ -101,6 +101,7 @@ class PaymentWrapper {
 			  order.setPaid(true);
 			  LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "Created payment with id = " + createdPayment.getId());
 			  updateGUIOnResult(order.getId(),true);
+			  
 			  return true;
 			  
 		} catch (PayPalRESTException e) {

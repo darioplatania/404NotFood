@@ -86,16 +86,21 @@ public class MainWindow {
 	protected void createContents() {
 		
 		shell = new Shell();
+		/*
+		Display display = new Display();
+	    Image bg_Image = new Image(display, "background.png"); 
+	    shell.setBackgroundImage(bg_Image);
+	    shell.setBackgroundMode(SWT.INHERIT_FORCE);  
+		*/
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+		shell.setBackgroundMode(SWT.INHERIT_FORCE);
 		
 		Image icon = SWTResourceManager.getImage(MainWindow.class, "/it/polito/pl/FourZeroFourNotFood/resources/logo.png");
 		shell.setImage(icon);
 		
 		shell.setLayout(new GridLayout());
 		shell.setText(title);
-		
-		
-		
+				
 		CLabel icon_lbl = new CLabel(shell,SWT.NONE);
 		icon_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		icon_lbl.setLayoutData(new GridData(SWT.CENTER,SWT.TOP,false,false));
@@ -275,7 +280,6 @@ public class MainWindow {
 	        }
 	      });
 
-	    
 	    
 	}
 }

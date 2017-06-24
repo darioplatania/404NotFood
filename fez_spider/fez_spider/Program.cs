@@ -82,7 +82,8 @@ namespace fez_spider
         
 
         private const String NEW_ORDER      = "NEW_ORDER\r\n";
-        private const String PAYMENT        = "PAYMENT\r\n";
+        private const String PAYMENT_CARD   = "PAYMENT_CARD\r\n";
+        private const String PAYMENT_PAYPAL   = "PAYMENT_PAYPAL\r\n";
         private const String CLOSE          = "CLOSE\r\n";
         private const String CANCEL_ORDER   = "CANCEL_ORDER\r\n";
         private const String UPDATE_ORDER   = "UPDATE_ORDER\r\n";
@@ -636,6 +637,8 @@ namespace fez_spider
         {
             led_position = 0;
 
+            _socket = null;
+
             _ordBtn.Enabled = false;
 
             orderId = "";
@@ -701,12 +704,65 @@ namespace fez_spider
 
 
             //TODO PROCESS PAYMENT
+            byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
+            byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
+
+            try
+            {
+                _socket.Send(msg_header);
+                _socket.Send(msg_body);
+
+            }catch(SocketException ex)
+            {
+                Debug.Print(ex.ToString());
+                _socket.Close();
+                _socket = null;
+            }
+
 
             _ccConfirmBtn.Enabled = true;
             _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
 
-            System.Threading.Thread.Sleep(3000);
-            loadGUI(_mainwindow);
+            //System.Threading.Thread.Sleep(3000);
+
+
+
+            if (_socket == null) {
+
+               
+                loadGUI(_mainwindow);
+
+
+            }else {
+                byte[] response = new byte[3];
+                _socket.ReceiveTimeout = 40000;
+
+                try
+                {
+                    _socket.Receive(response, 3, SocketFlags.None);
+
+
+                    var stream = new MemoryStream(response);
+                    StreamReader sr = new StreamReader(stream);
+                    string response_as_str = sr.ReadToEnd();
+
+                    if (response_as_str == "ERR")
+                    {
+                        loadGUI(_scegliPagamento);
+                        return;
+                    }
+                    
+
+                }catch(SocketException ex)
+                {
+                    Debug.Print(ex.Message);
+                }
+
+
+
+                System.Threading.Thread.Sleep(3000);
+                loadGUI(_mainwindow); // TODO COMPLETED PAYMENT ACTIVITY
+            }
 
         }
         /*
@@ -1028,6 +1084,20 @@ namespace fez_spider
         }
         private void _siBtn_TapEvent(object sender)
         {
+
+            byte[] msg_cancel = Encoding.UTF8.GetBytes(CANCEL_ORDER);
+
+            try
+            {
+                _socket.Send(msg_cancel);
+
+            }catch(SocketException ex)
+            {
+                Debug.Print(ex.Message);
+            }
+
+            _socket.Close();
+
             ResetStatus();
             loadGUI(_mainwindow);
         }

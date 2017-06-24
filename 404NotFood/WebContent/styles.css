@@ -1,0 +1,25 @@
+#pay_conf {
+    top:50px;
+    left:360px;
+    width:500px;
+    height:500px;
+    color:black;
+    position:absolute;
+    text-align:center;
+}
+
+#pay_conf h1,h5 {
+    margin:auto;
+    line-height:51px;
+    vertical-align:middle;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#pay_conf img {
+
+  background-repeat: no-repeat;
+  display: block
+  margin-right: auto
+  margin: 0 auto
+
+}

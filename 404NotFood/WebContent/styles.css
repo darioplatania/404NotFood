@@ -1,58 +1,18 @@
-#pay_conf {
-    top:50px;
-    left:360px;
-    width:500px;
-    height:500px;
-    color:black;
-    position:absolute;
-    text-align:center;
+.container {
+    position: relative;
 }
 
-#pay_conf h1,h5 {
-    margin:auto;
-    line-height:51px;
-    vertical-align:middle;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+.center {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    font-size: 1px;
 }
 
-#pay_conf img {
+img {
+    width: auto;
+    height: auto;
 
-  background-repeat: no-repeat;
-  display: block
-  margin-right: auto
-  margin: 0 auto
-
-}
-
-@media only screen and (min-width: 321px) and (max-width: 480px) {
-    #pay_conf {
-      width:301px;
-      height:300px;
-      left:30px;
-    }
-}
-
-@media only screen and (min-width: 481px) and (max-width: 768px) {
-    #pay_conf {
-      width:461px;
-      height:300px;
-      left:10px;
-    }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 1024px) {
-    #pay_conf {
-      width:749px;
-      height:300px;
-      left:10px;
-
-    }
-}
-
-@media only screen and (min-width: 1025px) {
-    #pay_conf {
-      width:924px;
-      height:300px;
-      left:160px;
-    }
 }

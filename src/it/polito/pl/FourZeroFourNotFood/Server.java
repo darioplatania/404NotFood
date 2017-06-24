@@ -43,7 +43,7 @@ class ClientRunnable implements Runnable{
 
 	private static final String URL 			 = "http://95.85.47.151:8080/food/webapi/payment/";
 	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
-	private static final String filePath = "../QRcode.jpg";
+	private static final String filePath = "../QRcode";
 	
 	
 	private OrderDB db;
@@ -168,9 +168,17 @@ class ClientRunnable implements Runnable{
 						String paymentId = null;
 						paymentId = paymentWrapper.handlePaymentPaypal(order);
 						
-						if(paymentId==null)
+						if(paymentId==null){
+							socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
 							break;
+						}
 						
+						try{
+							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
+							sendQR(order.getId());
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 						// wait for user confirm
 						System.out.println("Waiting for user confirm");
 						if(in.readLine().equalsIgnoreCase(MSG_USER_CONFIRM)){
@@ -186,11 +194,10 @@ class ClientRunnable implements Runnable{
 								// print response
 								System.out.println(responseMsg.toString());
 								
-								// UPDATE GUI & send +OK QRCode
+								// UPDATE GUI
 								if(responseMsg.getStatus()==204){
 									socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 									paymentWrapper.updateGUIOnResult(order.getid(), true);
-									sendQR(order.getId());
 									isEnded=true;
 
 								}
@@ -252,16 +259,33 @@ class ClientRunnable implements Runnable{
 	}
 
 	private void sendQR(String id) throws IOException {
-        OutputStream outputStream = socket.getOutputStream();
-        BufferedImage image = ImageIO.read(new File(filePath+id+".jpg"));
+        File file = new File(filePath+id+".jpg");
+        BufferedImage image = ImageIO.read(file);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(image, "jpg", byteArrayOutputStream);
-
-        byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-        outputStream.write(size);
-        outputStream.write(byteArrayOutputStream.toByteArray());
-        outputStream.flush();
+        
+        socket.getOutputStream().write(String.valueOf(byteArrayOutputStream.size()).getBytes("UTF-8"));
+        
+        int i = 0;
+        while(i!=byteArrayOutputStream.toByteArray().length){
+        	
+        	int diff = byteArrayOutputStream.toByteArray().length-i;
+        	if(diff<1024){
+        		socket.getOutputStream().write(byteArrayOutputStream.toByteArray(), i, diff);
+        		i=byteArrayOutputStream.toByteArray().length;
+        	}
+        	else{
+        		socket.getOutputStream().write(byteArrayOutputStream.toByteArray(), i, 1024);
+        		i=i+1024;
+        	}
+        	socket.getOutputStream().flush();
+        }
+        socket.getOutputStream().write("END".getBytes("UTF-8"));
+        socket.getOutputStream().flush();
+        
+        System.out.println("Ho inviato: "+byteArrayOutputStream.toByteArray().length);
+        file.delete();
 	}
 
 	private void remove(String id) {

@@ -40,12 +40,15 @@ namespace fez_spider
         [System.SerializableAttribute()]
         internal enum BinaryResources : short
         {
+            success = -30662,
             processingPayment = -27844,
             visa = -21004,
             Connection_error = -16116,
             paypal = -11989,
             americanexpress = -9027,
             creditcard = -5944,
+            error = -5941,
+            waitingQR = 12913,
             logo = 17715,
             mastercard = 29263,
         }
@@ -54,10 +57,12 @@ namespace fez_spider
         {
             PaymentCreditCard = -23819,
             processingPaymentWindow = -18266,
+            paymentError = -12441,
             Window = -5489,
             Menu = -2554,
             ErrorWindow = 910,
             Ordina = 6285,
+            paymentSuccessfull = 10054,
             paypalPaymentWindow = 12245,
             Annulla = 18971,
             ScegliPagamento = 26704,

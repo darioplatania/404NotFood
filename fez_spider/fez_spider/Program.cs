@@ -29,6 +29,11 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _credit_card_payment;
         private static GHI.Glide.Display.Window _paypal_payment;
         private static GHI.Glide.Display.Window _processingPaymentWindow;
+        private static GHI.Glide.Display.Window _paymentSuccess;
+        private static GHI.Glide.Display.Window _paymentError;
+
+
+
         private GHI.Glide.UI.Button _startbtn;
         private GHI.Glide.UI.Button _deleteBtn;
         private GHI.Glide.UI.Button _ordBtn;
@@ -54,7 +59,8 @@ namespace fez_spider
         private GHI.Glide.UI.TextBlock _ccErrMsg;
         private GHI.Glide.UI.Button _backToOrderBtn;
         private Image _qrCodeSample;
-
+        private Image waitQRCode;
+        
         #endregion
 
         private static Font font = Resources.GetFont(Resources.FontResources.NinaB);
@@ -79,7 +85,7 @@ namespace fez_spider
 
         /* Socket Variables */
         private Socket _socket = null;
-        private const String HOST = "172.20.10.3";
+        private const String HOST = "172.20.10.2";
         private const int PORT = 4096;
         
 
@@ -240,7 +246,7 @@ namespace fez_spider
 
             /* Processing Payment Window */
             _processingPaymentWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.processingPaymentWindow));
-            Image _processingThumb = new Image("processing-thumb", 255, 86, 56, 128, 128);
+            Image _processingThumb = new Image("processing-thumb", 255, 96, 30, 128, 128);
             _processingThumb.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.processingPayment), Bitmap.BitmapImageType.Jpeg);
             _processingPaymentWindow.AddChild(_processingThumb);
 
@@ -251,20 +257,37 @@ namespace fez_spider
             _paypal_doneBtn.Visible = false;
             _paypal_doneBtn.Enabled = false;
             _qrCodeSample = new Image("qrcode", 255, 80, 20, 160, 160);
-            _qrCodeSample.Visible = false;
             _paypal_payment.AddChild(_qrCodeSample);
+
+            waitQRCode = new Image("clessidra", 255, 96, 30, 128, 128);
+            waitQRCode.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.waitingQR), Bitmap.BitmapImageType.Jpeg);
+            waitQRCode.Visible = true;
+            _paypal_payment.AddChild(waitQRCode);
             
+            
+
+            /* Payment Success */
+            _paymentSuccess = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paymentSuccessfull));
+            Image _pSuccesslogo = new Image("psuccess-logo", 255, 96, 30, 128, 128);
+            _pSuccesslogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.success), Bitmap.BitmapImageType.Jpeg);
+            _paymentSuccess.AddChild(_pSuccesslogo);
+
+
+            /* Payment Error */
+            _paymentError = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paymentError));
+            Image _pErrorlogo = new Image("perror-logo", 255, 96, 30, 128, 128);
+            _pErrorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.error), Bitmap.BitmapImageType.Jpeg);
+            _paymentError.AddChild(_pErrorlogo);
+
+
 
             /* NetworkErrorWindow */
             _errorWindow = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.ErrorWindow));
-            
-            // NetworkErrorWindow.Adding Error Logo
             Image _Errorlogo = new Image("error-logo", 255, 0, 0, displayTE35.Width, displayTE35.Height);
             _Errorlogo.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.Connection_error), Bitmap.BitmapImageType.Jpeg);
             _errorWindow.AddChild(_Errorlogo);
 
-
-
+            
             /* Register Events to Buttons */
 
             _startbtn.PressEvent += Start_PressEvent;
@@ -340,9 +363,14 @@ namespace fez_spider
 
             _paypal_doneBtn.Enabled = false;
             _paypal_doneBtn.Visible = false;
+
             _qrCodeSample.Visible = false;
             _qrCodeSample.Bitmap = null;
+
             _paypal_payment.Invalidate();
+
+            loadGUI(_processingPaymentWindow);
+            System.Threading.Thread.Sleep(3000);
 
             try
             {
@@ -360,16 +388,17 @@ namespace fez_spider
 
                 if (response_as_str == "+OK")
                 {
-                    // TODO OK GO TO SUCCESS AND THEN START
-
-                    System.Threading.Thread.Sleep(3000);
+                    // GO TO SUCCESS AND THEN START
+                    loadGUI(_paymentSuccess);
+                    System.Threading.Thread.Sleep(10000);
                     loadGUI(_mainwindow);
 
                 }
                 else if (response_as_str == "ERR")
                 {
-                    //TODO ERR GO TO CHOOSE PAYMENT
-                    System.Threading.Thread.Sleep(3000);
+                    //GO TO ERR AND THEN CHOOSE PAYMENT
+                    loadGUI(_paymentError);
+                    System.Threading.Thread.Sleep(5000);
                     loadGUI(_scegliPagamento);
                 }
 
@@ -490,17 +519,17 @@ namespace fez_spider
 
             if (window != _cancel)
             {
-                if (window == _mainwindow)
+                if (window == _paymentError)
                 {
-                    led_position = 0;
+                    led_position = 6;
                 }
                 else if (window == _menu)
                 {
-                    led_position = 1;
+                    led_position = 5;
                 }
                 else if (window == _ordina)
                 {
-                    led_position = 2;
+                    led_position = 4;
                 }
                 else if (window == _scegliPagamento)
                 {
@@ -508,13 +537,17 @@ namespace fez_spider
                 }
                 else if (window == _credit_card_payment || window == _paypal_payment)
                 {
-                    led_position = 4;
+                    led_position = 2;
                 }
                 else if (window == _processingPaymentWindow)
                 {
-                    led_position = 5;
-                }//else if successfull payment led_position = 6
-
+                    led_position = 1;
+                }else if(window == _paymentSuccess || window == _mainwindow)
+                {
+                    led_position = 0;
+                }
+                
+                
                 ledStrip.TurnAllLedsOff();
                 ledStrip.TurnLedOn(led_position);
             }
@@ -523,8 +556,6 @@ namespace fez_spider
 
         private void loadGUI(GHI.Glide.Display.Window window)
         {
-            int led_position = 0;
-
             Glide.MainWindow = window;
             progressLed(window);
             
@@ -760,8 +791,7 @@ namespace fez_spider
             Debug.Print(creditCard);
             loadGUI(_processingPaymentWindow);
 
-
-            //TODO PROCESS PAYMENT
+            
             byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
             byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
 
@@ -780,9 +810,6 @@ namespace fez_spider
 
             _ccConfirmBtn.Enabled = true;
             _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
-
-            //System.Threading.Thread.Sleep(3000);
-
 
 
             if (_socket == null) {
@@ -805,6 +832,8 @@ namespace fez_spider
 
                     if (response_as_str == "ERR")
                     {
+                        loadGUI(_paymentError);
+                        System.Threading.Thread.Sleep(5000);
                         loadGUI(_scegliPagamento);
                         return;
                     }
@@ -817,9 +846,9 @@ namespace fez_spider
 
 
 
-                System.Threading.Thread.Sleep(3000);
-                loadGUI(_mainwindow); // TODO COMPLETED PAYMENT ACTIVITY
-            }
+                loadGUI(_paymentSuccess);
+                System.Threading.Thread.Sleep(10000);
+                loadGUI(_mainwindow);             }
 
         }
         /*
@@ -1100,10 +1129,32 @@ namespace fez_spider
         {
             loadGUI(_paypal_payment);
             _paypal_doneBtn.Visible = true;
+            _qrCodeSample.Visible = false;
+            waitQRCode.Visible = true;
             _paypal_payment.Invalidate();
 
-
+            // Waiting for Response
             // 0. Sending PAYMENT_PAYPAL
+            // 1. PAYMENT_OK
+            // 1.1 Waiting for byte stream
+            // 1.2 Render QR Code
+            // 1.3 Wait for user tap Done Button
+            //1.4 Send Payment_Confirm to Server
+            // 1.4.1 OK 
+            //1.4.1.1 Go to END PAGE
+            // 1.4.2 ERR
+            // 1.4.2.1 Go TO ERR PAGE
+            // 1.4.2.2 Redirect to Choose Payment after 5 seconds
+
+
+            // 2. PAYMENT_ERR
+            // 2.1 Go To ERR PAGE
+            // 2.2 Redirect to Choose Payment after 5 seconds
+
+
+
+
+
 
             try
             {
@@ -1123,8 +1174,7 @@ namespace fez_spider
                     _paypal_doneBtn.Enabled = true;
                     _paypal_payment.Invalidate();
 
-                    //TODO leggi stream
-
+                    
                     Debug.Print("Aspetto immagine");
 
                     byte[] size = new byte[5];
@@ -1169,6 +1219,7 @@ namespace fez_spider
                     Debug.Print("Ho ricevuto --> " + sr.ReadToEnd());
 
                     // Render QR CODE + DONE button
+                    waitQRCode.Visible = false;
                     _qrCodeSample.Bitmap = new Bitmap(img, Bitmap.BitmapImageType.Jpeg);
                     _qrCodeSample.Visible = true;
                     _paypal_payment.Invalidate();
@@ -1178,10 +1229,10 @@ namespace fez_spider
                 }
                 else if (response_as_str == "ERR")
                 {
-                    //TODO loadGUI(error_payment)
 
-                    System.Threading.Thread.Sleep(3000);
-                    loadGUI(_mainwindow);
+                    loadGUI(_paymentError);
+                    System.Threading.Thread.Sleep(5000);
+                    loadGUI(_scegliPagamento);
 
                 }
 
@@ -1195,24 +1246,7 @@ namespace fez_spider
             }
 
 
-            // Waiting for Response
-                // 1. PAYMENT_OK
-                    // 1.1 Waiting for byte stream
-                    // 1.2 Render QR Code
-                    // 1.3 Wait for user tap Done Button
-                    //1.4 Send Payment_Confirm to Server
-                        // 1.4.1 OK 
-                            //1.4.1.1 Go to END PAGE
-                        // 1.4.2 ERR
-                            // 1.4.2.1 Go TO ERR PAGE
-                            // 1.4.2.2 Redirect to Choose Payment after 5 seconds
-                        
-
-                // 2. PAYMENT_ERR
-                    // 2.1 Go To ERR PAGE
-                    // 2.2 Redirect to Choose Payment after 5 seconds
-
-
+           
 
 
 
@@ -1256,28 +1290,17 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            if (startup)
-            {
-                previousWindow = Glide.MainWindow;
-                timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
+            if(startup)
                 loadGUI(_errorWindow);
-            }
-
+            
         }
         ///*Ethernet Network_Up Function*/
         private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            int timeout = 10000;
-            double up_timestamp = Double.Parse(GetTimeStamp(DateTime.Now));
-            //Debug.Print(up_timestamp + " - " + timestamp + " = " + (up_timestamp - timestamp));
-            if ((up_timestamp - timestamp) < timeout && startup)
-                loadGUI(previousWindow);
-            else {
+            if(!startup)
                 startup = true;
-                loadGUI(_mainwindow);
-            }
-
-
+            loadGUI(_mainwindow);
+            
         }
         private void Start_PressEvent(object sender)
         {

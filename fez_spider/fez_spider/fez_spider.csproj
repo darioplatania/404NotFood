@@ -161,6 +161,13 @@
     <None Include="Resources\paypalPaymentWindow.txt" />
     <None Include="Resources\sample_qrcode.jpeg" />
     <None Include="Resources\logo.jpg" />
+    <None Include="Resources\success.png" />
+    <None Include="Resources\error.png" />
+    <None Include="Resources\paymentSuccessfull.txt" />
+    <None Include="Resources\paymentError.txt" />
+    <None Include="Resources\success.jpg" />
+    <None Include="Resources\error.jpg" />
+    <None Include="Resources\clessidra.jpg" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

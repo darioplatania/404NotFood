@@ -175,4 +175,19 @@
   <data name="paypalPaymentWindow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\paypalPaymentWindow.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
   </data>
+  <data name="error" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\error.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="paymentError" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\paymentError.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
+  <data name="paymentSuccessfull" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\paymentSuccessfull.txt;System.String, mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null;Windows-1252</value>
+  </data>
+  <data name="success" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\success.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="waitingQR" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\clessidra.jpg;System.Byte[], mscorlib, Version=4.3.1.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
 </root>

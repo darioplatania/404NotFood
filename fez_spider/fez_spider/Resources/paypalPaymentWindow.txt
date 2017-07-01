@@ -2,8 +2,21 @@
 
   <Window Name="paypal_payment" Width="320" Height="240" BackColor="FFFFFF">
 
-			
-	<Button Name="doneBtn" X="110" Y="190" Width="100" Height="30" Alpha="255" Text="Done" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+
+	<!-- X -->
+	<Button Name="BackToPaymentBtn" X="10" Y="10" Width="20" Height="24" Alpha="255" Text="X" Font="3" FontColor="e00000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	
+	<!-- QR Code at X=10;Y=34; 160x160-->
+
+	<!-- Istruzioni starting from Y=17 -->
+	<TextBlock Name="paymentLbl" X="175" Y="67" Width="135" Height="32" Alpha="255" Text="1. Scan QRCode" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<TextBlock Name="paymentLbl" X="175" Y="99" Width="135" Height="32" Alpha="255" Text="2. Make the Payment" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<TextBlock Name="paymentLbl" X="175" Y="131" Width="135" Height="32" Alpha="255" Text="3. Press Done" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<Button Name="doneBtn" X="190" Y="180" Width="100" Height="30" Alpha="255" Text="Done" Font="4" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>
+	
+	
+	<!-- Bottom Buttons -->
+
 		
 
   </Window>

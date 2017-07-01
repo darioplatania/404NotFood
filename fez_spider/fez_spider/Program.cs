@@ -58,6 +58,7 @@ namespace fez_spider
         private GHI.Glide.UI.Button _ccConfirmBtn;
         private GHI.Glide.UI.TextBlock _ccErrMsg;
         private GHI.Glide.UI.Button _backToOrderBtn;
+        private GHI.Glide.UI.Button _backToPaymentBtn;
         private Image _qrCodeSample;
         private Image waitQRCode;
         
@@ -253,13 +254,15 @@ namespace fez_spider
 
             /* Payment Via Paypal */
             _paypal_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paypalPaymentWindow));
+            _backToPaymentBtn = (GHI.Glide.UI.Button)_paypal_payment.GetChildByName("BackToPaymentBtn");
             _paypal_doneBtn = (GHI.Glide.UI.Button)_paypal_payment.GetChildByName("doneBtn");
             _paypal_doneBtn.Visible = false;
             _paypal_doneBtn.Enabled = false;
-            _qrCodeSample = new Image("qrcode", 255, 80, 20, 160, 160);
+            _qrCodeSample = new Image("qrcode", 255, 10, 47, 160, 160);
+            _qrCodeSample.Visible = false;
             _paypal_payment.AddChild(_qrCodeSample);
 
-            waitQRCode = new Image("clessidra", 255, 96, 30, 128, 128);
+            waitQRCode = new Image("clessidra", 128, 10, 47, 160, 160);
             waitQRCode.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.waitingQR), Bitmap.BitmapImageType.Jpeg);
             waitQRCode.Visible = true;
             _paypal_payment.AddChild(waitQRCode);
@@ -313,6 +316,7 @@ namespace fez_spider
             _ccBackBtn.TapEvent += _ccBackBtnTapEvent;
             _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
             _backToOrderBtn.TapEvent += _backToOrderBtnTapEvent;
+            _backToPaymentBtn.TapEvent += _backToPaymentBtn_TapEvent;
 
 
 
@@ -356,6 +360,11 @@ namespace fez_spider
 
 
 
+        }
+
+        private void _backToPaymentBtn_TapEvent(object sender)
+        {
+            loadGUI(_scegliPagamento);
         }
 
         private void _paypal_doneBtn_PressEvent(object sender)

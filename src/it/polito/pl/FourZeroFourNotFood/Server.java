@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -151,17 +152,18 @@ class ClientRunnable implements Runnable{
 			
 			//UPDATE GUI
 			updateGUIWithNewOrder(order);
-			
+			PaymentWrapper paymentWrapper = new PaymentWrapper();
+			String paymentId = null;
 			while(!isEnded){
 				
 				System.out.println("Waiting for PAYMENT | PAYMENT_PAYPAL | UPDATE_ORDER | CANCEL_ORDER");
-				PaymentWrapper paymentWrapper = new PaymentWrapper();
 				
 				switch(in.readLine()){
 				
 					case MSG_PAYMENT:
 						System.out.println("Waiting for Payment from: "+hostname);
-						if(paymentWrapper.handlePayment(in.readLine(),order)){
+						
+						if(paymentWrapper.handlePayment(decrypt(in.readLine()),order)){
 							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 							updatePaymentWebService(order);
 							isEnded=true;
@@ -173,55 +175,24 @@ class ClientRunnable implements Runnable{
 						
 					case MSG_PAYMENT_P:
 						System.out.println("Initializing Paypal payment...");
-						String paymentId = null;
-						paymentId = paymentWrapper.handlePaymentPaypal(order);
+						if(paymentId==null)
+							paymentId = paymentWrapper.handlePaymentPaypal(order);
 						
 						if(paymentId==null){
 							socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
-							break;
+						}else{
+							try{
+								socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
+								sendQR(order.getId());
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+							// wait for user confirm
+							System.out.println("Waiting for user confirm");
+							if(in.readLine().equalsIgnoreCase(MSG_USER_CONFIRM))
+								checkPaymentStatus(order, paymentId, paymentWrapper, isEnded, socket);
 						}
 						
-						try{
-							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
-							sendQR(order.getId());
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-						// wait for user confirm
-						System.out.println("Waiting for user confirm");
-						if(in.readLine().equalsIgnoreCase(MSG_USER_CONFIRM)){
-							
-							// check server response
-							try{
-								// create the client
-						        System.out.println(URL+paymentId);
-						        Client c = ClientBuilder.newClient();
-						        WebTarget target = c.target(URL+paymentId);
-								Response responseMsg = target.request()
- 						   							   	     .get();
-								// print response
-								System.out.println(responseMsg.toString());
-								
-								// UPDATE GUI
-								if(responseMsg.getStatus()==204){
-									socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
-									paymentWrapper.updateGUIOnResult(order.getid(), true);
-									updatePaymentWebService(order);
-									isEnded=true;
-
-								}
-								else{
-									socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
-									paymentWrapper.updateGUIOnResult(order.getid(), false);
-								}
-									
-							} catch(Exception e){
-								e.printStackTrace();
-								System.out.println("Error while get information from server");
-								socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
-								paymentWrapper.updateGUIOnResult(order.getid(), false);
-							}
-						}
 						
 						break;
 						
@@ -237,6 +208,9 @@ class ClientRunnable implements Runnable{
 						else
 							LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE, "Cannot update different order ids received from "+hostname);
 						
+						// important to create a new bill for new order
+						paymentId = null;
+						
 						//UPDATE GUI
 						updateGUIWithNewOrder(current_order);
 						
@@ -249,6 +223,9 @@ class ClientRunnable implements Runnable{
 						remove(order.getId());
 						isEnded=true;
 						break;
+						
+					case MSG_USER_CONFIRM:
+						checkPaymentStatus(order, paymentId, paymentWrapper, isEnded, socket);
 						
 					default:
 						break;
@@ -268,6 +245,49 @@ class ClientRunnable implements Runnable{
 		
 		
 		
+	}
+
+	private void checkPaymentStatus(Order order, String paymentId, PaymentWrapper paymentWrapper, boolean isEnded, Socket socket) throws UnsupportedEncodingException, IOException {
+		// check server response
+		try{
+			// create the client
+	        System.out.println(URL+paymentId);
+	        Client c = ClientBuilder.newClient();
+	        WebTarget target = c.target(URL+paymentId);
+			Response responseMsg = target.request()
+		   							   	     .get();
+			// print response
+			System.out.println(responseMsg.toString());
+			
+			// UPDATE GUI
+			if(responseMsg.getStatus()==204){
+				socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
+				paymentWrapper.updateGUIOnResult(order.getid(), true);
+				updatePaymentWebService(order);
+				isEnded=true;
+
+			}
+			else{
+				socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
+				paymentWrapper.updateGUIOnResult(order.getid(), false);
+			}
+				
+		} catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Error while get information from server");
+			socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
+			paymentWrapper.updateGUIOnResult(order.getid(), false);
+		}
+		
+	}
+
+	private String decrypt(String readLine) {
+		// TODO Auto-generated method stub
+		final String key = "404notfood";
+		
+		
+		
+		return null;
 	}
 
 	private void sendQR(String id) throws IOException {

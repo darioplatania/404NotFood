@@ -6,11 +6,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import org.eclipse.swt.SWT;
@@ -21,9 +19,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import javax.imageio.ImageIO;
+
+import org.json.simple.JSONObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
@@ -42,6 +44,7 @@ class ClientRunnable implements Runnable{
 	private static final String MSG_PAYMENT_ERR  = "ERR";
 
 	private static final String URL 			 = "http://95.85.47.151:8080/food/webapi/payment/";
+	private static final String URL_ORDER		 = "http://95.85.47.151:8080/food/webapi/order/";
 	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
 	private static final String filePath = "../QRcode";
 	
@@ -140,6 +143,8 @@ class ClientRunnable implements Runnable{
 			this.db.add(order);
 			System.out.println(this.db.size());
 			
+			loadOrderWebService(order);
+			
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.INFO, "ORDER "+order.getid()+" received from "+hostname);
 			
 			//UPDATE GUI
@@ -156,6 +161,7 @@ class ClientRunnable implements Runnable{
 						System.out.println("Waiting for Payment from: "+hostname);
 						if(paymentWrapper.handlePayment(in.readLine(),order)){
 							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
+							updatePaymentWebService(order);
 							isEnded=true;
 						}else{
 							isEnded=false;
@@ -198,6 +204,7 @@ class ClientRunnable implements Runnable{
 								if(responseMsg.getStatus()==204){
 									socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 									paymentWrapper.updateGUIOnResult(order.getid(), true);
+									updatePaymentWebService(order);
 									isEnded=true;
 
 								}
@@ -286,6 +293,55 @@ class ClientRunnable implements Runnable{
         
         System.out.println("Ho inviato: "+byteArrayOutputStream.toByteArray().length);
         file.delete();
+	}
+	
+	private void loadOrderWebService(Order order){
+		
+		try{
+			
+			 String items = "";
+			 int it = order.getFoods().size();
+			 while(it>0){
+				 String el = order.getFoods().get(it-1).getFood().getName() + " x" + order.getFoods().get(it-1).getQuantity() + "; ";
+				 items = items + el;
+				 it--;
+			 }
+			 System.out.println(items);
+			 
+			 JSONObject json_obj = new JSONObject();
+			 // populating json object
+			 json_obj.put("id", order.getId());
+			 json_obj.put("items", items);
+			 json_obj.put("price", order.getPrice());
+			 json_obj.put("status", "NOT OK");
+			 
+			
+			 // create the client
+		     Client c = ClientBuilder.newClient();
+		     WebTarget target = c.target(URL_ORDER);
+		     Response resp = target.request()
+			   	   				   .post(Entity.entity(json_obj.toString(), MediaType.APPLICATION_JSON));
+		     
+		     System.out.println(resp.getStatus());
+		}
+		catch(Exception e){
+			System.out.println("Error during upload order in Web Service");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void updatePaymentWebService(Order order){
+		try{
+			Client c = ClientBuilder.newClient();
+			WebTarget target = c.target(URL_ORDER+order.getId());
+			Response responseMsg = target.request()
+										 .put(Entity.entity("ok", MediaType.TEXT_PLAIN));
+			System.out.println(responseMsg.getStatus());
+		}
+		catch(Exception e){
+			System.out.println("Error during modify payment status in Web Service");
+		}
 	}
 
 	private void remove(String id) {

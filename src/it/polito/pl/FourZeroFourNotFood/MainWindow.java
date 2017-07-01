@@ -150,13 +150,13 @@ public class MainWindow {
 	    TableColumn tc2 = new TableColumn(table, SWT.CENTER);
 	    TableColumn tc3 = new TableColumn(table, SWT.CENTER);
 	    TableColumn tc4 = new TableColumn(table, SWT.CENTER);
-	    TableColumn tc5 = new TableColumn(table, SWT.CENTER);
+	    //TableColumn tc5 = new TableColumn(table, SWT.CENTER);
 	    
 	    tc1.setText("Id");
 	    tc2.setText("Menu");
 	    tc3.setText("Price");
 	    tc4.setText("Payment");
-	    tc5.setText("Status");
+	    //tc5.setText("Status");
 
 	    table.addListener(SWT.Resize, new Listener(){
 
@@ -172,7 +172,7 @@ public class MainWindow {
 				table.getColumn(1).setWidth(2*(w/n));
 				table.getColumn(2).setWidth((w/n)/2);
 				table.getColumn(3).setWidth((w/n));
-				table.getColumn(4).setWidth((w/n));
+				//table.getColumn(4).setWidth((w/n));
 				
 					
 			}

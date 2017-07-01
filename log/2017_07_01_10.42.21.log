@@ -1,0 +1,20 @@
+lug 01, 2017 10:42:22 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: 404 Not Food Starting...
+lug 01, 2017 10:42:22 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Starting connection...
+lug 01, 2017 10:42:22 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Server Started at 0.0.0.0/0.0.0.0:4096
+lug 01, 2017 10:42:22 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Waiting for new connections...
+lug 01, 2017 10:47:33 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: New connection from 172.20.10.2
+lug 01, 2017 10:47:43 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: ORDER x22jxmv927em5c8bfuaz67rrevt01gr7 received from 172.20.10.2
+lug 01, 2017 10:48:17 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: New connection from 172.20.10.2
+lug 01, 2017 10:48:24 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: ORDER 31sl3dsxssvzra02x2e1g26xyd4uuq5n received from 172.20.10.2
+lug 01, 2017 10:51:35 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: New connection from 172.20.10.2
+lug 01, 2017 10:51:42 AM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: ORDER 0503l7vfij6g1cpzkg9i7pj9ra0qbjpl received from 172.20.10.2

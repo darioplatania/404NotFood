@@ -1,0 +1,14 @@
+giu 24, 2017 7:53:41 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: 404 Not Food Starting...
+giu 24, 2017 7:53:41 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Starting connection...
+giu 24, 2017 7:53:41 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Server Started at 0.0.0.0/0.0.0.0:4096
+giu 24, 2017 7:53:42 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: Waiting for new connections...
+giu 24, 2017 7:53:46 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: New connection from 172.20.10.2
+giu 24, 2017 7:54:00 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+INFORMAZIONI: ORDER 9ko6796mwginyvi16v6i9pryh3rme25g received from 172.20.10.2
+giu 24, 2017 7:55:23 PM it.polito.pl.FourZeroFourNotFood.LoggerWrapper DEBUG_INFO
+GRAVE: Socket closed

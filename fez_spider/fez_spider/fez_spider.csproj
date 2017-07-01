@@ -168,6 +168,8 @@
     <None Include="Resources\success.jpg" />
     <None Include="Resources\error.jpg" />
     <None Include="Resources\clessidra.jpg" />
+    <None Include="Resources\server-error.jpg" />
+    <None Include="Resources\serverError.txt" />
     <Content Include="Scripts\json-serialize.js" />
     <Content Include="Scripts\json-serialize.min.js" />
   </ItemGroup>

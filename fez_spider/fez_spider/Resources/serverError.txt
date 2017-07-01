@@ -1,0 +1,6 @@
+<Glide>
+  <Window Name="server_error" Width="320" Height="240" BackColor="FFFFFF">   
+	
+  </Window>
+
+</Glide>

@@ -31,7 +31,7 @@ namespace fez_spider
         private static GHI.Glide.Display.Window _processingPaymentWindow;
         private static GHI.Glide.Display.Window _paymentSuccess;
         private static GHI.Glide.Display.Window _paymentError;
-
+        private static GHI.Glide.Display.Window _serverError;
 
 
         private GHI.Glide.UI.Button _startbtn;
@@ -86,7 +86,7 @@ namespace fez_spider
 
         /* Socket Variables */
         private Socket _socket = null;
-        private const String HOST = "172.20.10.2";
+        private const String HOST = "172.20.10.3";
         private const int PORT = 4096;
         
 
@@ -104,24 +104,21 @@ namespace fez_spider
         private ArrayList payment = new ArrayList();
         //private String url = "http://192.168.2.1:8080/food/webapi/food";
         private String url = "http://95.85.47.151:8080/food/webapi/food";
-        HttpWebRequest req;
-        private HttpWebResponse res;
-        private Stream stream;
         private StreamReader sr;
-
-
+        
         
         private static ArrayList menu;
         private static Orders orders;
-        private SocketClient sockWrap;
+        
 
+        private static bool qrCodeFlag = false;
 
         #region Fez Network Configuration
 
         private static String ip_address = "192.168.2.2";
         private static String subnet     = "255.255.255.0";
         private static String gateway    = "192.168.2.1";
-
+        
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
 
@@ -130,12 +127,14 @@ namespace fez_spider
         #endregion
 
         #region Fez Initialization on Startup
+    
+      
+
         private void initFezSettings()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
             Debug.Print("Program Started");
-
-
+            
             /* Init Led Position */
             led_position = 0;
 
@@ -216,6 +215,12 @@ namespace fez_spider
             _credit_card_payment.AddChild(_mastercardThumb);
             _credit_card_payment.AddChild(_americanexpressThumb);
 
+            /* server Error */
+            _serverError = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.serverError));
+            Image _serverErrImg = new Image("paypal", 255, 96, 56, 128, 128);
+            _serverErrImg.Bitmap = new Bitmap(Resources.GetBytes(Resources.BinaryResources.server_error), Bitmap.BitmapImageType.Jpeg);
+            _serverError.AddChild(_serverErrImg);
+
 
             ArrayList months = new ArrayList()
             {
@@ -256,7 +261,7 @@ namespace fez_spider
             _paypal_payment = GlideLoader.LoadWindow(Resources.GetString(Resources.StringResources.paypalPaymentWindow));
             _backToPaymentBtn = (GHI.Glide.UI.Button)_paypal_payment.GetChildByName("BackToPaymentBtn");
             _paypal_doneBtn = (GHI.Glide.UI.Button)_paypal_payment.GetChildByName("doneBtn");
-            _paypal_doneBtn.Visible = false;
+            _paypal_doneBtn.Visible = true;
             _paypal_doneBtn.Enabled = false;
             _qrCodeSample = new Image("qrcode", 255, 10, 47, 160, 160);
             _qrCodeSample.Visible = false;
@@ -364,22 +369,31 @@ namespace fez_spider
 
         private void _backToPaymentBtn_TapEvent(object sender)
         {
+
+            try
+            {
+                _socket.Send(Encoding.UTF8.GetBytes("BACK\r\n"));
+            }catch(SocketException se)
+            {
+                Debug.Print(se.Message);
+                _socket.Close();
+                loadGUI(_mainwindow);
+                return;
+            }
+
             loadGUI(_scegliPagamento);
         }
 
         private void _paypal_doneBtn_PressEvent(object sender)
         {
 
-            _paypal_doneBtn.Enabled = false;
-            _paypal_doneBtn.Visible = false;
-
-            _qrCodeSample.Visible = false;
-            _qrCodeSample.Bitmap = null;
+            if (!qrCodeFlag)
+                return;
 
             _paypal_payment.Invalidate();
 
             loadGUI(_processingPaymentWindow);
-            System.Threading.Thread.Sleep(3000);
+            System.Threading.Thread.Sleep(1500);
 
             try
             {
@@ -486,27 +500,43 @@ namespace fez_spider
 
             ArrayList al = null;
 
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-
-            if (res.StatusCode.ToString().Equals("200"))
+            try
             {
+                Debug.Print("Making Request to WebService");
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Timeout = 10000; // timeout to 10 seconds
+                Debug.Print("Waiting for response from WebService");
+                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-                Debug.Print("Response: " + res.StatusCode);
+                if (res.StatusCode.ToString().Equals("200"))
+                {
 
-                Stream stream = res.GetResponseStream();
-                sr = new StreamReader(stream);
-                string json = sr.ReadToEnd();
+                    Debug.Print("Response: " + res.StatusCode);
 
-                Debug.Print("Menu: " + json);
-                
+                    Stream stream = res.GetResponseStream();
+                    sr = new StreamReader(stream);
+                    string json = sr.ReadToEnd();
 
-                al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
-                
+                    Debug.Print("Menu: " + json);
+
+
+                    al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+
+                }
+
+                return al;
+
+            }
+            catch (System.Net.WebException se)
+            {
+                Debug.Print(se.Message);
+                return null;
             }
 
-            return al;
+
+
+           
 
         }
         private string RandomString(int Size)
@@ -734,6 +764,7 @@ namespace fez_spider
         private void ResetStatus()
         {
             led_position = 0;
+            qrCodeFlag = false;
 
             _socket = null;
 
@@ -749,7 +780,17 @@ namespace fez_spider
             _ingredients.Text = "";
             _pCounter.Text = "";
 
+
             _dataGrid.Clear();
+
+
+            _qrCodeSample.Visible = false;
+            _qrCodeSample.Bitmap = null;
+            waitQRCode.Visible = true;
+
+
+            _startbtn.Enabled = true;
+            _loadingLbl.Visible = false;
 
             ledStrip.TurnLedOn(led_position);
 
@@ -920,6 +961,7 @@ namespace fez_spider
 
             }catch(SocketException ex)
             {
+                Debug.Print("Error Sending " + ORDER_CMD);
                 Debug.Print("SocketException: " + ex.ToString());
                 _socket.Close();
                 loadGUI(_mainwindow);
@@ -1137,10 +1179,6 @@ namespace fez_spider
         private void _paypal_TapEvent(object sender)
         {
             loadGUI(_paypal_payment);
-            _paypal_doneBtn.Visible = true;
-            _qrCodeSample.Visible = false;
-            waitQRCode.Visible = true;
-            _paypal_payment.Invalidate();
 
             // Waiting for Response
             // 0. Sending PAYMENT_PAYPAL
@@ -1155,107 +1193,113 @@ namespace fez_spider
             // 1.4.2.1 Go TO ERR PAGE
             // 1.4.2.2 Redirect to Choose Payment after 5 seconds
 
-
             // 2. PAYMENT_ERR
             // 2.1 Go To ERR PAGE
             // 2.2 Redirect to Choose Payment after 5 seconds
+            
 
+            if(!qrCodeFlag){
 
+                _paypal_payment.Invalidate();
 
-
-
-
-            try
-            {
-                _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_PAYPAL));
-
-                byte[] response = new byte[3];
-                _socket.Receive(response,3,SocketFlags.None);
-
-                var stream = new MemoryStream(response);
-                StreamReader sr = new StreamReader(stream);
-                string response_as_str = sr.ReadToEnd();
-
-                if (response_as_str == "+OK")
+                try
                 {
+                    Debug.Print("Requesting QRCode");
+                    _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_PAYPAL));
 
-                    
-                    _paypal_doneBtn.Enabled = true;
-                    _paypal_payment.Invalidate();
+                    byte[] response = new byte[3];
+                    _socket.Receive(response, 3, SocketFlags.None);
 
-                    
-                    Debug.Print("Aspetto immagine");
+                    var stream = new MemoryStream(response);
+                    StreamReader sr = new StreamReader(stream);
+                    string response_as_str = sr.ReadToEnd();
 
-                    byte[] size = new byte[5];
-
-                    _socket.Receive(size, 5, SocketFlags.None);
-
-                    stream = new MemoryStream(size);
-                    sr = new StreamReader(stream);
-                    string size_as_str = sr.ReadToEnd();
-
-
-                    
-                    int len = int.Parse(size_as_str);
-
-
-
-                    byte[] img = new byte[len];
-                    Array.Clear(img, 0, len);
-                    
-
-                    int tmp = 0;
-                    int count = 0;
-                    while(count < len)
+                    if (response_as_str == "+OK")
                     {
-                        if (count + 1024 > len)
-                            tmp = len - count;
-                        else
-                            tmp = 1024;
 
-                        count += _socket.Receive(img, count,tmp, SocketFlags.None);
-                      
+
+                        _paypal_doneBtn.Enabled = true;
+                        _paypal_payment.Invalidate();
+
+
+                        Debug.Print("Aspetto immagine");
+
+                        byte[] size = new byte[5];
+
+                        _socket.Receive(size, 5, SocketFlags.None);
+
+                        stream = new MemoryStream(size);
+                        sr = new StreamReader(stream);
+                        string size_as_str = sr.ReadToEnd();
+
+
+
+                        int len = int.Parse(size_as_str);
+
+
+
+                        byte[] img = new byte[len];
+                        Array.Clear(img, 0, len);
+
+
+                        int tmp = 0;
+                        int count = 0;
+                        while (count < len)
+                        {
+                            if (count + 1024 > len)
+                                tmp = len - count;
+                            else
+                                tmp = 1024;
+
+                            count += _socket.Receive(img, count, tmp, SocketFlags.None);
+
+                        }
+
+                        Debug.Print("count: " + count);
+
+                        byte[] end = new byte[3];
+
+                        _socket.Receive(end, 3, SocketFlags.None);
+
+                        stream = new MemoryStream(end);
+                        sr = new StreamReader(stream);
+                        Debug.Print("Ho ricevuto --> " + sr.ReadToEnd());
+
+                        // Render QR CODE + DONE button
+                        waitQRCode.Visible = false;
+                        _qrCodeSample.Bitmap = new Bitmap(img, Bitmap.BitmapImageType.Jpeg);
+                        _qrCodeSample.Visible = true;
+                        qrCodeFlag = true;
+                        _paypal_payment.Invalidate();
+
+
+
+                    }
+                    else if (response_as_str == "ERR")
+                    {
+
+                        loadGUI(_paymentError);
+                        System.Threading.Thread.Sleep(5000);
+                        loadGUI(_scegliPagamento);
+
                     }
 
-                    Debug.Print("count: " + count);
 
-                    byte[] end = new byte[3];
 
-                    _socket.Receive(end, 3, SocketFlags.None);
-
-                    stream = new MemoryStream(end);
-                    sr = new StreamReader(stream);
-                    Debug.Print("Ho ricevuto --> " + sr.ReadToEnd());
-
-                    // Render QR CODE + DONE button
-                    waitQRCode.Visible = false;
-                    _qrCodeSample.Bitmap = new Bitmap(img, Bitmap.BitmapImageType.Jpeg);
-                    _qrCodeSample.Visible = true;
-                    _paypal_payment.Invalidate();
-
-                    
 
                 }
-                else if (response_as_str == "ERR")
+                catch (SocketException ex)
                 {
-
-                    loadGUI(_paymentError);
-                    System.Threading.Thread.Sleep(5000);
-                    loadGUI(_scegliPagamento);
-
+                    Debug.Print(ex.Message);
+                  //  loadGUI(_errorWindow);
+                    loadGUI(_mainwindow);
                 }
 
-
-
-
-            }
-            catch(SocketException ex)
-            {
-                Debug.Print(ex.Message);
             }
 
 
-           
+
+
 
 
 
@@ -1299,20 +1343,88 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            if(startup)
+            if (startup) {
+                Debug.Print("Network Down");
                 loadGUI(_errorWindow);
-            
+            }
+
         }
         ///*Ethernet Network_Up Function*/
         private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
+            System.Threading.Thread.Sleep(500);
+
             if(!startup)
                 startup = true;
-            loadGUI(_mainwindow);
+            
+            if (qrCodeFlag || Glide.MainWindow == _processingPaymentWindow)
+                loadGUI(_scegliPagamento);
+            else
+                loadGUI(_mainwindow);
             
         }
         private void Start_PressEvent(object sender)
         {
+
+            /* Start 2nd Thread */
+            Debug.Print("Starting secondary thread");
+            System.Threading.Thread t = new System.Threading.Thread(() => {
+
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                
+                IPHostEntry hostInfo = Dns.GetHostEntry(HOST);
+                IPAddress ipAddr = hostInfo.AddressList[0];
+                IPEndPoint remEP = new IPEndPoint(ipAddr, 4097);
+
+                Debug.Print("HEARTBEAT: Connecting to "+remEP.Address.ToString());
+                s.Connect(remEP);
+
+                if (s.RemoteEndPoint.ToString() == (HOST + ":4097"))
+                {
+                    s.ReceiveTimeout = 40000;
+                    string response_as_str = "";
+                    byte[] response = new byte[6];
+                    
+                    try
+                    {
+                        do
+                        {
+
+                            s.Send(Encoding.UTF8.GetBytes("PING\r\n"));
+
+
+                            s.Receive(response, 6, SocketFlags.None);
+                            StreamReader sr = new StreamReader(new MemoryStream(response));
+                            response_as_str = sr.ReadLine();
+
+                            Debug.Print(response_as_str);
+
+                        } while (response_as_str == "PONG");
+                    }
+                    catch (SocketException se){
+
+                        s.Close();
+                        if(_socket!=null)
+                            _socket.Close();
+
+                    }
+                    
+                    loadGUI(_serverError);
+                    System.Threading.Thread.Sleep(5000);
+                    loadGUI(_mainwindow);
+
+                }else {
+
+                    Debug.Print("HEARTBEAT: Failed connecting socket");
+                  
+
+                }
+
+                            
+            });
+
+            t.Start();
+            
 
             _loadingLbl.Text = "Loading, Please Wait..";
             
@@ -1329,7 +1441,7 @@ namespace fez_spider
 
             // Socket connection
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _socket.ReceiveTimeout = 40000;
+            _socket.ReceiveTimeout = 15000;
 
 
             IPHostEntry ipHostInfo = Dns.GetHostEntry(HOST);
@@ -1368,18 +1480,21 @@ namespace fez_spider
                     printDatagrid();
 
 
+                    return; // Sucessfull exit!
+                }else
+                {
+                    //chiudo socket
+                    _socket.Close();
                 }
-            }else
-            {
-                _startbtn.Enabled = true;
-                _loadingLbl.Visible = false;
-                loadGUI(_mainwindow);
-                
 
             }
-
-
             
+            
+            // something wrong, may not arrive here!
+            _startbtn.Enabled = true;
+            _loadingLbl.Visible = false;
+            loadGUI(_mainwindow);
+                
 
         }
 

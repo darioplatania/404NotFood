@@ -102,8 +102,8 @@ namespace fez_spider
         private static String ORDER_CMD = null;
 
         private ArrayList payment = new ArrayList();
-        //private String url = "http://192.168.2.1:8080/food/webapi/food";
         private String url = "http://95.85.47.151:8080/food/webapi/food";
+        private String payment_url = "http://95.85.47.151:8080/food/webapi/order/";
         private StreamReader sr;
         
         
@@ -112,6 +112,7 @@ namespace fez_spider
         
 
         private static bool qrCodeFlag = false;
+        private static bool processingPayment = false;
 
         #region Fez Network Configuration
 
@@ -376,8 +377,6 @@ namespace fez_spider
             }catch(SocketException se)
             {
                 Debug.Print(se.Message);
-                _socket.Close();
-                loadGUI(_mainwindow);
                 return;
             }
 
@@ -430,8 +429,6 @@ namespace fez_spider
             catch(SocketException ex)
             {
                 Debug.Print(ex.Message);
-                _socket.Close();
-                loadGUI(_mainwindow);
             }
 
 
@@ -765,6 +762,7 @@ namespace fez_spider
         {
             led_position = 0;
             qrCodeFlag = false;
+            processingPayment = false;
 
             _socket = null;
 
@@ -835,17 +833,24 @@ namespace fez_spider
         }
         private void processPayment(string creditCard) {
 
-
-            
-
             _ccConfirmBtn.Enabled = false;
             _ccConfirmBtn.TapEvent -= _ccConfirmBtnTapEvent;
-
+            
             Debug.Print(creditCard);
             loadGUI(_processingPaymentWindow);
+            System.Threading.Thread.Sleep(1000);
+            processingPayment = true;
+
+            if (qrCodeFlag)
+            {
+                qrCodeFlag = false;
+                _qrCodeSample.Bitmap = null;
+                _qrCodeSample.Visible = false;
+                waitQRCode.Visible = true;
+                
+            }
 
 
-            
             byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
 
             byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
@@ -859,8 +864,7 @@ namespace fez_spider
             }catch(SocketException ex)
             {
                 Debug.Print(ex.ToString());
-                _socket.Close();
-                _socket = null;
+
             }
 
 
@@ -978,8 +982,6 @@ namespace fez_spider
             {
                 Debug.Print("Error Sending " + ORDER_CMD);
                 Debug.Print("SocketException: " + ex.ToString());
-                _socket.Close();
-                loadGUI(_mainwindow);
                 return;
             }
 
@@ -1358,6 +1360,10 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
+            
+            previousWindow = Glide.MainWindow;
+            
+
             if (startup) {
                 Debug.Print("Network Down");
                 loadGUI(_errorWindow);
@@ -1369,15 +1375,60 @@ namespace fez_spider
         {
             System.Threading.Thread.Sleep(500);
 
-            if(!startup)
+            if (!startup) { 
                 startup = true;
-            
-            if (qrCodeFlag || Glide.MainWindow == _processingPaymentWindow)
-                loadGUI(_scegliPagamento);
-            else
                 loadGUI(_mainwindow);
-            
+            }else {
+                if (previousWindow == _processingPaymentWindow)
+                {
+
+                    if (processingPayment)
+                        recoveryPayment();
+                    else if (qrCodeFlag)
+                        loadGUI(_paypal_payment);
+
+                }
+                else
+                    loadGUI(previousWindow);
+
+            }
+
         }
+
+
+        private void recoveryPayment()
+        {
+
+            Debug.Print("Retrieving payment Info");
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(payment_url + orderId);
+            req.Timeout = 10000; // timeout to 10 seconds
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+
+            if (res.StatusCode.ToString().Equals("200"))
+            {
+
+
+                Stream stream = res.GetResponseStream();
+                sr = new StreamReader(stream);
+                string str = sr.ReadToEnd();
+
+                switch (str)
+                {
+                    case "OK":
+                        loadGUI(_paymentSuccess);
+                        System.Threading.Thread.Sleep(10000);
+                        loadGUI(_mainwindow);
+                        break;
+                    default:
+                        loadGUI(_credit_card_payment);
+                        break;
+
+                }
+
+            }
+
+        }
+
         private void Start_PressEvent(object sender)
         {
 
@@ -1396,39 +1447,45 @@ namespace fez_spider
 
                 if (s.RemoteEndPoint.ToString() == (HOST + ":4097"))
                 {
-                    s.ReceiveTimeout = 40000;
                     string response_as_str = "";
                     byte[] response = new byte[6];
-                    
-                    try
+                    while (true)
                     {
-                        do
+                        try
+                        {
+                            if (ethernetJ11D.IsNetworkUp)
+                            {
+                                s.Send(Encoding.UTF8.GetBytes("PING\r\n"));
+                                s.Receive(response, 6, SocketFlags.None);
+                                StreamReader sr = new StreamReader(new MemoryStream(response));
+                                response_as_str = sr.ReadLine();
+                                Debug.Print(response_as_str);
+                            }
+
+
+                            System.Threading.Thread.Sleep(3500);
+                        }
+                        catch (SocketException se)
                         {
 
-                            s.Send(Encoding.UTF8.GetBytes("PING\r\n"));
-
-
-                            s.Receive(response, 6, SocketFlags.None);
-                            StreamReader sr = new StreamReader(new MemoryStream(response));
-                            response_as_str = sr.ReadLine();
-
-                            Debug.Print(response_as_str);
-
-                        } while (response_as_str == "PONG");
-                    }
-                    catch (SocketException se){
-
-                        s.Close();
-                        if(_socket!=null)
-                            _socket.Close();
+                            System.Threading.Thread.Sleep(2000);
+                            if (ethernetJ11D.IsNetworkUp)
+                            {
+                                loadGUI(_serverError);
+                                System.Threading.Thread.Sleep(2000);
+                                loadGUI(_mainwindow);
+                                break;
+                            }
+                        }
 
                     }
                     
-                    loadGUI(_serverError);
-                    System.Threading.Thread.Sleep(5000);
-                    loadGUI(_mainwindow);
 
-                }else {
+                    
+
+
+                }
+                else {
 
                     Debug.Print("HEARTBEAT: Failed connecting socket");
                   

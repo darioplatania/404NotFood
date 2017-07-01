@@ -91,7 +91,7 @@ public class Main {
 			while(true){
 				if(in.readLine()==null)
 					break;
-				Thread.sleep(2000);
+				Thread.sleep(3500);
 				out.println("PONG");
 			}
 		

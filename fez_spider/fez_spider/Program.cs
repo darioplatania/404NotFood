@@ -835,15 +835,21 @@ namespace fez_spider
         }
         private void processPayment(string creditCard) {
 
+
+            
+
             _ccConfirmBtn.Enabled = false;
             _ccConfirmBtn.TapEvent -= _ccConfirmBtnTapEvent;
 
             Debug.Print(creditCard);
             loadGUI(_processingPaymentWindow);
 
+
             
             byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
+
             byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
+
 
             try
             {
@@ -942,7 +948,16 @@ namespace fez_spider
         private void _ordBtn_PressEvent(object sender)
         {
 
-            
+            if (qrCodeFlag)
+            {
+                qrCodeFlag = false;
+                _qrCodeSample.Bitmap = null;
+                _qrCodeSample.Visible = false;
+                waitQRCode.Visible = true;
+                _paypal_doneBtn.Enabled = false;
+                   
+            }
+
             String order_as_json = GetOrderAsJson();
 
             Debug.Print(ORDER_CMD);

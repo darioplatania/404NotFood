@@ -110,6 +110,7 @@
     <Reference Include="System.Http" />
     <Reference Include="System.IO" />
     <Reference Include="System.Net.Security" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

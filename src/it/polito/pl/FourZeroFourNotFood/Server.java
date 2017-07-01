@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.eclipse.swt.SWT;
@@ -47,6 +48,7 @@ class ClientRunnable implements Runnable{
 	private static final String URL_ORDER		 = "http://95.85.47.151:8080/food/webapi/order/";
 	//private static final String URL = "http://localhost:8080/food/webapi/payment/";
 	private static final String filePath = "../QRcode";
+	
 	
 	
 	private OrderDB db;
@@ -254,11 +256,14 @@ class ClientRunnable implements Runnable{
 			
 				}
 			}
-			
+
 			socket.close();
-	
-		} catch (IOException|JsonSyntaxException e) {
+			
+		} catch (IOException|JsonSyntaxException|NullPointerException e) {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" from: "+hostname);
+		
+		}finally{
+			Server.sockets.remove(socket);
 		}
 		
 		
@@ -413,6 +418,7 @@ public class Server {
 	private ServerSocket socket;
 	private LoggerWrapper logger;
 	
+	public static ArrayList<Socket> sockets = new ArrayList<Socket>();
 	
 	public Server(int PORT_NUMBER) throws IOException{
 		
@@ -440,14 +446,15 @@ public class Server {
 			Socket new_client = this.socket.accept();
 			String host = new_client.getInetAddress().getHostAddress();
 			
+			sockets.add(new_client);
 			
 			logger.DEBUG_INFO(Level.INFO, "New connection from "+host);
-			
+			ClientRunnable cr = 
+					new ClientRunnable(host, new_client);
 			// START NEW THREAD TO HANDLE NEW CONNECTION
-			new Thread(
-					new ClientRunnable(host, new_client)
-			).start();
-	
+			Thread t = new Thread(cr);
+			t.start();
+			
 			
 						
 		

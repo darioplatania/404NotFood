@@ -1,7 +1,9 @@
 package it.polito.pl.FourZeroFourNotFood;
 
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,6 +69,7 @@ public class MainWindow {
 	 * Open the window.
 	 */
 	public void open() {
+		
 		Display display = Display.getDefault();
 		createContents();
 		
@@ -181,6 +184,14 @@ public class MainWindow {
 	    
 		shell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
+		    	for(Socket s:Server.sockets){
+		    		try {
+						s.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
 		        System.exit(0);
 		      }
 		    });

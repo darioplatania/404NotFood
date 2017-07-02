@@ -291,26 +291,29 @@ class ClientRunnable implements Runnable{
 		// TODO Auto-generated method stub
 		
 		
-		final String key = "404notfood";
+		final String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
 		
-		/*
+		while(text.length()%16!=0){
+			text += "\0";
+		}
+		System.out.println("Stringa modificata: "+text);
 		// encrypt
 		XTEA x = new XTEA();
-		x.setKey(convertStringToByteArray(key));
+		x.setKey(key.getBytes());
 		byte[] byteString = convertStringToByteArray(text);
 		
-		x.encrypt(byteString, 0, text.length());
+		
+		x.encrypt(byteString, 0, byteString.length);
+		System.out.println("String criptata: "+new String(byteString));
 		
 		// decrypt
-		x.decrypt(byteString, 0, text.length()); //byteString now contains the decrypted data
-		String str = new String(byteString); //decrypted String
+		x.decrypt(byteString, 0, byteString.length); //byteString now contains the decrypted data
+		String str = new String(byteString).replaceAll("\0", ""); //decrypted String without padding
+	
+		System.out.println("Stringa decriptata: "+str);		
 		
-		System.out.println(str);
 		return str;
-		
-		*/
-		return text;
-	}
+		}
 	
 	private static byte[] convertStringToByteArray(String stringToConvert) {
 	    byte[] theByteArray = stringToConvert.getBytes();

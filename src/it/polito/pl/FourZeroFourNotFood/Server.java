@@ -287,7 +287,7 @@ class ClientRunnable implements Runnable{
 		
 		
 		
-		return null;
+		return readLine;
 	}
 
 	private void sendQR(String id) throws IOException {

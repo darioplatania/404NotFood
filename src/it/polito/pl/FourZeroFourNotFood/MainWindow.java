@@ -172,7 +172,7 @@ public class MainWindow {
 
 				int w = shell.getBounds().width;
 				int n = table.getColumnCount();
-				
+				n--;
 				
 				table.getColumn(0).setWidth(0);
 				table.getColumn(1).setWidth((w/n));

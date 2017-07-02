@@ -166,6 +166,8 @@ class ClientRunnable implements Runnable{
 						if(paymentWrapper.handlePayment(decrypt(in.readLine()),order)){
 							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 							updatePaymentWebService(order);
+							// waiting for last message from FEZ
+							in.readLine();
 							isEnded=true;
 						}else{
 							isEnded=false;

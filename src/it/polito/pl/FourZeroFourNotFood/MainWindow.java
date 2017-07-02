@@ -17,9 +17,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -126,7 +129,7 @@ public class MainWindow {
 		table.setForeground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		table.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 	    table.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,false));
-		table.setHeaderVisible(true);
+		table.setHeaderVisible(false);
 		table.setLinesVisible(false);
 
 		
@@ -171,9 +174,9 @@ public class MainWindow {
 				int n = table.getColumnCount();
 				
 				
-				table.getColumn(0).setWidth((w/n)/2);
-				table.getColumn(1).setWidth(2*(w/n));
-				table.getColumn(2).setWidth((w/n)/2);
+				table.getColumn(0).setWidth(0);
+				table.getColumn(1).setWidth((w/n));
+				table.getColumn(2).setWidth((w/n));
 				table.getColumn(3).setWidth((w/n));
 				//table.getColumn(4).setWidth((w/n));
 				
@@ -184,15 +187,33 @@ public class MainWindow {
 	    
 		shell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
-		    	for(Socket s:Server.sockets){
-		    		try {
-						s.close();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-		    	}
-		        System.exit(0);
+		    	  
+		    	// create a dialog with ok and cancel buttons and a question icon
+		    	  MessageBox dialog =
+		    	      new MessageBox(shell, SWT.ICON | SWT.OK| SWT.CANCEL);
+		    	  dialog.setText("Warning");
+		    	  dialog.setMessage("All the orders will be lost. Are you sure to close it?");
+		    	  
+
+		    	  // open dialog and await user selection
+		    	  int returnCode = dialog.open();
+		    	  
+		    	  if(returnCode == SWT.OK){
+		    			for(Socket s:Server.sockets){
+				    		try {
+								s.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				    	}
+				        System.exit(0);
+		    	  }else if(returnCode == SWT.CANCEL){
+		    		  event.doit = false;
+		    	  }
+		    		  
+		    
+		    	  
 		      }
 		    });
 	    
@@ -217,6 +238,7 @@ public class MainWindow {
 	    menu_table.setLayoutData(new GridData(SWT.FILL,SWT.TOP,true,true));
 	    menu_table.setHeaderVisible(false);
 	    menu_table.setLinesVisible(false);
+	    
 
 	    
 	    TableColumn tableColumn = new TableColumn(menu_table, SWT.LEFT);
@@ -246,7 +268,22 @@ public class MainWindow {
 	    	
 	    });
 	    
-	    
+	    menu_table.addListener(SWT.EraseItem, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event event)
+	        {
+	            event.detail &= ~SWT.HOT;
+	            if ((event.detail & SWT.SELECTED) == 0) return; /// item not selected
+
+	            GC gc = event.gc;
+	            gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+
+	            event.detail &= ~SWT.SELECTED;
+	            menu_table.deselectAll();
+
+	        }
+	    });
 	    
 	    menu_composite.setContent(menu_table);
 	    menu_composite.setExpandHorizontal(true);

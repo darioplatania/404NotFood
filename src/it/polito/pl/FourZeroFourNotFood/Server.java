@@ -422,7 +422,7 @@ class ClientRunnable implements Runnable{
 				 }
 				 
 				 TableItem new_item = new TableItem(MainWindow.getTable(), SWT.NONE);
-				 new_item.setText(new String[] { id,menu,price,paid,"Received" });
+				 new_item.setText(new String[] { id,menu,price,paid});
 				 
 				 MainWindow.getOrderItems().put(id, new_item);
 				 

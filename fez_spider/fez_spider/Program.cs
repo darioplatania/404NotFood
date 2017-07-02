@@ -10,13 +10,17 @@ using GHI.Glide.UI;
 using System.IO;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading;
 
 
 
 namespace fez_spider
 {
+
+    
     public partial class Program
     {
+        private static System.Threading.Thread tHeartBeat;
 
         #region Ghi.Glide Definitions 
 
@@ -85,8 +89,11 @@ namespace fez_spider
         private static string orderId = null;
 
         /* Socket Variables */
+        private Socket s = null;
         private Socket _socket = null;
-        private const String HOST = "172.20.10.3";
+//        private const String HOST = "172.20.10.3";
+        private const String HOST = "192.168.1.9";
+
         private const int PORT = 4096;
         
 
@@ -113,29 +120,41 @@ namespace fez_spider
 
         private static bool qrCodeFlag = false;
         private static bool processingPayment = false;
-
+        
         #region Fez Network Configuration
 
-        private static String ip_address = "192.168.2.2";
-        private static String subnet     = "255.255.255.0";
-        private static String gateway    = "192.168.2.1";
-        
+        //private static String ip_address = "192.168.2.2";
+        //private static String subnet     = "255.255.255.0";
+        //private static String gateway    = "192.168.2.1";
+
+        private static String ip_address = "192.168.1.253";
+        private static String subnet = "255.255.255.0";
+        private static String gateway = "192.168.1.1";
+
+
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
 
 
         private static int led_position;
 
+
+        private static ManualResetEvent HeartBeatEvent = new ManualResetEvent(false);
+        private static ManualResetEvent DownEvent = new ManualResetEvent(true);
+
+
+
         #endregion
 
         #region Fez Initialization on Startup
-    
-      
+
+
 
         private void initFezSettings()
         {
             /*Use Debug.Print to show messages in Visual Studio's "Output" window during debugging*/
             Debug.Print("Program Started");
-            
+
+        
             /* Init Led Position */
             led_position = 0;
 
@@ -590,11 +609,38 @@ namespace fez_spider
             
         }
 
-        private void loadGUI(GHI.Glide.Display.Window window)
+        private void loadGUI(GHI.Glide.Display.Window window,bool b)
         {
+            if (window == _mainwindow)
+            {
+                if (_socket != null)
+                {
+                    _socket.Close();
+                    _socket = null;
+
+                    if (b) {
+                        Debug.Print("Main thread aspetta morte heartbeat");
+                        HeartBeatEvent.WaitOne();
+                        HeartBeatEvent.Reset();
+
+                        Debug.Print("Main thread scopre morte heartbeat");
+                        
+                    }
+                        
+                   
+                }
+                
+            }
+
+
             Glide.MainWindow = window;
             progressLed(window);
-            
+        }
+
+        private void loadGUI(GHI.Glide.Display.Window window)
+        {
+
+            loadGUI(window, true);
 
         }
         private void initOrders()
@@ -833,12 +879,14 @@ namespace fez_spider
         }
         private void processPayment(string creditCard) {
 
-            _ccConfirmBtn.Enabled = false;
-            _ccConfirmBtn.TapEvent -= _ccConfirmBtnTapEvent;
             
             Debug.Print(creditCard);
             loadGUI(_processingPaymentWindow);
-            System.Threading.Thread.Sleep(1000);
+
+            if (recoveryPayment(false))
+                return;
+
+            
             processingPayment = true;
 
             if (qrCodeFlag)
@@ -852,7 +900,6 @@ namespace fez_spider
 
 
             byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
-
             byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
 
 
@@ -860,56 +907,49 @@ namespace fez_spider
             {
                 _socket.Send(msg_header);
                 _socket.Send(msg_body);
+                
+
+                byte[] response = new byte[3];
+                _socket.Receive(response, 3, SocketFlags.None);
+
+
+                var stream = new MemoryStream(response);
+                StreamReader sr = new StreamReader(stream);
+                string response_as_str = sr.ReadToEnd();
+
+
+
+                if (response_as_str == "ERR")
+                {
+                    loadGUI(_paymentError);
+                    System.Threading.Thread.Sleep(5000);
+                    processingPayment = false;
+                    loadGUI(_scegliPagamento);
+
+                }else
+                {
+                    Debug.Print("Payment Success");
+
+                    loadGUI(_paymentSuccess);
+                    System.Threading.Thread.Sleep(2000);
+                    _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_CONFIRM));
+                    System.Threading.Thread.Sleep(2000);
+                    loadGUI(_mainwindow);
+
+                }
+
+
 
             }catch(SocketException ex)
             {
                 Debug.Print(ex.ToString());
 
+
+
+
             }
 
-
-            _ccConfirmBtn.Enabled = true;
-            _ccConfirmBtn.TapEvent += _ccConfirmBtnTapEvent;
-
-
-            if (_socket == null) {
-
-               
-                loadGUI(_mainwindow);
-
-
-            }else {
-                byte[] response = new byte[3];
-                
-                try
-                {
-                    _socket.Receive(response, 3, SocketFlags.None);
-
-
-                    var stream = new MemoryStream(response);
-                    StreamReader sr = new StreamReader(stream);
-                    string response_as_str = sr.ReadToEnd();
-
-                    if (response_as_str == "ERR")
-                    {
-                        loadGUI(_paymentError);
-                        System.Threading.Thread.Sleep(5000);
-                        loadGUI(_scegliPagamento);
-                        return;
-                    }
-                    
-
-                }catch(SocketException ex)
-                {
-                    Debug.Print(ex.Message);
-                }
-
-
-
-                loadGUI(_paymentSuccess);
-                System.Threading.Thread.Sleep(10000);
-                loadGUI(_mainwindow);             }
-
+            
         }
         /*
              
@@ -1036,6 +1076,27 @@ namespace fez_spider
         
         private void _ccConfirmBtnTapEvent(object sender)
         {
+            //TODO RIMUOVERE
+
+            /* BEGIN */
+
+
+            Hashtable card1 = new Hashtable();
+            card1.Add("firstname", "Joe");
+            card1.Add("lastname", "Shopper");
+            card1.Add("cvv2", "874");
+            card1.Add("number", "4567516310777851");
+            card1.Add("expireMonth", "11");
+            card1.Add("expireYear", "2018");
+            card1.Add("type", "visa");
+
+            string card1_as_json = Json.NETMF.JsonSerializer.SerializeObject(card1);
+            
+            processPayment(card1_as_json);
+            return;
+
+            /* END */
+
             string message = "";
 
 
@@ -1337,21 +1398,25 @@ namespace fez_spider
         }
         private void _siBtn_TapEvent(object sender)
         {
+            String target = "";
+            if (ORDER_CMD == NEW_ORDER)
+                target = CLOSE;
+            else
+                target = CANCEL_ORDER;
 
-            byte[] msg_cancel = Encoding.UTF8.GetBytes(CANCEL_ORDER);
+            byte[] msg_cancel = Encoding.UTF8.GetBytes(target);
 
             try
             {
                 _socket.Send(msg_cancel);
-            }catch(SocketException ex)
+
+                loadGUI(_mainwindow);
+            }
+            catch(SocketException ex)
             {
                 Debug.Print(ex.Message);
             }
-
-            _socket.Close();
-
-            ResetStatus();
-            loadGUI(_mainwindow);
+            
         }
         private void deleteBtn_PressEvent(object sender)
         {
@@ -1360,7 +1425,7 @@ namespace fez_spider
         /*Ethernet Network_Down Function*/
         private void ethernetJ11D_NetworkDown(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            
+            DownEvent.Reset();
             previousWindow = Glide.MainWindow;
             
 
@@ -1373,7 +1438,11 @@ namespace fez_spider
         ///*Ethernet Network_Up Function*/
         private void ethernetJ11D_NetworkUp(GTM.Module.NetworkModule sender,GTM.Module.NetworkModule.NetworkState state)
         {
-            System.Threading.Thread.Sleep(500);
+
+
+            Debug.Print("Network is UP");
+
+            DownEvent.Set();
 
             if (!startup) { 
                 startup = true;
@@ -1381,25 +1450,28 @@ namespace fez_spider
             }else {
                 if (previousWindow == _processingPaymentWindow)
                 {
-
-                    if (processingPayment)
-                        recoveryPayment();
-                    else if (qrCodeFlag)
+                    if (qrCodeFlag)
                         loadGUI(_paypal_payment);
-
+                    else 
+                        recoveryPayment(true);
+                     
                 }
                 else
                     loadGUI(previousWindow);
 
             }
 
+            HeartBeatEvent.Set();
         }
 
 
-        private void recoveryPayment()
+        private bool recoveryPayment(bool flag)
         {
 
             Debug.Print("Retrieving payment Info");
+
+            loadGUI(_processingPaymentWindow);
+
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(payment_url + orderId);
             req.Timeout = 10000; // timeout to 10 seconds
             HttpWebResponse res = (HttpWebResponse)req.GetResponse();
@@ -1415,17 +1487,28 @@ namespace fez_spider
                 switch (str)
                 {
                     case "OK":
+
+                        _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_CONFIRM));
                         loadGUI(_paymentSuccess);
-                        System.Threading.Thread.Sleep(10000);
+                        System.Threading.Thread.Sleep(5000);
+                       
+
                         loadGUI(_mainwindow);
-                        break;
+                        return true;
                     default:
-                        loadGUI(_credit_card_payment);
-                        break;
+                        if (flag) { 
+                            loadGUI(_paymentError);
+                            System.Threading.Thread.Sleep(5000);
+                            processingPayment = false;
+                            loadGUI(_credit_card_payment);
+                        }
+                        return false;
 
                 }
 
             }
+
+            return false;
 
         }
 
@@ -1433,54 +1516,80 @@ namespace fez_spider
         {
 
             /* Start 2nd Thread */
-            Debug.Print("Starting secondary thread");
-            System.Threading.Thread t = new System.Threading.Thread(() => {
+            Debug.Print("Starting Session");
+            tHeartBeat = new System.Threading.Thread(() => {
 
-                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                int counter = 0;
+                s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 
                 IPHostEntry hostInfo = Dns.GetHostEntry(HOST);
                 IPAddress ipAddr = hostInfo.AddressList[0];
                 IPEndPoint remEP = new IPEndPoint(ipAddr, 4097);
 
                 Debug.Print("HEARTBEAT: Connecting to "+remEP.Address.ToString());
-                s.Connect(remEP);
 
+                s.Connect(remEP);
+               
                 if (s.RemoteEndPoint.ToString() == (HOST + ":4097"))
                 {
+                    Debug.Print("Heartbeat connected");
+                    
                     string response_as_str = "";
                     byte[] response = new byte[6];
+
+                    HeartBeatEvent.Set();
+                    s.ReceiveTimeout = 3000;
+
                     while (true)
                     {
+                        DownEvent.WaitOne();
                         try
                         {
-                            if (ethernetJ11D.IsNetworkUp)
+                            if (counter == 10)
                             {
-                                s.Send(Encoding.UTF8.GetBytes("PING\r\n"));
-                                s.Receive(response, 6, SocketFlags.None);
-                                StreamReader sr = new StreamReader(new MemoryStream(response));
-                                response_as_str = sr.ReadLine();
-                                Debug.Print(response_as_str);
+
+                                // non riesco a contattare il client, termino e faccio terminare il main thread
+                                s.Close();
+                                s = null;
+                                loadGUI(_serverError);
+                                System.Threading.Thread.Sleep(2000);
+                                loadGUI(_mainwindow, false);
+                                break;
+
+                            }else if (_socket == null)
+                            {
+                                // Il main thread ha deciso di terminare la sessione
+                                s.Close();
+                                s = null;
+                                break;
                             }
 
 
-                            System.Threading.Thread.Sleep(3500);
+                            s.Send(Encoding.UTF8.GetBytes("PING\r\n"));
+                            s.Receive(response, 6, SocketFlags.None);
+
+                            s.ReceiveTimeout = 3000;
+
+                            StreamReader sr = new StreamReader(new MemoryStream(response));
+                            response_as_str = sr.ReadLine();
+                            Debug.Print(response_as_str);
+
+                            counter = 0;
+                            
+                            System.Threading.Thread.Sleep(500);
                         }
                         catch (SocketException se)
                         {
 
-                            System.Threading.Thread.Sleep(2000);
-                            if (ethernetJ11D.IsNetworkUp)
-                            {
-                                loadGUI(_serverError);
-                                System.Threading.Thread.Sleep(2000);
-                                loadGUI(_mainwindow);
-                                break;
-                            }
+                            Debug.Print("Heartbeat get exception");
+                            counter++;
+                            s.ReceiveTimeout = 3000;
                         }
 
                     }
-                    
 
+                    Debug.Print("Heartbeat is going to die...");
+                    HeartBeatEvent.Set();
                     
 
 
@@ -1488,6 +1597,8 @@ namespace fez_spider
                 else {
 
                     Debug.Print("HEARTBEAT: Failed connecting socket");
+                    s = null;
+                    HeartBeatEvent.Set();
                   
 
                 }
@@ -1495,17 +1606,15 @@ namespace fez_spider
                             
             });
 
-            t.Start();
-            
+
+
+            ResetStatus();
 
             _loadingLbl.Text = "Loading, Please Wait..";
-            
-
             _startbtn.Enabled = false;
             _loadingLbl.Visible = true;
             _mainwindow.Invalidate();
 
-            ResetStatus();
             
             orderId = RandomString(32);
             Debug.Print("orderId: " + orderId);
@@ -1523,43 +1632,70 @@ namespace fez_spider
             Debug.Print("Connecting to: "+remoteEP.Address.ToString());
             _socket.Connect(remoteEP);
 
-            if (_socket.RemoteEndPoint.ToString()==(HOST+":"+PORT))
+            if (_socket.RemoteEndPoint.ToString() == (HOST + ":" + PORT)) {
+
+
                 Debug.Print("Socket connected to " + _socket.RemoteEndPoint.ToString());
+                Debug.Print("Starting thread");
+                tHeartBeat.Start();
+
+                Debug.Print("Aspetto thread");
+                HeartBeatEvent.WaitOne();
+                Debug.Print("Notifica arrivata");
+                HeartBeatEvent.Reset();
+                if (s == null) { 
+                    _socket.Close();
+                    _socket = null;
+
+                    _startbtn.Enabled = true;
+                    _loadingLbl.Visible = false;
+                    _mainwindow.Invalidate();
+
+                    return;
+                }
+                
+
+                Debug.Print("Secondo thread creato correttamente");
+               
+
+            }
             else {
 
                 Debug.Print("Failed connecting socket");
                 _socket = null;
+                _startbtn.Enabled = true;
+                _loadingLbl.Visible = false;
+                _mainwindow.Invalidate();
+                return;
 
             }
 
 
-            // Gestire Errore
 
-            if (_socket != null)
+
+            menu = downloadMenu(url);
+            if (menu != null)
             {
-                menu = downloadMenu(url);
-                if (menu != null)
-                {
 
 
-                    _startbtn.Enabled = true;
-                    _loadingLbl.Visible = false;
+                _startbtn.Enabled = true;
+                _loadingLbl.Visible = false;
 
-                    initOrders();
+                initOrders();
 
-                    loadGUI(_menu);
+                loadGUI(_menu);
 
-                    printDatagrid();
+                printDatagrid();
 
 
-                    return; // Sucessfull exit!
-                }else
-                {
-                    //chiudo socket
-                    _socket.Close();
-                }
-
+                return; // Sucessfull exit!
+            }else
+            {
+                //chiudo socket
+                _socket.Close();
             }
+
+           
             
             
             // something wrong, may not arrive here!

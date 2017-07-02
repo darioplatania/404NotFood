@@ -288,29 +288,28 @@ class ClientRunnable implements Runnable{
 	}
 
 	private String decrypt(String text) {
-		// TODO Auto-generated method stub
-		
-		
+		// TODO remove encryption when FEZ app is ready
 		final String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
 		
+		// adjust size for encryption
 		while(text.length()%16!=0){
 			text += "\0";
 		}
 		System.out.println("Stringa modificata: "+text);
-		// encrypt
+
+		// initialize XTEA
 		XTEA x = new XTEA();
 		x.setKey(key.getBytes());
 		byte[] byteString = convertStringToByteArray(text);
 		
-		
+		// encrypt
 		x.encrypt(byteString, 0, byteString.length);
 		System.out.println("String criptata: "+new String(byteString));
 		
 		// decrypt
 		x.decrypt(byteString, 0, byteString.length); //byteString now contains the decrypted data
 		String str = new String(byteString).replaceAll("\0", ""); //decrypted String without padding
-	
-		System.out.println("Stringa decriptata: "+str);		
+		System.out.println("Stringa decriptata: "+str);
 		
 		return str;
 		}
@@ -514,7 +513,6 @@ public class Server {
 	
 	public void stop() throws IOException{
 		this.socket.close();
-	}
-	
+    }
 	
 }

@@ -30,6 +30,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.h2.security.XTEA;
+
 
 
 class ClientRunnable implements Runnable{
@@ -167,8 +169,9 @@ class ClientRunnable implements Runnable{
 							socket.getOutputStream().write(MSG_PAYMENT_OK.getBytes("UTF-8"));
 							updatePaymentWebService(order);
 							// waiting for last message from FEZ
-							in.readLine();
-							isEnded=true;
+							
+							if(in.readLine().equals(MSG_USER_CONFIRM));
+								isEnded=true;
 						}else{
 							isEnded=false;
 							socket.getOutputStream().write(MSG_PAYMENT_ERR.getBytes("UTF-8"));
@@ -191,7 +194,7 @@ class ClientRunnable implements Runnable{
 							}
 							// wait for user confirm
 							System.out.println("Waiting for user confirm");
-							if(in.readLine().equalsIgnoreCase(MSG_USER_CONFIRM))
+							if(in.readLine().equals(MSG_USER_CONFIRM))
 								checkPaymentStatus(order, paymentId, paymentWrapper, isEnded, socket);
 						}
 						
@@ -237,6 +240,7 @@ class ClientRunnable implements Runnable{
 			}
 
 			socket.close();
+			System.out.println("socket closed correctly");
 			
 		} catch (IOException|JsonSyntaxException|NullPointerException e) {
 			LoggerWrapper.getInstance().DEBUG_INFO(Level.SEVERE,e.getMessage()+" from: "+hostname);
@@ -283,13 +287,34 @@ class ClientRunnable implements Runnable{
 		
 	}
 
-	private String decrypt(String readLine) {
+	private String decrypt(String text) {
 		// TODO Auto-generated method stub
+		
+		
 		final String key = "404notfood";
 		
+		/*
+		// encrypt
+		XTEA x = new XTEA();
+		x.setKey(convertStringToByteArray(key));
+		byte[] byteString = convertStringToByteArray(text);
 		
+		x.encrypt(byteString, 0, text.length());
 		
-		return readLine;
+		// decrypt
+		x.decrypt(byteString, 0, text.length()); //byteString now contains the decrypted data
+		String str = new String(byteString); //decrypted String
+		
+		System.out.println(str);
+		return str;
+		
+		*/
+		return text;
+	}
+	
+	private static byte[] convertStringToByteArray(String stringToConvert) {
+	    byte[] theByteArray = stringToConvert.getBytes();
+	    return theByteArray;
 	}
 
 	private void sendQR(String id) throws IOException {

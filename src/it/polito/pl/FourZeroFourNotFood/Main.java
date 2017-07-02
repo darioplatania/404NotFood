@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.google.gson.Gson;
+import com.mysql.jdbc.log.Log;
 
 
 
@@ -76,35 +77,41 @@ public class Main {
 	}
 	
 	protected static void heartService(){
-
 		ServerSocket socket;
 		try {
 			socket = new ServerSocket(PORT_HEART_NUMBER);
-			
-			
-			// WAIT FOR NEW CONNECTION
-			Socket new_client = socket.accept();
-			//String host = new_client.getInetAddress().getHostAddress();
-			PrintWriter out = new PrintWriter(new_client.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(new_client.getInputStream()));
 		
 			while(true){
-				if(in.readLine()==null)
-					break;
-				Thread.sleep(3500);
-				out.println("PONG");
-			}
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
+				System.out.println("Hearth beat +++++++++++++++ BORN "+Thread.currentThread().getId());
+				try {
 					
+					
+					// WAIT FOR NEW CONNECTION
+					Socket new_client = socket.accept();
+					System.out.println("Hearth beat ************* ACCEPT "+Thread.currentThread().getId());
+					//String host = new_client.getInetAddress().getHostAddress();
+					PrintWriter out = new PrintWriter(new_client.getOutputStream(), true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(new_client.getInputStream()));
+				
+					while(true){
+						
+						if(in.readLine()==null)
+							break;
 		
-
+						Thread.sleep(500);
+						out.println("PONG");
+					}
+					
+					System.out.println("Hearth beat -------------- DEAD "+Thread.currentThread().getId());
+				
+				} catch (IOException|InterruptedException e) {
+					System.out.println("Hearth beat -------------- DEAD "+Thread.currentThread().getId());
+				}
+			}
+		}catch(IOException e){
+			System.out.println("Hearth beat XXXXXXXXXXXXXXXXXXXXXX DEAD "+Thread.currentThread().getId());
+		}
 	}
 
 

@@ -87,6 +87,7 @@ namespace fez_spider
         private List years_list;
 
         private static string orderId = null;
+        private const  string key = "1234567890123456";
 
         /* Socket Variables */
         private Socket s = null;
@@ -107,6 +108,8 @@ namespace fez_spider
 
 
         private static String ORDER_CMD = null;
+        /* get current year */
+        private static int current_year = 2017;
 
         private ArrayList payment = new ArrayList();
         private String url = "http://95.85.47.151:8080/food/webapi/food";
@@ -261,13 +264,13 @@ namespace fez_spider
             months_list = new List(months,150);
 
             ArrayList years = new ArrayList();
-            
+
+          
             //TODO get current year
-            for(int i = 2017; i < 2027; i++)
+            for(int i = current_year; i < 2027; i++)
                 years.Add(new object[2] { i.ToString(), i });
             
             years_list = new List(years, 150);
-
 
 
             /* Processing Payment Window */
@@ -490,9 +493,7 @@ namespace fez_spider
         }
 
         #region Custom Function Implementation 
-
-        //TODO Commentare sopra ogni signature
-
+        
         private Socket connectToDesktop(String hostname, int port)
         {
             Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -877,6 +878,31 @@ namespace fez_spider
             return value.ToString("yyyyMMddHHmmssfff");
            
         }
+
+        private byte[] encryptXTEA(String target,String key)
+        {
+            // Aggiungo Padding per allinearmi a 16
+            while ((target.Length % Xtea.Align) != 0)
+                target += "\r\n";
+
+
+            //Cifro con la chiave passata
+            byte[] msg_body = Encoding.UTF8.GetBytes(target);
+            Xtea xt = new Xtea(Encoding.UTF8.GetBytes(key));
+            xt.encrypt(msg_body, 0, msg_body.Length);
+
+            
+            //Genero l'esadecimale
+            String output = "";
+            for (int i = 0; i < msg_body.Length; i++)
+                output += msg_body[i].ToString("X2");
+
+            
+            //Ritorno l'esadecimale del byte[] cifrato
+            return Encoding.UTF8.GetBytes(output);
+
+        }
+
         private void processPayment(string creditCard) {
 
             
@@ -900,22 +926,24 @@ namespace fez_spider
 
 
             byte[] msg_header  = Encoding.UTF8.GetBytes(PAYMENT_CARD);
-            byte[] msg_body    = Encoding.UTF8.GetBytes(creditCard + "\r\n");
 
+            /* cifro dati carta di credito con Xtea */
+            byte[] hex_encrypted_body = encryptXTEA(creditCard, key);
 
             try
             {
                 _socket.Send(msg_header);
-                _socket.Send(msg_body);
+                _socket.Send(hex_encrypted_body);
+                _socket.Send(Encoding.UTF8.GetBytes("\r\n"));
                 
 
                 byte[] response = new byte[3];
                 _socket.Receive(response, 3, SocketFlags.None);
 
-
                 var stream = new MemoryStream(response);
                 StreamReader sr = new StreamReader(stream);
                 string response_as_str = sr.ReadToEnd();
+
 
 
 
@@ -1076,26 +1104,7 @@ namespace fez_spider
         
         private void _ccConfirmBtnTapEvent(object sender)
         {
-            //TODO RIMUOVERE
-
-            /* BEGIN */
-
-
-            Hashtable card1 = new Hashtable();
-            card1.Add("firstname", "Joe");
-            card1.Add("lastname", "Shopper");
-            card1.Add("cvv2", "874");
-            card1.Add("number", "4567516310777851");
-            card1.Add("expireMonth", "11");
-            card1.Add("expireYear", "2018");
-            card1.Add("type", "visa");
-
-            string card1_as_json = Json.NETMF.JsonSerializer.SerializeObject(card1);
             
-            processPayment(card1_as_json);
-            return;
-
-            /* END */
 
             string message = "";
 

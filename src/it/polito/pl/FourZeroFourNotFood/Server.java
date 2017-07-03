@@ -289,30 +289,45 @@ class ClientRunnable implements Runnable{
 
 	private String decrypt(String text) {
 		// TODO remove encryption when FEZ app is ready
-		final String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
+		//final String key = Long.toHexString(Double.doubleToLongBits(Math.random()));
 		
-		// adjust size for encryption
-		while(text.length()%16!=0){
-			text += "\0";
-		}
-		System.out.println("Stringa modificata: "+text);
-
+		final String key = "1234567890123456";
+		
+		
 		// initialize XTEA
 		XTEA x = new XTEA();
 		x.setKey(key.getBytes());
-		byte[] byteString = convertStringToByteArray(text);
+		byte[] byteString = hexStringToByteArray(text);
 		
-		// encrypt
-		x.encrypt(byteString, 0, byteString.length);
-		System.out.println("String criptata: "+new String(byteString));
 		
 		// decrypt
 		x.decrypt(byteString, 0, byteString.length); //byteString now contains the decrypted data
-		String str = new String(byteString).replaceAll("\0", ""); //decrypted String without padding
+		String str = new String(byteString).replaceAll("\r\n", ""); //decrypted String without padding
 		System.out.println("Stringa decriptata: "+str);
 		
 		return str;
 		}
+	
+	public static String bytesToHex(byte[] bytes) {
+		char[] hexArray = "0123456789ABCDEF".toCharArray();
+		char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
+	}
+	
+	public static byte[] hexStringToByteArray(String s) {
+	    int len = s.length();
+	    byte[] data = new byte[len / 2];
+	    for (int i = 0; i < len; i += 2) {
+	        data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+	                             + Character.digit(s.charAt(i+1), 16));
+	    }
+	    return data;
+	}
 	
 	private static byte[] convertStringToByteArray(String stringToConvert) {
 	    byte[] theByteArray = stringToConvert.getBytes();

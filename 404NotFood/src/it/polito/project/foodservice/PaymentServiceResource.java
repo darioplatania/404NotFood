@@ -2,6 +2,7 @@ package it.polito.project.foodservice;
 
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;

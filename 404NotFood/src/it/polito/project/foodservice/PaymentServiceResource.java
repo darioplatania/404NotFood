@@ -32,15 +32,18 @@ public class PaymentServiceResource {
 		@ApiResponse(code = 503, message = "Connection with DB not works correctly")})
 	public Response addPayment(@QueryParam("PayerID") String PayerID, @QueryParam("paymentId") String paymentId) {
 		PaymentServiceImpl res = new PaymentServiceImpl();
+		String redirect_url = "../continue_payment.html";
 		try{
 			res.addPayment(PayerID, paymentId);
-		}catch(SQLException e){
+		}catch (DataIntegrityViolationException e) {
+	        redirect_url = "../duplicate_payment.html";
+	    }catch(SQLException e){
 			throw new ServiceUnavailableException();
 		}
 
 		java.net.URI location = null;
 		try {
-			location = new java.net.URI("../continue_payment.html");
+			location = new java.net.URI(redirect_url);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

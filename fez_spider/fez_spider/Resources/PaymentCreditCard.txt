@@ -8,11 +8,11 @@
 	<TextBox Name="card_number" X="84" Y="100" Width="226" Height="32" Alpha="255" Text="" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
 	
 	<TextBlock Name="expiration_date_label" X="10" Y="127" Width="320" Height="32" Alpha="255" Text="Expiration Date" TextAlign="Left" TextVerticalAlign="Middle" Font="2" FontColor="000000"/>
-	<Dropdown Name="expiration_date_month" X="10" Y="160" Width="100" Height="32" Alpha="255" Text="Month" TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
-	<Dropdown Name="expiration_date_year" X="115" Y="160" Width="100" Height="32" Alpha="255" Text="Year" TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<Dropdown Name="expiration_date_month" X="10" Y="160" Width="120" Height="32" Alpha="255" Text="Month" TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
+	<Dropdown Name="expiration_date_year" X="140" Y="160" Width="100" Height="32" Alpha="255" Text="Year" TextAlign="Center" TextVerticalAlign="Middle" Font="3" FontColor="000000"/>
 	
 	<TextBlock Name="cvv_label" X="275" Y="127" Width="35" Height="32" Alpha="255" Text="CVV" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
-	<TextBox Name="cvv" X="220" Y="160" Width="90" Height="32" Alpha="255" Text="" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
+	<TextBox Name="cvv" X="250" Y="160" Width="60" Height="32" Alpha="255" Text="" TextAlign="Left" TextVerticalAlign="Middle" Font="3" FontColor="000000" BackColor="FFFFFF"/>
 	
 
 	<Button Name="ccBackBtn" X="5" Y="202" Width="55" Height="32" Alpha="255" Text="Back" Font="3" FontColor="000000" DisabledFontColor="808080" TintColor="000000" TintAmount="0"/>

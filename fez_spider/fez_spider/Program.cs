@@ -92,8 +92,8 @@ namespace fez_spider
         /* Socket Variables */
         private Socket s = null;
         private Socket _socket = null;
-//        private const String HOST = "172.20.10.3";
-        private const String HOST = "192.168.1.9";
+        //private const String HOST = "172.20.10.3";
+        private const String HOST = "192.168.2.1";
 
         private const int PORT = 4096;
         
@@ -126,13 +126,13 @@ namespace fez_spider
         
         #region Fez Network Configuration
 
-        //private static String ip_address = "192.168.2.2";
-        //private static String subnet     = "255.255.255.0";
-        //private static String gateway    = "192.168.2.1";
+        private static String ip_address = "192.168.2.2";
+        private static String subnet     = "255.255.255.0";
+        private static String gateway    = "192.168.2.1";
 
-        private static String ip_address = "192.168.1.253";
-        private static String subnet = "255.255.255.0";
-        private static String gateway = "192.168.1.1";
+ //       private static String ip_address = "192.168.1.253";
+  //      private static String subnet = "255.255.255.0";
+   //     private static String gateway = "192.168.1.1";
 
 
         private static String[] dns      = { "8.8.8.8", "8.8.4.4" };
@@ -521,26 +521,35 @@ namespace fez_spider
             try
             {
                 Debug.Print("Making Request to WebService");
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Timeout = 10000; // timeout to 10 seconds
-                Debug.Print("Waiting for response from WebService");
-                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-                if (res.StatusCode.ToString().Equals("200"))
+                try
                 {
+                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                    req.Timeout = 10000; // timeout to 10 seconds
+                    Debug.Print("Waiting for response from WebService");
+                    HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-                    Debug.Print("Response: " + res.StatusCode);
+                    if (res.StatusCode.ToString().Equals("200"))
+                    {
 
-                    Stream stream = res.GetResponseStream();
-                    sr = new StreamReader(stream);
-                    string json = sr.ReadToEnd();
+                        Debug.Print("Response: " + res.StatusCode);
 
-                    Debug.Print("Menu: " + json);
+                        Stream stream = res.GetResponseStream();
+                        sr = new StreamReader(stream);
+                        string json = sr.ReadToEnd();
+
+                        Debug.Print("Menu: " + json);
 
 
-                    al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
+                        al = Json.NETMF.JsonSerializer.DeserializeString(json) as ArrayList;
 
+                    }
+
+                }catch(System.Net.WebException ex)
+                {
+                    al = null;
                 }
+
 
                 return al;
 
@@ -812,7 +821,7 @@ namespace fez_spider
             processingPayment = false;
 
             _socket = null;
-
+            _ccErrMsg.Text = "";
             _ordBtn.Enabled = false;
 
             orderId = "";
@@ -905,6 +914,7 @@ namespace fez_spider
 
         private void processPayment(string creditCard) {
 
+            _ccErrMsg.Text = "";
             
             Debug.Print(creditCard);
             loadGUI(_processingPaymentWindow);
@@ -912,7 +922,8 @@ namespace fez_spider
             if (recoveryPayment(false))
                 return;
 
-            
+            Debug.Print("Payment Not Found Or Wrong");
+
             processingPayment = true;
 
             if (qrCodeFlag)
@@ -938,8 +949,8 @@ namespace fez_spider
                 
 
                 byte[] response = new byte[3];
+                
                 _socket.Receive(response, 3, SocketFlags.None);
-
                 var stream = new MemoryStream(response);
                 StreamReader sr = new StreamReader(stream);
                 string response_as_str = sr.ReadToEnd();
@@ -971,6 +982,7 @@ namespace fez_spider
             }catch(SocketException ex)
             {
                 Debug.Print(ex.ToString());
+
 
 
 
@@ -1287,8 +1299,7 @@ namespace fez_spider
 
             if(!qrCodeFlag){
 
-                _paypal_payment.Invalidate();
-
+                
                 try
                 {
                     Debug.Print("Requesting QRCode");
@@ -1379,7 +1390,7 @@ namespace fez_spider
                 {
                     Debug.Print(ex.Message);
                   //  loadGUI(_errorWindow);
-                    loadGUI(_mainwindow);
+                    //loadGUI(_mainwindow);
                 }
 
             }
@@ -1436,7 +1447,11 @@ namespace fez_spider
         {
             DownEvent.Reset();
             previousWindow = Glide.MainWindow;
-            
+
+            if (previousWindow == _paypal_payment)
+                Debug.Print("ok");
+
+            Debug.Print(qrCodeFlag.ToString());
 
             if (startup) {
                 Debug.Print("Network Down");
@@ -1465,8 +1480,14 @@ namespace fez_spider
                         recoveryPayment(true);
                      
                 }
-                else
+                else {
+
+                    if (previousWindow == _paypal_payment && !qrCodeFlag)
+                        previousWindow = _scegliPagamento;
+
                     loadGUI(previousWindow);
+
+                }
 
             }
 
@@ -1481,41 +1502,52 @@ namespace fez_spider
 
             loadGUI(_processingPaymentWindow);
 
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(payment_url + orderId);
-            req.Timeout = 10000; // timeout to 10 seconds
-            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-            if (res.StatusCode.ToString().Equals("200"))
+            try
             {
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(payment_url + orderId);
+                req.Timeout = 1000; // timeout to 1 seconds
+                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
 
-
-                Stream stream = res.GetResponseStream();
-                sr = new StreamReader(stream);
-                string str = sr.ReadToEnd();
-
-                switch (str)
+                if (res.StatusCode.ToString().Equals("200"))
                 {
-                    case "OK":
 
-                        _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_CONFIRM));
-                        loadGUI(_paymentSuccess);
-                        System.Threading.Thread.Sleep(5000);
-                       
 
-                        loadGUI(_mainwindow);
-                        return true;
-                    default:
-                        if (flag) { 
-                            loadGUI(_paymentError);
+                    Stream stream = res.GetResponseStream();
+                    sr = new StreamReader(stream);
+                    string str = sr.ReadToEnd();
+
+                    switch (str)
+                    {
+                        case "OK":
+
+                            _socket.Send(Encoding.UTF8.GetBytes(PAYMENT_CONFIRM));
+                            loadGUI(_paymentSuccess);
                             System.Threading.Thread.Sleep(5000);
-                            processingPayment = false;
-                            loadGUI(_credit_card_payment);
-                        }
-                        return false;
+
+
+                            loadGUI(_mainwindow);
+                            return true;
+                        default:
+                            if (flag)
+                            {
+                                loadGUI(_paymentError);
+                                System.Threading.Thread.Sleep(5000);
+                                processingPayment = false;
+                                loadGUI(_credit_card_payment);
+                            }
+                            return false;
+
+                    }
 
                 }
-
             }
+            catch(System.Net.WebException ex)
+            {
+                Debug.Print(ex.Message);
+                return false;
+            }
+            
 
             return false;
 
@@ -1581,7 +1613,7 @@ namespace fez_spider
 
                             StreamReader sr = new StreamReader(new MemoryStream(response));
                             response_as_str = sr.ReadLine();
-                            Debug.Print(response_as_str);
+                          //  Debug.Print(response_as_str);
 
                             counter = 0;
                             
